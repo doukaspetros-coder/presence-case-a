@@ -59,17 +59,26 @@ jobs:
               and path.relative_to(root).as_posix() != "things/.gitkeep"
           ]
 
+          couplets_dir = root / "couplets"
+          couplets_dir.mkdir(exist_ok=True)
+          couplets = [
+              {"path": path.relative_to(root).as_posix(), "text": path.read_text(encoding="utf-8")}
+              for path in sorted(couplets_dir.rglob("*.txt"))
+              if path.is_file()
+          ]
+
           manifest = {
               "repository": repository,
               "commit": commit_sha,
               "commit_at": commit_at,
               "items": items,
+              "couplets": couplets,
           }
           (site / "manifest.json").write_text(
-              json.dumps(manifest, separators=(",", ":")) + "\n",
+              json.dumps(manifest, ensure_ascii=False, separators=(",", ":")) + "\n",
               encoding="utf-8",
           )
-          print(f"Indexed {len(items)} presence file(s).")
+          print(f"Indexed {len(items)} presence file(s) and {len(couplets)} couplet(s).")
           PY
 
       - name: Upload static site

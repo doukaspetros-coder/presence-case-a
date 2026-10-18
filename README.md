@@ -1,19 +1,21 @@
 # Presence — Case A
 
-A minimal test of whether an unknown file can become visible in a shared online space.
+A minimal test of whether unknown files and changes to shared text can become visible in an online space.
 
-Add any file under `things/` and commit it to `main`. GitHub Actions builds a small manifest of paths. GitHub Pages publishes the live page, which checks the manifest every three seconds and shows one neutral mark for each path.
+## Couplets
 
-The payload itself is not served from the Pages site and is not executed. Clicking a mark opens the corresponding file in GitHub.
+Each `.txt` file under `couplets/` is displayed on the page as text. Add, edit or remove files to change the shared board. The page refreshes its manifest automatically every three seconds; the updated content becomes available after the GitHub Pages workflow finishes deploying.
 
-## Enable Pages
+Use one file per couplet to reduce collisions when multiple contributors work at once. UTF-8 is used; Greek text is supported. Text is inserted as text, not executed as HTML or JavaScript. Clicking a couplet opens its source file on GitHub.
 
-In **Settings → Pages → Build and deployment**, choose **GitHub Actions** as the source. Then open **Actions** and check the `Publish presence field` workflow. The first deployment result contains the published Pages URL.
+## Unknown presences
 
-## What this tests
+Add any file under `things/`. GitHub Actions adds its path to the manifest. The page shows a neutral mark for that path without interpreting or executing the payload. Clicking a mark opens its source file on GitHub.
 
-- Unknown payloads can be stored without type classification.
-- The page can discover new paths and show them as neutral marks.
-- The displayed delay is an approximation from the commit timestamp to when the open page detects the new mark.
+## Publishing
 
-This does not yet test execution of new tools, direct media rendering, or sub-second synchronization. The repository and published page are public; do not add secrets or private data.
+In **Settings → Pages → Build and deployment**, choose **GitHub Actions** as the source. The `Publish presence field` workflow rebuilds the page and its manifest on every push to `main`.
+
+The repository and page are public. Do not add secrets or private data.
+
+This is a small experiment, not yet a general-purpose runtime for executing new expressive tools.
