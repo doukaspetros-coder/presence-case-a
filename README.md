@@ -18,8 +18,6 @@ Add any file under `things/`. GitHub Actions adds its path to the manifest. The 
 
 ## Publishing
 
-In **Settings → Pages → Build and deployment**, choose **GitHub Actions** as the source. The `Publish presence field` workflow rebuilds the page and its manifest on every push to `main`.
-
 The repository and page are public. Do not add secrets or private data.
 
 This is a small experiment, not yet a general-purpose runtime for executing new expressive tools.
