@@ -1,0 +1,82 @@
+name: Publish presence field
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build page and presence index
+        env:
+          REPOSITORY: ${{ github.repository }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          root = Path.cwd()
+          site = root / "_site"
+          site.mkdir(exist_ok=True)
+          (site / "index.html").write_bytes((root / "index.html").read_bytes())
+          (site / ".nojekyll").touch()
+
+          commit_sha = os.environ["COMMIT_SHA"]
+          repository = os.environ["REPOSITORY"]
+          commit_at = subprocess.check_output(
+              ["git", "show", "-s", "--format=%cI", commit_sha], text=True
+          ).strip()
+
+          things = root / "things"
+          things.mkdir(exist_ok=True)
+          items = [
+              path.relative_to(root).as_posix()
+              for path in sorted(things.rglob("*"))
+              if path.is_file()
+              and path.relative_to(root).as_posix() != "things/.gitkeep"
+          ]
+
+          manifest = {
+              "repository": repository,
+              "commit": commit_sha,
+              "commit_at": commit_at,
+              "items": items,
+          }
+          (site / "manifest.json").write_text(
+              json.dumps(manifest, separators=(",", ":")) + "\n",
+              encoding="utf-8",
+          )
+          print(f"Indexed {len(items)} presence file(s).")
+          PY
+
+      - name: Upload static site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
