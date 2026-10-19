@@ -88,7 +88,37 @@ jobs:
                   "digest": hashlib.sha256(path.read_bytes()).hexdigest(),
               })
 
-          trace_paths = set(items) | {item["path"] for item in couplets} | {item["path"] for item in vectors}
+          couplets_by_path = {item["path"]: item["text"] for item in couplets}
+          transformations_dir = root / "transformations"
+          transformations_dir.mkdir(exist_ok=True)
+          transformations = []
+          for path in sorted(transformations_dir.rglob("*.json")):
+              if not path.is_file() or path.is_symlink():
+                  continue
+              relative = path.relative_to(root).as_posix()
+              try:
+                  payload = json.loads(path.read_text(encoding="utf-8"))
+              except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+                  print(f"Skipping invalid transformation {relative}: {exc}")
+                  continue
+              if not isinstance(payload, dict) or payload.get("mode") != "text-particles":
+                  print(f"Skipping unsupported transformation {relative}.")
+                  continue
+              source = payload.get("source")
+              if not isinstance(source, str) or source not in couplets_by_path:
+                  print(f"Skipping unresolved transformation {relative}: source must be an existing couplet.")
+                  continue
+              source_text = couplets_by_path[source]
+              digest = hashlib.sha256(path.read_bytes() + b"\\0" + source_text.encode("utf-8")).hexdigest()
+              transformations.append({
+                  "path": relative,
+                  "mode": "text-particles",
+                  "source": source,
+                  "source_text": source_text,
+                  "digest": digest,
+              })
+
+          trace_paths = set(items) | {item["path"] for item in couplets} | {item["path"] for item in vectors} | {item["path"] for item in transformations}
           links_dir = root / "links"
           links_dir.mkdir(exist_ok=True)
           links = []
@@ -126,13 +156,14 @@ jobs:
               "items": items,
               "couplets": couplets,
               "vectors": vectors,
+              "transformations": transformations,
               "links": links,
           }
           (site / "manifest.json").write_text(
               json.dumps(manifest, ensure_ascii=False, separators=(",", ":")) + "\n",
               encoding="utf-8",
           )
-          print(f"Indexed {len(items)} presence file(s), {len(couplets)} couplet(s), {len(vectors)} vector trace(s), and {len(links)} connection(s).")
+          print(f"Indexed {len(items)} presence file(s), {len(couplets)} couplet(s), {len(vectors)} vector trace(s), {len(transformations)} transformation(s), and {len(links)} connection(s).")
 
           history_rows = subprocess.check_output(
               ["git", "log", "--first-parent", "-n", "40", "--format=%H%x09%cI%x09%s"],
@@ -176,10 +207,34 @@ jobs:
                       if path.startswith("vectors/")
                       and path.lower().endswith(".svg")
                   ]
+                  history_couplets_by_path = {item["path"]: item["text"] for item in history_couplets}
+                  history_transformations = []
+                  for path in sorted(members):
+                      if not path.startswith("transformations/") or not path.endswith(".json"):
+                          continue
+                      raw_transform = read_member(path)
+                      try:
+                          payload = json.loads(raw_transform.decode("utf-8"))
+                      except (UnicodeDecodeError, json.JSONDecodeError):
+                          continue
+                      if not isinstance(payload, dict) or payload.get("mode") != "text-particles":
+                          continue
+                      source = payload.get("source")
+                      if not isinstance(source, str) or source not in history_couplets_by_path:
+                          continue
+                      source_text = history_couplets_by_path[source]
+                      history_transformations.append({
+                          "path": path,
+                          "mode": "text-particles",
+                          "source": source,
+                          "source_text": source_text,
+                          "digest": hashlib.sha256(raw_transform + b"\\0" + source_text.encode("utf-8")).hexdigest(),
+                      })
                   history_trace_paths = (
                       set(history_items)
                       | {item["path"] for item in history_couplets}
                       | {item["path"] for item in history_vectors}
+                      | {item["path"] for item in history_transformations}
                   )
                   history_links = []
                   for path in sorted(members):
@@ -212,6 +267,7 @@ jobs:
                       "items": history_items,
                       "couplets": history_couplets,
                       "vectors": history_vectors,
+                      "transformations": history_transformations,
                       "links": history_links,
                   })
 
