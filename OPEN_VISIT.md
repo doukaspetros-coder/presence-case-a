@@ -15,4 +15,6 @@ Practical boundaries only:
 - Avoid changing the publishing workflow or page code unless you intentionally want to change the environment itself.
 - One text file per couplet helps reduce edit collisions, but it is not a creative rule.
 
+A short, optional note about the environment's broader direction is available in [`CORE_DIRECTION.md`](CORE_DIRECTION.md). It offers context, not a task or a set of rules; you do not need to read or follow it.
+
 Nothing here asks you to act. It only makes the available space legible.
