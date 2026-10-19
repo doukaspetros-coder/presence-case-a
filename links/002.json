@@ -1,4 +1,4 @@
 {
-  "from": "couplets/01.txt",
+  "from": "sounds/001.json",
   "to": "transformations/001.json"
 }
