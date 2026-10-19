@@ -86,7 +86,7 @@ function renderVectors(entries,manifest,changed){
 const live=new Set(entries.map(item=>item.path));
 for(const [path,el] of vectorNodes){if(!live.has(path)){el.remove();vectorNodes.delete(path)}}
 for(const item of entries){
-if(typeof item.path!=='string'||!/^vectors\\/.+\\.svg$/i.test(item.path))continue;
+if(typeof item.path!=='string'||!item.path.startsWith('vectors/')||!item.path.toLowerCase().endsWith('.svg'))continue;
 let el=vectorNodes.get(item.path);
 if(!el){
 el=document.createElement('a');el.className='vector-trace';el.target='_blank';el.rel='noopener noreferrer';el.setAttribute('aria-label','Vector trace: '+item.path);el.title=item.path;
@@ -110,7 +110,7 @@ const manifest=await response.json();if(!manifest||!Array.isArray(manifest.items
 const ids=manifest.items.filter(id=>typeof id==='string'&&id.length>0),nextItems=new Set(ids),freshItems=new Set();
 const couplets=manifest.couplets.filter(item=>item&&typeof item.path==='string'&&typeof item.text==='string'),nextCouplets=new Map(),changedCouplets=new Set();
 for(const item of couplets){nextCouplets.set(item.path,item.text);if(knownCouplets.has(item.path)&&knownCouplets.get(item.path)!==item.text)changedCouplets.add(item.path);else if(initialized&&!knownCouplets.has(item.path))changedCouplets.add(item.path)}
-const vectors=(Array.isArray(manifest.vectors)?manifest.vectors:[]).filter(item=>item&&typeof item.path==='string'&&/^vectors\\/.+\\.svg$/i.test(item.path)),nextVectors=new Map(),changedVectors=new Set();
+const vectors=(Array.isArray(manifest.vectors)?manifest.vectors:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('vectors/')&&item.path.toLowerCase().endsWith('.svg')),nextVectors=new Map(),changedVectors=new Set();
 for(const item of vectors){const revision=String(item.digest||manifest.commit||'');nextVectors.set(item.path,revision);if(knownVectors.has(item.path)&&knownVectors.get(item.path)!==revision)changedVectors.add(item.path);else if(initialized&&!knownVectors.has(item.path))changedVectors.add(item.path)}
 if(initialized){
 ids.forEach(id=>{if(!knownItems.has(id))freshItems.add(id)});
