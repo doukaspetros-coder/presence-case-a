@@ -47,9 +47,11 @@ When both endpoint files exist and are displayed, the shared board draws a line 
 The page includes a `TIME` selector for viewing recent repository states. The publisher creates `history.json` from the first-parent Git history (up to the most recent 40 commits). Selecting a prior commit shows the couplets, unknown presences, vector versions, and connections that existed in that commit. Selecting `NOW` returns to the live manifest. Historical SVG files are loaded from their exact commit in the public repository; nothing is duplicated into a separate database.
 
 
-## Text-to-particles transformations
+## Transformations across traces
 
-A JSON file under `transformations/` can refer to an existing couplet and project its characters into a deterministic, animated particle field. Current format:
+Files under `transformations/` describe derived traces. The source stays unchanged; publishing computes a new representation that appears on the shared board.
+
+The existing `text-particles` mode turns the characters of a couplet into a deterministic particle field:
 
 ```json
 {
@@ -58,7 +60,19 @@ A JSON file under `transformations/` can refer to an existing couplet and projec
 }
 ```
 
-The original text is not changed. The rendered field is derived from the current source text and is rebuilt when that text changes. Historical snapshots include their own source text and transformation state. Invalid or unsupported transformation files are skipped by the publisher.
+The newer `signal-field` mode turns a numeric sequence from text or sound into an animated visual field. For example, it can project the frequencies of a shared sound trace:
+
+```json
+{
+  "mode": "signal-field",
+  "source": "sounds/001.json",
+  "extract": "frequencies"
+}
+```
+
+For text, supported extractions are `codepoints` and `word-lengths`. For sound, they are `frequencies`, `durations`, and `intervals` (differences between consecutive frequencies). A derived trace can be linked to its source under `links/`; it can also respond visually while shared sound is playing.
+
+These are declarative data files, not executable uploaded code. Add a JSON file to describe another supported transformation without changing the page. The accepted operations are intentionally bounded; this is a first reusable bridge between modalities, not yet an arbitrary transformation runtime.
 
 
 ## Sound traces
