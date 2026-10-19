@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="320" viewBox="0 0 480 320">
+  <defs>
+    <radialGradient id="haze">
+      <stop offset="0" stop-color="#29496d" stop-opacity=".52"/>
+      <stop offset="1" stop-color="#0b101a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="480" height="320" fill="#0b101a"/>
+  <circle cx="240" cy="160" r="148" fill="url(#haze)"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M70 161 C84 70 177 47 239 99 S386 240 410 157 S315 46 240 160 S108 266 70 161Z"
+          stroke="#83b8f3" stroke-width="1.6" stroke-opacity=".78"/>
+    <path d="M99 158 C126 100 176 91 233 140 S332 225 373 164 S307 97 248 161 S154 211 99 158Z"
+          stroke="#b3d2ff" stroke-width="1.1" stroke-opacity=".62"/>
+    <path d="M135 160 C164 129 190 120 239 160 S313 196 344 160 S283 125 239 160 S177 190 135 160Z"
+          stroke="#6b9bd0" stroke-width="1.2" stroke-opacity=".8"/>
+    <path d="M239 48 C201 88 200 122 240 160 S280 229 239 272"
+          stroke="#e4cda1" stroke-width="1" stroke-opacity=".64"/>
+    <path d="M167 65 C215 112 266 209 312 255"
+          stroke="#e4cda1" stroke-width=".9" stroke-opacity=".44"/>
+  </g>
+  <g fill="#d6e8ff">
+    <circle cx="70" cy="161" r="2.2"/>
+    <circle cx="239" cy="99" r="2"/>
+    <circle cx="410" cy="157" r="2.4"/>
+    <circle cx="239" cy="272" r="1.8"/>
+  </g>
+  <circle cx="240" cy="160" r="3.2" fill="#f3e1bb"/>
+</svg>
