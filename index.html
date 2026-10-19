@@ -37,8 +37,9 @@ body{color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,mon
 .particle-trail{fill:none;stroke:#799cc5;stroke-opacity:.3;stroke-width:.65;stroke-linecap:round;stroke-linejoin:round}
 .particle-dot{transform-box:fill-box;transform-origin:center;animation:particle-float 5.8s ease-in-out infinite alternate}
 #particle-life-link{position:fixed;z-index:8;top:15px;left:18px;padding:8px 10px;border:1px solid rgba(173,194,227,.14);background:rgba(8,10,16,.68);color:var(--muted);font-size:10px;letter-spacing:.12em;text-decoration:none;backdrop-filter:blur(8px)}
-#particle-life-link:hover,#particle-life-link:focus-visible{color:var(--ink);border-color:rgba(173,204,250,.5);outline:none}
-@media(max-width:540px){#particle-life-link{top:10px;left:10px;font-size:9px;padding:7px 8px}}
+#particle-life-link:hover,#particle-life-link:focus-visible,#sound-space-link:hover,#sound-space-link:focus-visible{color:var(--ink);border-color:rgba(173,204,250,.5);outline:none}
+#sound-space-link{position:fixed;z-index:8;top:54px;left:18px;padding:8px 10px;border:1px solid rgba(173,194,227,.14);background:rgba(8,10,16,.68);color:var(--muted);font-size:10px;letter-spacing:.12em;text-decoration:none;backdrop-filter:blur(8px)}
+@media(max-width:540px){#particle-life-link{top:10px;left:10px;font-size:9px;padding:7px 8px}#sound-space-link{top:47px;left:10px;font-size:9px;padding:7px 8px}}
 body.sound-active .particle-field{border-color:rgba(228,205,161,.62);box-shadow:0 0 28px rgba(228,205,161,.16)}
 body.sound-active .particle-dot{filter:drop-shadow(0 0 4px rgba(228,205,161,.82))}
 .transform-trace:hover,.transform-trace:focus-visible{background:rgba(28,36,53,.64);border-color:rgba(173,204,250,.38);outline:none}
@@ -80,6 +81,7 @@ body[data-view="past"] #history-control{border-color:rgba(228,205,161,.3)}
 <div id="field" aria-hidden="true"><svg id="connections" xmlns="http://www.w3.org/2000/svg"></svg></div>
 <main id="board"></main>
 <a id="particle-life-link" href="./particle-life.html">PARTICLE LIFE ↗</a>
+<a id="sound-space-link" href="./sound-space.html">SOUND SPACE ↗</a>
 <div id="readout" aria-live="off">
 <span>TRACES <span class="value" id="count">0</span></span>
 <span>COUPLETS <span class="value" id="couplet-count">0</span></span>
