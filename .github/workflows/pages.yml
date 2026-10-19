@@ -33,8 +33,10 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
         run: |
           python3 - <<'PY'
+          import hashlib
           import json
           import os
+          import shutil
           import subprocess
           from pathlib import Path
 
@@ -64,8 +66,23 @@ jobs:
           couplets = [
               {"path": path.relative_to(root).as_posix(), "text": path.read_text(encoding="utf-8")}
               for path in sorted(couplets_dir.rglob("*.txt"))
-              if path.is_file()
+              if path.is_file() and not path.is_symlink()
           ]
+
+          vectors_dir = root / "vectors"
+          vectors_dir.mkdir(exist_ok=True)
+          vectors = []
+          for path in sorted(vectors_dir.rglob("*")):
+              if not path.is_file() or path.is_symlink() or path.suffix.lower() != ".svg":
+                  continue
+              relative = path.relative_to(root).as_posix()
+              destination = site / relative
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copyfile(path, destination)
+              vectors.append({
+                  "path": relative,
+                  "digest": hashlib.sha256(path.read_bytes()).hexdigest(),
+              })
 
           manifest = {
               "repository": repository,
@@ -73,12 +90,13 @@ jobs:
               "commit_at": commit_at,
               "items": items,
               "couplets": couplets,
+              "vectors": vectors,
           }
           (site / "manifest.json").write_text(
               json.dumps(manifest, ensure_ascii=False, separators=(",", ":")) + "\n",
               encoding="utf-8",
           )
-          print(f"Indexed {len(items)} presence file(s) and {len(couplets)} couplet(s).")
+          print(f"Indexed {len(items)} presence file(s), {len(couplets)} couplet(s), and {len(vectors)} vector trace(s).")
           PY
 
       - name: Upload static site
