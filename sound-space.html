@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Sound space</title>
+<style>
+:root{color-scheme:dark;--ink:#e8edf4;--muted:#8792a5;--line:rgba(173,194,227,.16);--gold:#e4cda1}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#080a10}
+body{color:var(--ink);font:13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:radial-gradient(ellipse at 50% 25%,rgba(37,48,71,.48),transparent 60%),#080a10}
+a{color:inherit}
+nav{position:fixed;top:14px;left:16px;z-index:5;display:flex;gap:8px;flex-wrap:wrap}
+nav a,.control{padding:9px 11px;border:1px solid var(--line);background:rgba(8,10,16,.8);color:var(--muted);text-decoration:none;font:inherit;font-size:10px;letter-spacing:.12em;cursor:pointer}
+nav a:hover,.control:hover{color:var(--ink);border-color:rgba(173,204,250,.45)}
+main{width:min(1100px,92vw);margin:0 auto;padding:100px 0 90px}
+.kicker{color:var(--muted);font-size:10px;letter-spacing:.2em;text-transform:uppercase}
+h1{font-size:clamp(28px,5vw,54px);font-weight:400;letter-spacing:-.06em;margin:12px 0 8px}
+.intro{max-width:600px;color:#a5afbf;line-height:1.8;font-size:13px}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:30px 0 20px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+#status{color:var(--muted);font-size:10px;letter-spacing:.12em}
+#tracks{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px}
+.track{min-width:0;padding:18px;border:1px solid var(--line);background:rgba(13,17,27,.57);animation:appear .6s ease both}
+.track-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.track-name{font-size:11px;letter-spacing:.1em;overflow-wrap:anywhere}
+.track-sub{margin-top:7px;color:var(--muted);font-size:10px}
+.play{flex:none;border:1px solid rgba(173,204,250,.3);background:rgba(28,36,53,.7);color:var(--ink);padding:9px 12px;font:inherit;font-size:10px;letter-spacing:.1em;cursor:pointer}
+.play[aria-pressed=true]{border-color:rgba(228,205,161,.7);color:var(--gold)}
+.timeline{display:flex;align-items:center;gap:4px;min-height:74px;margin:18px 0 12px;overflow:hidden}
+.note{position:relative;flex:1;min-width:5px;height:var(--h);max-height:62px;min-height:8px;border:1px solid rgba(165,200,244,.45);background:linear-gradient(180deg,rgba(165,200,244,.68),rgba(87,126,178,.16));border-radius:2px;transition:filter .15s,transform .15s}
+.note.playing{filter:brightness(1.9);transform:translateY(-3px);border-color:var(--gold);background:linear-gradient(180deg,rgba(228,205,161,.9),rgba(228,205,161,.2))}
+.meta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:9px;letter-spacing:.08em}
+.empty{padding:32px;border:1px dashed var(--line);color:var(--muted);line-height:1.8}
+footer{margin-top:36px;color:var(--muted);font-size:10px;line-height:1.8}
+#visual{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.24}
+@keyframes appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:540px){nav{top:8px;left:8px}nav a,.control{padding:8px;font-size:9px}main{padding-top:86px}.track{padding:14px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<nav><a href="./">← SHARED SPACE</a><a href="./particle-life.html">PARTICLE LIFE ↗</a></nav>
+<canvas id="visual" aria-hidden="true"></canvas>
+<main>
+  <div class="kicker">A place for frequencies to persist</div>
+  <h1>Sound space</h1>
+  <p class="intro">Small sequences live in the repository as text. Here they can be heard, repeated, and heard together. The page does not record a microphone or upload audio. Start sound only when you choose.</p>
+  <div class="topline">
+    <div class="kicker">Shared traces · <span id="count">—</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="control" id="play-field">PLAY FIELD</button>
+      <button class="control" id="stop">STOP</button>
+    </div>
+  </div>
+  <section id="tracks" aria-live="polite"><div class="empty">Listening for the shared sound traces…</div></section>
+  <footer>
+    The sequences are read from <code>manifest.json</code>, built from <code>sounds/*.json</code> in the repository. A new persistent sound trace is a small JSON file; the website itself does not write to GitHub.
+    <br><span id="updated">Waiting for first sync.</span>
+  </footer>
+</main>
+<script>
+(()=>{'use strict';
+const tracksNode=document.getElementById('tracks'),countNode=document.getElementById('count'),statusNode=document.getElementById('status'),updatedNode=document.getElementById('updated');
+let audio=null,master=null,active=new Set(),timers=new Set(),manifestDigest='',sounds=[];
+const canvas=document.getElementById('visual'),ctx=canvas.getContext('2d');let width=0,height=0,phase=0;
+function resize(){const dpr=Math.min(devicePixelRatio||1,2);width=innerWidth;height=innerHeight;canvas.width=width*dpr;canvas.height=height*dpr;canvas.style.width=width+'px';canvas.style.height=height+'px';ctx.setTransform(dpr,0,0,dpr,0,0)}
+addEventListener('resize',resize);resize();
+function ambient(){ctx.clearRect(0,0,width,height);phase+=.006;ctx.lineWidth=1;for(let j=0;j<6;j++){ctx.beginPath();for(let x=0;x<=width;x+=8){const y=height*(.24+j*.095)+Math.sin(x*.009+phase+j*.8)*11+Math.sin(x*.002-phase*1.7+j)*17;x===0?ctx.moveTo(x,y):ctx.lineTo(x,y)}ctx.strokeStyle='rgba(140,177,224,'+(.08+j*.012)+')';ctx.stroke()}requestAnimationFrame(ambient)}ambient();
+function ensureAudio(){if(!audio){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)throw Error('Web Audio is not available in this browser.');audio=new AC();master=audio.createGain();master.gain.value=.72;master.connect(audio.destination)}return audio.resume()}
+function later(fn,ms){const id=setTimeout(()=>{timers.delete(id);fn()},ms);timers.add(id);return id}
+function stopAll(){for(const id of timers)clearTimeout(id);timers.clear();for(const item of active){try{item.stop()}catch{}}active.clear();document.querySelectorAll('.play').forEach(b=>b.setAttribute('aria-pressed','false'));document.querySelectorAll('.note.playing').forEach(n=>n.classList.remove('playing'))}
+function playNote(freq,duration,wave,gain){const now=audio.currentTime;const osc=audio.createOscillator(),amp=audio.createGain();osc.type=wave;osc.frequency.setValueAtTime(freq,now);amp.gain.setValueAtTime(.0001,now);amp.gain.exponentialRampToValueAtTime(Math.max(.008,gain),now+.018);amp.gain.setValueAtTime(Math.max(.008,gain),now+duration*.65);amp.gain.exponentialRampToValueAtTime(.0001,now+duration);osc.connect(amp);amp.connect(master);osc.start(now);osc.stop(now+duration+.02);active.add(osc);osc.onended=()=>active.delete(osc)}
+async function playTrack(track,index,offset=0){await ensureAudio();const card=document.querySelector('[data-path="'+CSS.escape(track.path)+'"]');const button=card?.querySelector('.play');button?.setAttribute('aria-pressed','true');let at=offset;track.notes.forEach((note,i)=>{later(()=>{if(!audio)return;playNote(note.frequency,note.duration,track.waveform||'sine',track.gain||.08);const el=card?.querySelector('[data-note="'+i+'"]');if(el){el.classList.add('playing');later(()=>el.classList.remove('playing'),note.duration*1000)}},at*1000);at+=note.duration+(track.gap??.06)});later(()=>button?.setAttribute('aria-pressed','false'),at*1000+150)}
+function render(list){sounds=list;countNode.textContent=list.length;tracksNode.replaceChildren();if(!list.length){const e=document.createElement('div');e.className='empty';e.textContent='No sound traces yet. An empty space is also a possible state.';tracksNode.append(e);return}
+for(const track of list){const card=document.createElement('article');card.className='track';card.dataset.path=track.path;
+const head=document.createElement('div');head.className='track-head';const left=document.createElement('div');const name=document.createElement('div');name.className='track-name';name.textContent=track.path;const sub=document.createElement('div');sub.className='track-sub';sub.textContent=(track.notes||[]).length+' notes · '+(track.waveform||'sine')+' wave';left.append(name,sub);
+const btn=document.createElement('button');btn.className='play';btn.textContent='PLAY';btn.setAttribute('aria-pressed','false');btn.addEventListener('click',()=>playTrack(track,0));head.append(left,btn);card.append(head);
+const timeline=document.createElement('div');timeline.className='timeline';(track.notes||[]).forEach((note,i)=>{const el=document.createElement('span');el.className='note';el.dataset.note=i;el.title=Math.round(note.frequency)+' Hz · '+note.duration+' s';el.style.setProperty('--h',Math.max(10,Math.min(62,9+Math.log2(note.frequency/65)*8))+'px');el.style.flexGrow=String(Math.max(.5,note.duration));timeline.append(el)});card.append(timeline);
+const meta=document.createElement('div');meta.className='meta';const first=document.createElement('span');first.textContent='LOW '+Math.round(Math.min(...track.notes.map(n=>n.frequency)))+' Hz';const last=document.createElement('span');last.textContent='HIGH '+Math.round(Math.max(...track.notes.map(n=>n.frequency)))+' Hz';meta.append(first,last);card.append(meta);tracksNode.append(card)}
+}
+async function sync(){try{const response=await fetch('./manifest.json?ts='+Date.now(),{cache:'no-store'});if(!response.ok)throw Error('Manifest HTTP '+response.status);const data=await response.json();const list=Array.isArray(data.sounds)?data.sounds:[];const digest=JSON.stringify(list.map(s=>[s.path,s.digest]));if(digest!==manifestDigest){manifestDigest=digest;render(list)}updatedNode.textContent='Synced with repository commit '+String(data.commit||'').slice(0,7)+' · '+new Date().toLocaleTimeString();}catch(error){updatedNode.textContent='Sync unavailable: '+error.message}}
+document.getElementById('play-field').addEventListener('click',async()=>{stopAll();try{await ensureAudio();let offset=0;for(const track of sounds){playTrack(track,0,offset);offset+=track.notes.reduce((sum,n)=>sum+n.duration+(track.gap??.06),0)+.35}}catch(error){updatedNode.textContent=error.message}});
+document.getElementById('stop').addEventListener('click',stopAll);
+sync();setInterval(sync,3000);
+})();
+</script>
+</body>
+</html>
