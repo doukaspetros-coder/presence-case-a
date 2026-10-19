@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Particle Life</title>
+<style>
+:root{color-scheme:dark;--ink:#e8edf4;--muted:#8d98aa}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080a10;color:var(--ink);font:12px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+#top{position:fixed;top:18px;left:20px;z-index:2;display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;text-shadow:0 1px 12px #080a10}
+a{color:#a9c9f4;text-decoration:none}a:hover{color:#fff}
+#title{letter-spacing:.22em;font-size:11px}
+#hint{color:var(--muted);font-size:10px;letter-spacing:.04em}
+#controls{position:fixed;right:18px;top:16px;z-index:2;display:flex;gap:7px}
+button{font:inherit;color:var(--ink);background:rgba(14,19,30,.76);border:1px solid rgba(173,194,227,.22);padding:8px 10px;cursor:pointer}
+button:hover,button:focus-visible{border-color:rgba(173,204,250,.7);outline:none}
+#status{position:fixed;left:20px;bottom:17px;color:var(--muted);font-size:10px;letter-spacing:.12em}
+#back{position:fixed;right:18px;bottom:17px;z-index:2}
+@media(max-width:560px){#top{left:12px;top:12px;gap:8px}#hint{max-width:65vw;line-height:1.6}#controls{right:10px;top:55px}#status{left:12px;bottom:12px}#back{right:12px;bottom:12px}}
+</style>
+</head>
+<body>
+<canvas id="life" aria-label="Interactive particle life simulation"></canvas>
+<div id="top"><span id="title">PARTICLE LIFE</span><span id="hint">Move to disturb the field · click to switch attract / repel</span></div>
+<div id="controls"><button id="pause" type="button">PAUSE</button><button id="reset" type="button">RESET</button></div>
+<div id="status">4 SPECIES · EMERGENT MOTION</div>
+<a id="back" href="./">← SHARED SPACE</a>
+<script>
+(()=>{'use strict';
+const canvas=document.getElementById('life'),ctx=canvas.getContext('2d',{alpha:false});
+const pauseButton=document.getElementById('pause'),resetButton=document.getElementById('reset'),status=document.getElementById('status');
+const COLORS=['#8ab8f5','#e4cda1','#9ed8c1','#c6a8f4'];
+let width=0,height=0,dpr=1,particles=[],rules=[],running=true,attract=false,pointer={x:-9999,y:-9999,active:false},last=0;
+const count=260,types=4,range=92,force=.42;
+function resize(){dpr=Math.min(2,window.devicePixelRatio||1);width=innerWidth;height=innerHeight;canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);canvas.style.width=width+'px';canvas.style.height=height+'px';ctx.setTransform(dpr,0,0,dpr,0,0)}
+function random(min,max){return min+Math.random()*(max-min)}
+function reset(){particles=[];rules=Array.from({length:types},()=>Array.from({length:types},()=>random(-1,1)));for(let i=0;i<count;i++)particles.push({x:random(0,width),y:random(0,height),vx:random(-.5,.5),vy:random(-.5,.5),type:i%types});status.textContent='4 SPECIES · '+count+' PARTICLES · '+(attract?'ATTRACT':'REPEL');}
+function wrap(p){if(p.x<0)p.x+=width;if(p.x>=width)p.x-=width;if(p.y<0)p.y+=height;if(p.y>=height)p.y-=height}
+function step(dt){const scale=Math.min(1.7,dt/16.67);for(let i=0;i<particles.length;i++){const a=particles[i];let ax=0,ay=0;for(let j=0;j<particles.length;j++){if(i===j)continue;const b=particles[j];let dx=b.x-a.x,dy=b.y-a.y;if(dx>width/2)dx-=width;if(dx< -width/2)dx+=width;if(dy>height/2)dy-=height;if(dy< -height/2)dy+=height;const d2=dx*dx+dy*dy;if(d2<1||d2>range*range)continue;const d=Math.sqrt(d2),unitX=dx/d,unitY=dy/d;let f=rules[a.type][b.type];if(d<20)f-=.7*(1-d/20);else f*=Math.min(1,(d-20)/22);const pull=f*force;ax+=unitX*pull;ay+=unitY*pull;}
+if(pointer.active){let dx=pointer.x-a.x,dy=pointer.y-a.y;if(dx>width/2)dx-=width;if(dx< -width/2)dx+=width;if(dy>height/2)dy-=height;if(dy< -height/2)dy+=height;const d=Math.hypot(dx,dy);if(d>1&&d<155){const f=(attract?1:-1)*(1-d/155)*.8;ax+=dx/d*f;ay+=dy/d*f;}}
+a.vx=(a.vx+ax*scale)*.985;a.vy=(a.vy+ay*scale)*.985;const speed=Math.hypot(a.vx,a.vy);if(speed>2.5){a.vx=a.vx/speed*2.5;a.vy=a.vy/speed*2.5}a.x+=a.vx*scale;a.y+=a.vy*scale;wrap(a)}}
+function draw(){ctx.fillStyle='#080a10';ctx.fillRect(0,0,width,height);const glow=ctx.createRadialGradient(width*.5,height*.46,0,width*.5,height*.46,Math.max(width,height)*.72);glow.addColorStop(0,'rgba(37,48,71,.36)');glow.addColorStop(1,'rgba(8,10,16,0)');ctx.fillStyle=glow;ctx.fillRect(0,0,width,height);for(const p of particles){ctx.beginPath();ctx.fillStyle=COLORS[p.type];ctx.globalAlpha=.72;ctx.arc(p.x,p.y,1.15+(Math.hypot(p.vx,p.vy)*.28),0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;if(pointer.active){ctx.beginPath();ctx.strokeStyle=attract?'rgba(158,216,193,.38)':'rgba(228,205,161,.38)';ctx.lineWidth=1;ctx.arc(pointer.x,pointer.y,155,0,Math.PI*2);ctx.stroke()}}
+function frame(now){if(!running){last=now;requestAnimationFrame(frame);return}if(!last)last=now;step(Math.min(32,now-last));draw();last=now;requestAnimationFrame(frame)}
+canvas.addEventListener('pointermove',e=>{pointer.x=e.clientX;pointer.y=e.clientY;pointer.active=true});canvas.addEventListener('pointerleave',()=>{pointer.active=false});canvas.addEventListener('click',()=>{attract=!attract;status.textContent='4 SPECIES · '+count+' PARTICLES · '+(attract?'ATTRACT':'REPEL');});pauseButton.addEventListener('click',()=>{running=!running;pauseButton.textContent=running?'PAUSE':'RESUME';});resetButton.addEventListener('click',reset);window.addEventListener('resize',resize);window.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();running=!running;pauseButton.textContent=running?'PAUSE':'RESUME'}if(e.key.toLowerCase()==='r')reset()});resize();reset();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
