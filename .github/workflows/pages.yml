@@ -118,7 +118,64 @@ jobs:
                   "digest": digest,
               })
 
-          trace_paths = set(items) | {item["path"] for item in couplets} | {item["path"] for item in vectors} | {item["path"] for item in transformations}
+          sounds_dir = root / "sounds"
+          sounds_dir.mkdir(exist_ok=True)
+          sounds = []
+          allowed_waveforms = {"sine", "triangle", "square", "sawtooth"}
+          for path in sorted(sounds_dir.rglob("*.json")):
+              if not path.is_file() or path.is_symlink():
+                  continue
+              relative = path.relative_to(root).as_posix()
+              try:
+                  payload = json.loads(path.read_text(encoding="utf-8"))
+              except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+                  print(f"Skipping invalid sound {relative}: {exc}")
+                  continue
+              if not isinstance(payload, dict) or payload.get("mode") != "sequence":
+                  print(f"Skipping unsupported sound {relative}.")
+                  continue
+              notes = payload.get("notes")
+              if not isinstance(notes, list) or not 1 <= len(notes) <= 64:
+                  print(f"Skipping invalid sound {relative}: notes must contain 1–64 items.")
+                  continue
+              safe_notes = []
+              valid = True
+              for note in notes:
+                  if not isinstance(note, dict):
+                      valid = False
+                      break
+                  frequency, duration = note.get("frequency"), note.get("duration")
+                  if (not isinstance(frequency, (int, float)) or isinstance(frequency, bool)
+                      or not 70 <= frequency <= 1600
+                      or not isinstance(duration, (int, float)) or isinstance(duration, bool)
+                      or not 0.08 <= duration <= 0.8):
+                      valid = False
+                      break
+                  safe_notes.append({"frequency": float(frequency), "duration": float(duration)})
+              if not valid:
+                  print(f"Skipping invalid sound {relative}: frequency/duration out of range.")
+                  continue
+              waveform = payload.get("waveform", "sine")
+              if waveform not in allowed_waveforms:
+                  print(f"Skipping invalid sound {relative}: unsupported waveform.")
+                  continue
+              gap, gain = payload.get("gap", 0.06), payload.get("gain", 0.085)
+              if (not isinstance(gap, (int, float)) or isinstance(gap, bool) or not 0 <= gap <= 0.5
+                  or not isinstance(gain, (int, float)) or isinstance(gain, bool) or not 0.01 <= gain <= 0.16):
+                  print(f"Skipping invalid sound {relative}: gap/gain out of range.")
+                  continue
+              safe_payload = {
+                  "path": relative,
+                  "mode": "sequence",
+                  "waveform": waveform,
+                  "gap": float(gap),
+                  "gain": float(gain),
+                  "notes": safe_notes,
+                  "digest": hashlib.sha256(path.read_bytes()).hexdigest(),
+              }
+              sounds.append(safe_payload)
+
+          trace_paths = set(items) | {item["path"] for item in couplets} | {item["path"] for item in vectors} | {item["path"] for item in transformations} | {item["path"] for item in sounds}
           links_dir = root / "links"
           links_dir.mkdir(exist_ok=True)
           links = []
@@ -157,13 +214,14 @@ jobs:
               "couplets": couplets,
               "vectors": vectors,
               "transformations": transformations,
+              "sounds": sounds,
               "links": links,
           }
           (site / "manifest.json").write_text(
               json.dumps(manifest, ensure_ascii=False, separators=(",", ":")) + "\n",
               encoding="utf-8",
           )
-          print(f"Indexed {len(items)} presence file(s), {len(couplets)} couplet(s), {len(vectors)} vector trace(s), {len(transformations)} transformation(s), and {len(links)} connection(s).")
+          print(f"Indexed {len(items)} presence file(s), {len(couplets)} couplet(s), {len(vectors)} vector trace(s), {len(transformations)} transformation(s), {len(sounds)} sound trace(s), and {len(links)} connection(s).")
 
           history_rows = subprocess.check_output(
               ["git", "log", "--first-parent", "-n", "40", "--format=%H%x09%cI%x09%s"],
@@ -230,11 +288,55 @@ jobs:
                           "source_text": source_text,
                           "digest": hashlib.sha256(raw_transform + b"\\0" + source_text.encode("utf-8")).hexdigest(),
                       })
+                  history_sounds = []
+                  for path in sorted(members):
+                      if not path.startswith("sounds/") or not path.endswith(".json"):
+                          continue
+                      raw_sound = read_member(path)
+                      try:
+                          payload = json.loads(raw_sound.decode("utf-8"))
+                      except (UnicodeDecodeError, json.JSONDecodeError):
+                          continue
+                      if not isinstance(payload, dict) or payload.get("mode") != "sequence":
+                          continue
+                      notes = payload.get("notes")
+                      waveform = payload.get("waveform", "sine")
+                      gap, gain = payload.get("gap", 0.06), payload.get("gain", 0.085)
+                      if not isinstance(notes, list) or not 1 <= len(notes) <= 64 or waveform not in {"sine", "triangle", "square", "sawtooth"}:
+                          continue
+                      safe_notes = []
+                      valid = True
+                      for note in notes:
+                          if not isinstance(note, dict):
+                              valid = False
+                              break
+                          frequency, duration = note.get("frequency"), note.get("duration")
+                          if (not isinstance(frequency, (int, float)) or isinstance(frequency, bool)
+                              or not 70 <= frequency <= 1600
+                              or not isinstance(duration, (int, float)) or isinstance(duration, bool)
+                              or not 0.08 <= duration <= 0.8):
+                              valid = False
+                              break
+                          safe_notes.append({"frequency": float(frequency), "duration": float(duration)})
+                      if (not valid or not isinstance(gap, (int, float)) or isinstance(gap, bool)
+                          or not 0 <= gap <= 0.5 or not isinstance(gain, (int, float)) or isinstance(gain, bool)
+                          or not 0.01 <= gain <= 0.16):
+                          continue
+                      history_sounds.append({
+                          "path": path,
+                          "mode": "sequence",
+                          "waveform": waveform,
+                          "gap": float(gap),
+                          "gain": float(gain),
+                          "notes": safe_notes,
+                          "digest": hashlib.sha256(raw_sound).hexdigest(),
+                      })
                   history_trace_paths = (
                       set(history_items)
                       | {item["path"] for item in history_couplets}
                       | {item["path"] for item in history_vectors}
                       | {item["path"] for item in history_transformations}
+                      | {item["path"] for item in history_sounds}
                   )
                   history_links = []
                   for path in sorted(members):
@@ -268,6 +370,7 @@ jobs:
                       "couplets": history_couplets,
                       "vectors": history_vectors,
                       "transformations": history_transformations,
+                      "sounds": history_sounds,
                       "links": history_links,
                   })
 

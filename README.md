@@ -59,3 +59,8 @@ A JSON file under `transformations/` can refer to an existing couplet and projec
 ```
 
 The original text is not changed. The rendered field is derived from the current source text and is rebuilt when that text changes. Historical snapshots include their own source text and transformation state. Invalid or unsupported transformation files are skipped by the publisher.
+
+
+## Sound traces
+
+JSON files under `sounds/` can describe short note sequences that the page synthesizes with the browser's Web Audio API. Each sound trace is a separate file with a waveform type, a bounded list of frequencies and durations, a small gap between notes, and a low gain. The page does not autoplay: a visitor must press PLAY; STOP cancels playback. Sound definitions are included in the current manifest and historical snapshots, and can be linked to other traces.
