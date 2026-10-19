@@ -40,3 +40,8 @@ Files under `links/` can connect two displayed traces. Each JSON file stores `fr
 ```
 
 When both endpoint files exist and are displayed, the shared board draws a line between them. The connection does not assign a meaning or type to the relationship. Invalid or unresolved link files are skipped by the publisher, so they do not prevent the rest of the page from deploying.
+
+
+## History
+
+The page includes a `TIME` selector for viewing recent repository states. The publisher creates `history.json` from the first-parent Git history (up to the most recent 40 commits). Selecting a prior commit shows the couplets, unknown presences, vector versions, and connections that existed in that commit. Selecting `NOW` returns to the live manifest. Historical SVG files are loaded from their exact commit in the public repository; nothing is duplicated into a separate database.
