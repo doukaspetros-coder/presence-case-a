@@ -35,6 +35,11 @@ body{color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,mon
 #state-mark{width:5px;height:5px;border-radius:50%;background:#8796a9}
 #state[data-state="live"] #state-mark{background:#9fc9b1;box-shadow:0 0 9px rgba(159,201,177,.65)}
 #state[data-state="error"] #state-mark{background:#d5a29a}
+#history-control{position:fixed;z-index:8;top:14px;right:18px;display:flex;align-items:center;gap:10px;padding:8px 10px;color:var(--muted);font-size:10px;letter-spacing:.12em;background:rgba(8,10,16,.78);border:1px solid rgba(173,194,227,.14);backdrop-filter:blur(8px)}
+#history-select{max-width:min(48vw,380px);border:0;outline:none;background:transparent;color:var(--ink);font:inherit;letter-spacing:.03em;cursor:pointer}
+#history-select option{background:#101521;color:#e8edf4}
+body[data-view="past"] #history-control{border-color:rgba(228,205,161,.3)}
+@media(max-width:540px){#history-control{top:10px;right:10px;gap:7px;padding:7px 8px;font-size:9px}#history-select{max-width:58vw}}
 @keyframes pulse{0%{transform:scale(.65);opacity:.75}100%{transform:scale(3.1);opacity:0}}
 @keyframes appear{from{opacity:0;filter:blur(3px)}to{opacity:1;filter:blur(0)}}
 @keyframes glow{0%{filter:brightness(2.8)}100%{filter:brightness(1)}}
@@ -53,15 +58,16 @@ body{color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,mon
 <span>LINKS <span class="value" id="link-count">0</span></span>
 <span>NEW → SEEN <span class="value" id="latency">—</span></span>
 </div>
+<div id="history-control"><label for="history-select">TIME</label><select id="history-select" aria-label="Choose a previous state"><option value="now">NOW</option></select></div>
 <div id="state" data-state="wait"><span id="state-mark"></span><span id="state-text">WAITING</span></div>
 <script>
 (()=>{'use strict';
-const POLL_MS=3000,field=document.getElementById('field'),board=document.getElementById('board'),connections=document.getElementById('connections'),countNode=document.getElementById('count'),coupletCountNode=document.getElementById('couplet-count'),vectorCountNode=document.getElementById('vector-count'),linkCountNode=document.getElementById('link-count'),latencyNode=document.getElementById('latency'),stateNode=document.getElementById('state'),stateText=document.getElementById('state-text');
-const points=new Map(),markers=new Map(),coupletNodes=new Map(),vectorNodes=new Map(),connectionNodes=new Map();let knownItems=new Set(),knownCouplets=new Map(),knownVectors=new Map(),knownLinks=new Map(),currentLinks=[],initialized=false,busy=false;
+const POLL_MS=3000,field=document.getElementById('field'),board=document.getElementById('board'),connections=document.getElementById('connections'),historySelect=document.getElementById('history-select'),countNode=document.getElementById('count'),coupletCountNode=document.getElementById('couplet-count'),vectorCountNode=document.getElementById('vector-count'),linkCountNode=document.getElementById('link-count'),latencyNode=document.getElementById('latency'),stateNode=document.getElementById('state'),stateText=document.getElementById('state-text');
+const points=new Map(),markers=new Map(),coupletNodes=new Map(),vectorNodes=new Map(),connectionNodes=new Map();let knownItems=new Set(),knownCouplets=new Map(),knownVectors=new Map(),knownLinks=new Map(),currentLinks=[],initialized=false,busy=false,liveManifest=null,historySnapshots=[],selectedHistory='now',historyLoaded=false;
 function hash(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function pointFor(id){if(!points.has(id))points.set(id,{x:7+(hash(id+':x')%8600)/100,y:9+(hash(id+':y')%8000)/100});return points.get(id)}
 function setState(value,label){stateNode.dataset.state=value;stateText.textContent=label}
-function fileUrl(manifest,path){const repo=String(manifest.repository||'');const safePath=path.split('/').map(encodeURIComponent).join('/');return /^[^/]+\/[^/]+$/.test(repo)?'https://github.com/'+repo+'/blob/main/'+safePath:'#'}
+function fileUrl(manifest,path){const repo=String(manifest.repository||'');const safePath=path.split('/').map(encodeURIComponent).join('/');return /^[^/]+\/[^/]+$/.test(repo)?'https://github.com/'+repo+'/blob/'+encodeURIComponent(manifest.ref||'main')+'/'+safePath:'#'}
 function flash(el,cls){el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls)}
 function renderItems(ids,manifest,fresh){
 const live=new Set(ids);
@@ -98,7 +104,7 @@ el.href=fileUrl(manifest,item.path);
 const img=el.querySelector('img'),revision=String(item.digest||manifest.commit||'');
 if(img.dataset.revision!==revision){
 const safePath=item.path.split('/').map(encodeURIComponent).join('/');
-const assetUrl=new URL(safePath,location.href);if(revision)assetUrl.searchParams.set('v',revision);
+const assetPath=manifest.ref&&manifest.ref!=='main'?'https://raw.githubusercontent.com/'+manifest.repository+'/'+encodeURIComponent(manifest.ref)+'/'+safePath:safePath;const assetUrl=new URL(assetPath,location.href);if(revision)assetUrl.searchParams.set('v',revision);
 img.src=assetUrl.href;img.dataset.revision=revision;
 }
 if(changed.has(item.path))flash(el,'changed');
@@ -165,26 +171,64 @@ drawConnections();
 }
 window.addEventListener('resize',drawConnections,{passive:true});
 window.addEventListener('scroll',drawConnections,{passive:true});
+function resetKnown(){
+knownItems=new Set();knownCouplets=new Map();knownVectors=new Map();knownLinks=new Map();initialized=false;
+}
+function snapshotLabel(item){
+const date=String(item.commit_at||'').replace('T',' ').slice(0,16);
+const subject=String(item.subject||item.commit||'snapshot');
+return date+' · '+subject.slice(0,54);
+}
+function populateHistory(){
+while(historySelect.options.length>1)historySelect.remove(1);
+for(const item of historySnapshots){
+if(!item||!item.commit||item.commit===liveManifest?.commit)continue;
+const option=document.createElement('option');option.value=item.commit;option.textContent=snapshotLabel(item);historySelect.appendChild(option);
+}
+}
+async function loadHistory(){
+try{
+const url=new URL('./history.json',location.href);url.searchParams.set('_',String(Date.now()));
+const response=await fetch(url,{cache:'no-store',headers:{Accept:'application/json'}});if(!response.ok)throw Error('history '+response.status);
+const data=await response.json();if(!data||!Array.isArray(data.snapshots))throw Error('invalid history');
+historySnapshots=data.snapshots;historyLoaded=true;if(liveManifest)populateHistory();
+}catch(e){historySelect.title='Historical states are unavailable right now.'}
+}
+historySelect.addEventListener('change',()=>{
+selectedHistory=historySelect.value||'now';resetKnown();latencyNode.textContent='—';
+document.body.dataset.view=selectedHistory==='now'?'live':'past';
+setState('wait',selectedHistory==='now'?'LOADING':'LOADING PAST');
+poll();
+});
 async function poll(){if(busy)return;busy=true;try{
 const url=new URL('./manifest.json',location.href);url.searchParams.set('_',String(Date.now()));
 const response=await fetch(url,{cache:'no-store',headers:{Accept:'application/json'}});if(!response.ok)throw Error('manifest '+response.status);
-const manifest=await response.json();if(!manifest||!Array.isArray(manifest.items)||!Array.isArray(manifest.couplets))throw Error('invalid manifest');
-const ids=manifest.items.filter(id=>typeof id==='string'&&id.length>0),nextItems=new Set(ids),freshItems=new Set();
-const couplets=manifest.couplets.filter(item=>item&&typeof item.path==='string'&&typeof item.text==='string'),nextCouplets=new Map(),changedCouplets=new Set();
+const current=await response.json();if(!current||!Array.isArray(current.items)||!Array.isArray(current.couplets))throw Error('invalid manifest');
+liveManifest=current;
+if(historyLoaded&&historySelect.options.length===1)populateHistory();
+const isHistorical=selectedHistory!=='now';
+const manifest=isHistorical?historySnapshots.find(item=>item&&item.commit===selectedHistory):current;
+if(!manifest)throw Error('selected history snapshot is unavailable');
+const viewManifest={...manifest,ref:isHistorical?String(manifest.ref||manifest.commit):'main'};
+const ids=viewManifest.items.filter(id=>typeof id==='string'&&id.length>0),nextItems=new Set(ids),freshItems=new Set();
+const couplets=viewManifest.couplets.filter(item=>item&&typeof item.path==='string'&&typeof item.text==='string'),nextCouplets=new Map(),changedCouplets=new Set();
 for(const item of couplets){nextCouplets.set(item.path,item.text);if(knownCouplets.has(item.path)&&knownCouplets.get(item.path)!==item.text)changedCouplets.add(item.path);else if(initialized&&!knownCouplets.has(item.path))changedCouplets.add(item.path)}
-const vectors=(Array.isArray(manifest.vectors)?manifest.vectors:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('vectors/')&&item.path.toLowerCase().endsWith('.svg')),nextVectors=new Map(),changedVectors=new Set();
-for(const item of vectors){const revision=String(item.digest||manifest.commit||'');nextVectors.set(item.path,revision);if(knownVectors.has(item.path)&&knownVectors.get(item.path)!==revision)changedVectors.add(item.path);else if(initialized&&!knownVectors.has(item.path))changedVectors.add(item.path)}
-const links=(Array.isArray(manifest.links)?manifest.links:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('links/')&&item.path.toLowerCase().endsWith('.json')&&typeof item.from==='string'&&typeof item.to==='string'),nextLinks=new Map(),changedLinks=new Set();
+const vectors=(Array.isArray(viewManifest.vectors)?viewManifest.vectors:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('vectors/')&&item.path.toLowerCase().endsWith('.svg')),nextVectors=new Map(),changedVectors=new Set();
+for(const item of vectors){const revision=String(item.digest||viewManifest.commit||'');nextVectors.set(item.path,revision);if(knownVectors.has(item.path)&&knownVectors.get(item.path)!==revision)changedVectors.add(item.path);else if(initialized&&!knownVectors.has(item.path))changedVectors.add(item.path)}
+const links=(Array.isArray(viewManifest.links)?viewManifest.links:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('links/')&&item.path.toLowerCase().endsWith('.json')&&typeof item.from==='string'&&typeof item.to==='string'),nextLinks=new Map(),changedLinks=new Set();
 for(const item of links){const revision=String(item.digest||item.from+'→'+item.to);nextLinks.set(item.path,revision);if(knownLinks.has(item.path)&&knownLinks.get(item.path)!==revision)changedLinks.add(item.path);else if(initialized&&!knownLinks.has(item.path))changedLinks.add(item.path)}
-if(initialized){
+if(initialized&&!isHistorical){
 ids.forEach(id=>{if(!knownItems.has(id))freshItems.add(id)});
 const hasNew=freshItems.size>0||changedCouplets.size>0||changedVectors.size>0||changedLinks.size>0;
-if(hasNew){const stamp=Date.parse(manifest.commit_at||'');if(Number.isFinite(stamp)){const seconds=Math.max(0,(Date.now()-stamp)/1000);latencyNode.textContent=seconds<10?seconds.toFixed(1)+'s':Math.round(seconds)+'s'}}
+if(hasNew){const stamp=Date.parse(viewManifest.commit_at||'');if(Number.isFinite(stamp)){const seconds=Math.max(0,(Date.now()-stamp)/1000);latencyNode.textContent=seconds<10?seconds.toFixed(1)+'s':Math.round(seconds)+'s'}}
 }
-renderItems(ids,manifest,freshItems);renderCouplets(couplets,manifest,changedCouplets);renderVectors(vectors,manifest,changedVectors);renderLinks(links,manifest,changedLinks);
-knownItems=nextItems;knownCouplets=nextCouplets;knownVectors=nextVectors;knownLinks=nextLinks;initialized=true;setState('live','LIVE');
+if(isHistorical)latencyNode.textContent='—';
+renderItems(ids,viewManifest,freshItems);renderCouplets(couplets,viewManifest,changedCouplets);renderVectors(vectors,viewManifest,changedVectors);renderLinks(links,viewManifest,changedLinks);
+knownItems=nextItems;knownCouplets=nextCouplets;knownVectors=nextVectors;knownLinks=nextLinks;initialized=true;
+document.body.dataset.view=isHistorical?'past':'live';setState(isHistorical?'past':'live',isHistorical?'PAST':'LIVE');
 }catch(e){setState('error',initialized?'RETRYING':'WAITING')}finally{busy=false}}
-poll();setInterval(poll,POLL_MS);
+
+poll();loadHistory();setInterval(poll,POLL_MS);
 })();
 </script>
 </body>
