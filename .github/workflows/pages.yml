@@ -48,6 +48,7 @@ jobs:
           site = root / "_site"
           site.mkdir(exist_ok=True)
           (site / "index.html").write_bytes((root / "index.html").read_bytes())
+          (site / "particle-life.html").write_bytes((root / "particle-life.html").read_bytes())
           (site / ".nojekyll").touch()
 
           commit_sha = os.environ["COMMIT_SHA"]
