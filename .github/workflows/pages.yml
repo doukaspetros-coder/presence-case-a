@@ -91,34 +91,6 @@ jobs:
               })
 
           couplets_by_path = {item["path"]: item["text"] for item in couplets}
-          transformations_dir = root / "transformations"
-          transformations_dir.mkdir(exist_ok=True)
-          transformations = []
-          for path in sorted(transformations_dir.rglob("*.json")):
-              if not path.is_file() or path.is_symlink():
-                  continue
-              relative = path.relative_to(root).as_posix()
-              try:
-                  payload = json.loads(path.read_text(encoding="utf-8"))
-              except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-                  print(f"Skipping invalid transformation {relative}: {exc}")
-                  continue
-              if not isinstance(payload, dict) or payload.get("mode") != "text-particles":
-                  print(f"Skipping unsupported transformation {relative}.")
-                  continue
-              source = payload.get("source")
-              if not isinstance(source, str) or source not in couplets_by_path:
-                  print(f"Skipping unresolved transformation {relative}: source must be an existing couplet.")
-                  continue
-              source_text = couplets_by_path[source]
-              digest = hashlib.sha256(path.read_bytes() + b"\\0" + source_text.encode("utf-8")).hexdigest()
-              transformations.append({
-                  "path": relative,
-                  "mode": "text-particles",
-                  "source": source,
-                  "source_text": source_text,
-                  "digest": digest,
-              })
 
           sounds_dir = root / "sounds"
           sounds_dir.mkdir(exist_ok=True)
@@ -176,6 +148,81 @@ jobs:
                   "digest": hashlib.sha256(path.read_bytes()).hexdigest(),
               }
               sounds.append(safe_payload)
+
+          sounds_by_path = {item["path"]: item for item in sounds}
+          transformations_dir = root / "transformations"
+          transformations_dir.mkdir(exist_ok=True)
+          transformations = []
+          for path in sorted(transformations_dir.rglob("*.json")):
+              if not path.is_file() or path.is_symlink():
+                  continue
+              relative = path.relative_to(root).as_posix()
+              try:
+                  payload = json.loads(path.read_text(encoding="utf-8"))
+              except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+                  print(f"Skipping invalid transformation {relative}: {exc}")
+                  continue
+              if not isinstance(payload, dict):
+                  print(f"Skipping unsupported transformation {relative}.")
+                  continue
+              mode = payload.get("mode")
+              source = payload.get("source")
+              if mode == "text-particles":
+                  if not isinstance(source, str) or source not in couplets_by_path:
+                      print(f"Skipping unresolved transformation {relative}: source must be an existing couplet.")
+                      continue
+                  source_text = couplets_by_path[source]
+                  transformations.append({
+                      "path": relative,
+                      "mode": "text-particles",
+                      "source": source,
+                      "source_text": source_text,
+                      "digest": hashlib.sha256(path.read_bytes() + b"\\0" + source_text.encode("utf-8")).hexdigest(),
+                  })
+                  continue
+              if mode != "signal-field" or not isinstance(source, str):
+                  print(f"Skipping unsupported transformation {relative}.")
+                  continue
+              extract = payload.get("extract")
+              values = None
+              if source in couplets_by_path:
+                  source_text = couplets_by_path[source]
+                  if extract == "codepoints":
+                      values = [ord(char) for char in source_text[:180]]
+                  elif extract == "word-lengths":
+                      values = [len(word) for word in source_text.split()[:180]]
+                  else:
+                      print(f"Skipping invalid transformation {relative}: unsupported text extraction.")
+                      continue
+                  source_fingerprint = source_text.encode("utf-8")
+              elif source in sounds_by_path:
+                  source_sound = sounds_by_path[source]
+                  notes = source_sound["notes"]
+                  if extract == "frequencies":
+                      values = [note["frequency"] for note in notes]
+                  elif extract == "durations":
+                      values = [note["duration"] for note in notes]
+                  elif extract == "intervals":
+                      values = [notes[index]["frequency"] - notes[index - 1]["frequency"] for index in range(1, len(notes))]
+                  else:
+                      print(f"Skipping invalid transformation {relative}: unsupported sound extraction.")
+                      continue
+                  source_fingerprint = str(source_sound["digest"]).encode("utf-8")
+              else:
+                  print(f"Skipping unresolved transformation {relative}: source must be an existing couplet or sound trace.")
+                  continue
+              values = values[:180]
+              if not values:
+                  print(f"Skipping empty transformation {relative}.")
+                  continue
+              transformations.append({
+                  "path": relative,
+                  "mode": "signal-field",
+                  "source": source,
+                  "extract": extract,
+                  "values": values,
+                  "digest": hashlib.sha256(path.read_bytes() + b"\\0" + source_fingerprint).hexdigest(),
+              })
 
           trace_paths = set(items) | {item["path"] for item in couplets} | {item["path"] for item in vectors} | {item["path"] for item in transformations} | {item["path"] for item in sounds}
           links_dir = root / "links"
@@ -268,28 +315,6 @@ jobs:
                       and path.lower().endswith(".svg")
                   ]
                   history_couplets_by_path = {item["path"]: item["text"] for item in history_couplets}
-                  history_transformations = []
-                  for path in sorted(members):
-                      if not path.startswith("transformations/") or not path.endswith(".json"):
-                          continue
-                      raw_transform = read_member(path)
-                      try:
-                          payload = json.loads(raw_transform.decode("utf-8"))
-                      except (UnicodeDecodeError, json.JSONDecodeError):
-                          continue
-                      if not isinstance(payload, dict) or payload.get("mode") != "text-particles":
-                          continue
-                      source = payload.get("source")
-                      if not isinstance(source, str) or source not in history_couplets_by_path:
-                          continue
-                      source_text = history_couplets_by_path[source]
-                      history_transformations.append({
-                          "path": path,
-                          "mode": "text-particles",
-                          "source": source,
-                          "source_text": source_text,
-                          "digest": hashlib.sha256(raw_transform + b"\\0" + source_text.encode("utf-8")).hexdigest(),
-                      })
                   history_sounds = []
                   for path in sorted(members):
                       if not path.startswith("sounds/") or not path.endswith(".json"):
@@ -332,6 +357,70 @@ jobs:
                           "gain": float(gain),
                           "notes": safe_notes,
                           "digest": hashlib.sha256(raw_sound).hexdigest(),
+                      })
+                  history_sounds_by_path = {item["path"]: item for item in history_sounds}
+                  history_transformations = []
+                  for path in sorted(members):
+                      if not path.startswith("transformations/") or not path.endswith(".json"):
+                          continue
+                      raw_transform = read_member(path)
+                      try:
+                          payload = json.loads(raw_transform.decode("utf-8"))
+                      except (UnicodeDecodeError, json.JSONDecodeError):
+                          continue
+                      if not isinstance(payload, dict):
+                          continue
+                      mode = payload.get("mode")
+                      source = payload.get("source")
+                      if mode == "text-particles":
+                          if not isinstance(source, str) or source not in history_couplets_by_path:
+                              continue
+                          source_text = history_couplets_by_path[source]
+                          history_transformations.append({
+                              "path": path,
+                              "mode": "text-particles",
+                              "source": source,
+                              "source_text": source_text,
+                              "digest": hashlib.sha256(raw_transform + b"\\0" + source_text.encode("utf-8")).hexdigest(),
+                          })
+                          continue
+                      if mode != "signal-field" or not isinstance(source, str):
+                          continue
+                      extract = payload.get("extract")
+                      values = None
+                      if source in history_couplets_by_path:
+                          source_text = history_couplets_by_path[source]
+                          if extract == "codepoints":
+                              values = [ord(char) for char in source_text[:180]]
+                          elif extract == "word-lengths":
+                              values = [len(word) for word in source_text.split()[:180]]
+                          else:
+                              continue
+                          source_fingerprint = source_text.encode("utf-8")
+                      elif source in history_sounds_by_path:
+                          source_sound = history_sounds_by_path[source]
+                          notes = source_sound["notes"]
+                          if extract == "frequencies":
+                              values = [note["frequency"] for note in notes]
+                          elif extract == "durations":
+                              values = [note["duration"] for note in notes]
+                          elif extract == "intervals":
+                              values = [notes[index]["frequency"] - notes[index - 1]["frequency"] for index in range(1, len(notes))]
+                          else:
+                              continue
+                          source_fingerprint = str(source_sound["digest"]).encode("utf-8")
+                      else:
+                          continue
+                      values = values[:180]
+                      if not values:
+                          continue
+                      history_transformations.append({
+                          "path": path,
+                          "mode": "signal-field",
+                          "source": source,
+                          "extract": extract,
+                          "values": values,
+                          "digest": hashlib.sha256(raw_transform + b"\\0" + source_fingerprint).hexdigest(),
                       })
                   history_trace_paths = (
                       set(history_items)
