@@ -158,6 +158,7 @@ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.class
 board.appendChild(el);transformNodes.set(item.path,el);
 }
 el.href=fileUrl(manifest,item.path);el.title=item.source+' · '+item.path;
+const meta=el.children[0];if(meta&&meta.children[1])meta.children[1].textContent=item.source;
 const revision=String(item.digest||hash(item.source_text));
 if(el.dataset.revision!==revision){renderParticleField(el.querySelector('svg'),item);el.dataset.revision=revision}
 if(changed.has(item.path))flash(el,'changed');
