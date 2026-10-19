@@ -255,25 +255,47 @@ dot.dataset.baseY=String(p.y);dot.dataset.baseR=String(p.r);dot.dataset.baseOpac
 dot.style.animationDelay='-'+p.delay+'s';svg.appendChild(dot);
 }
 }
+function renderSignalField(svg,item){
+while(svg.firstChild)svg.removeChild(svg.firstChild);
+svg.setAttribute('viewBox','0 0 420 240');svg.setAttribute('role','img');svg.setAttribute('aria-label','Signal derived from '+String(item.source||'a trace'));
+const values=(Array.isArray(item.values)?item.values:[]).map(Number).filter(Number.isFinite).slice(0,180);
+if(!values.length)return;
+let min=Math.min(...values),max=Math.max(...values);if(min===max){min-=1;max+=1}
+const span=max-min,denom=Math.max(1,values.length-1);
+const coords=values.map((value,i)=>({x:12+396*i/denom,y:18+(1-(value-min)/span)*204,r:1.2+((value-min)/span)*2.5,opacity:.42+((value-min)/span)*.5,delay:((i%17)*.17).toFixed(2)}));
+if(coords.length>1){
+const trail=document.createElementNS('http://www.w3.org/2000/svg','path');trail.setAttribute('class','particle-trail');
+trail.setAttribute('d',coords.map((p,i)=>(i?'L ':'M ')+p.x.toFixed(2)+' '+p.y.toFixed(2)).join(' '));svg.appendChild(trail);
+}
+for(const p of coords){
+const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');dot.setAttribute('class','particle-dot');
+dot.setAttribute('cx',p.x.toFixed(2));dot.setAttribute('cy',p.y.toFixed(2));dot.setAttribute('r',p.r.toFixed(2));
+dot.setAttribute('fill',p.y<120?'#e2cda6':'#b7d2f5');dot.setAttribute('fill-opacity',p.opacity.toFixed(2));
+dot.dataset.baseY=p.y.toFixed(2);dot.dataset.baseR=p.r.toFixed(2);dot.dataset.baseOpacity=p.opacity.toFixed(2);
+dot.style.animationDelay='-'+p.delay+'s';svg.appendChild(dot);
+}
+}
 function renderTransformations(entries,manifest,changed){
 const live=new Set(entries.map(item=>item.path));
 for(const [path,el] of transformNodes){if(!live.has(path)){el.remove();transformNodes.delete(path)}}
 for(const item of entries){
-if(typeof item.path!=='string'||!item.path.startsWith('transformations/')||!item.path.toLowerCase().endsWith('.json')||item.mode!=='text-particles'||typeof item.source!=='string'||typeof item.source_text!=='string')continue;
+const isSignal=item&&item.mode==='signal-field';
+if(!item||typeof item.path!=='string'||!item.path.startsWith('transformations/')||!item.path.toLowerCase().endsWith('.json'))continue;
+if(isSignal){if(typeof item.source!=='string'||!Array.isArray(item.values)||!item.values.length)continue}
+else if(item.mode!=='text-particles'||typeof item.source!=='string'||typeof item.source_text!=='string')continue;
 let el=transformNodes.get(item.path);
 if(!el){
-el=document.createElement('a');el.className='transform-trace';el.target='_blank';el.rel='noopener noreferrer';el.setAttribute('aria-label','Text to particles transformation');
+el=document.createElement('a');el.className='transform-trace';el.target='_blank';el.rel='noopener noreferrer';el.setAttribute('aria-label',isSignal?'Signal transformation':'Text to particles transformation');
 const meta=document.createElement('div');meta.className='transform-meta';
-const kind=document.createElement('span');kind.className='transform-kind';kind.textContent='TEXT → PARTICLES';
-const source=document.createElement('span');source.className='transform-source';source.textContent=item.source;
-meta.appendChild(kind);meta.appendChild(source);el.appendChild(meta);
+const kind=document.createElement('span');kind.className='transform-kind';kind.textContent=isSignal?'SIGNAL → PARTICLES':'TEXT → PARTICLES';
+const source=document.createElement('span');source.className='transform-source';meta.appendChild(kind);meta.appendChild(source);el.appendChild(meta);
 const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.classList.add('particle-field');el.appendChild(svg);
 board.appendChild(el);transformNodes.set(item.path,el);
 }
 el.href=fileUrl(manifest,item.path);el.title=item.source+' · '+item.path;
-const meta=el.children[0];if(meta&&meta.children[1])meta.children[1].textContent=item.source;
-const revision=String(item.digest||hash(item.source_text));
-if(el.dataset.revision!==revision){renderParticleField(el.querySelector('svg'),item);el.dataset.revision=revision}
+const meta=el.children[0];if(meta&&meta.children[1])meta.children[1].textContent=item.source+(isSignal?' · '+item.extract:'');
+const revision=String(item.digest||(isSignal?hash(JSON.stringify(item.values)):hash(item.source_text)));
+if(el.dataset.revision!==revision){if(isSignal)renderSignalField(el.querySelector('svg'),item);else renderParticleField(el.querySelector('svg'),item);el.dataset.revision=revision}
 if(changed.has(item.path))flash(el,'changed');
 }
 transformCountNode.textContent=String(entries.length);drawConnections();
@@ -381,8 +403,8 @@ const couplets=viewManifest.couplets.filter(item=>item&&typeof item.path==='stri
 for(const item of couplets){nextCouplets.set(item.path,item.text);if(knownCouplets.has(item.path)&&knownCouplets.get(item.path)!==item.text)changedCouplets.add(item.path);else if(initialized&&!knownCouplets.has(item.path))changedCouplets.add(item.path)}
 const vectors=(Array.isArray(viewManifest.vectors)?viewManifest.vectors:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('vectors/')&&item.path.toLowerCase().endsWith('.svg')),nextVectors=new Map(),changedVectors=new Set();
 for(const item of vectors){const revision=String(item.digest||viewManifest.commit||'');nextVectors.set(item.path,revision);if(knownVectors.has(item.path)&&knownVectors.get(item.path)!==revision)changedVectors.add(item.path);else if(initialized&&!knownVectors.has(item.path))changedVectors.add(item.path)}
-const transformations=(Array.isArray(viewManifest.transformations)?viewManifest.transformations:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('transformations/')&&item.mode==='text-particles'&&typeof item.source==='string'&&typeof item.source_text==='string'),nextTransforms=new Map(),changedTransforms=new Set();
-for(const item of transformations){const revision=String(item.digest||hash(item.source_text));nextTransforms.set(item.path,revision);if(knownTransforms.has(item.path)&&knownTransforms.get(item.path)!==revision)changedTransforms.add(item.path);else if(initialized&&!knownTransforms.has(item.path))changedTransforms.add(item.path)}
+const transformations=(Array.isArray(viewManifest.transformations)?viewManifest.transformations:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('transformations/')&&typeof item.source==='string'&&((item.mode==='text-particles'&&typeof item.source_text==='string')||(item.mode==='signal-field'&&Array.isArray(item.values)&&item.values.length>0))),nextTransforms=new Map(),changedTransforms=new Set();
+for(const item of transformations){const revision=String(item.digest||(item.mode==='signal-field'?hash(JSON.stringify(item.values)):hash(item.source_text)));nextTransforms.set(item.path,revision);if(knownTransforms.has(item.path)&&knownTransforms.get(item.path)!==revision)changedTransforms.add(item.path);else if(initialized&&!knownTransforms.has(item.path))changedTransforms.add(item.path)}
 const sounds=(Array.isArray(viewManifest.sounds)?viewManifest.sounds:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('sounds/')&&item.mode==='sequence'&&Array.isArray(item.notes)),nextSounds=new Map(),changedSounds=new Set();
 for(const item of sounds){const revision=String(item.digest||JSON.stringify(item.notes));nextSounds.set(item.path,revision);if(knownSounds.has(item.path)&&knownSounds.get(item.path)!==revision)changedSounds.add(item.path);else if(initialized&&!knownSounds.has(item.path))changedSounds.add(item.path)}
 const links=(Array.isArray(viewManifest.links)?viewManifest.links:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('links/')&&item.path.toLowerCase().endsWith('.json')&&typeof item.from==='string'&&typeof item.to==='string'),nextLinks=new Map(),changedLinks=new Set();
