@@ -36,6 +36,8 @@ body{color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,mon
 .particle-field{display:block;width:100%;height:auto;aspect-ratio:7/4;background:radial-gradient(ellipse at 50% 45%,rgba(43,67,99,.45),rgba(9,13,21,.2) 72%);border:1px solid rgba(173,194,227,.08)}
 .particle-trail{fill:none;stroke:#799cc5;stroke-opacity:.3;stroke-width:.65;stroke-linecap:round;stroke-linejoin:round}
 .particle-dot{transform-box:fill-box;transform-origin:center;animation:particle-float 5.8s ease-in-out infinite alternate}
+body.sound-active .particle-field{border-color:rgba(228,205,161,.48);box-shadow:0 0 24px rgba(228,205,161,.1)}
+body.sound-active .particle-dot{animation-duration:.38s;filter:drop-shadow(0 0 3px rgba(228,205,161,.72))}
 .transform-trace:hover,.transform-trace:focus-visible{background:rgba(28,36,53,.64);border-color:rgba(173,204,250,.38);outline:none}
 .transform-trace.changed{animation:appear .7s ease-out both,glow 2.6s ease-out 1!important}
 .sound-trace{display:flex;flex-direction:column;gap:12px;position:relative;flex:0 1 min(430px,86vw);max-width:min(430px,86vw);min-width:min(290px,90vw);padding:clamp(14px,2.1vw,28px);border:1px solid rgba(173,194,227,.13);background:rgba(13,17,27,.48);box-shadow:0 12px 50px rgba(0,0,0,.1);pointer-events:auto;animation:appear 1.1s ease-out both;transition:background .3s,border-color .3s}
@@ -143,6 +145,7 @@ soundPlayers.delete(path);if(player.timer)clearTimeout(player.timer);
 for(const oscillator of player.oscillators){try{oscillator.stop()}catch{}}
 try{player.context.close()}catch{}
 if(player.button){player.button.textContent='PLAY';player.button.setAttribute('aria-pressed','false')}
+if(soundPlayers.size===0)document.body.classList.remove('sound-active');
 }
 function stopAllSounds(){for(const path of [...soundPlayers.keys()])stopSound(path)}
 function waveformFor(svg,item){
@@ -175,6 +178,7 @@ let context;
 try{context=new AudioContextClass();await context.resume()}catch(e){try{context&&context.close()}catch{}button.textContent='AUDIO UNAVAILABLE';return}
 const master=context.createGain();master.gain.value=Math.max(.01,Math.min(.16,Number(item.gain)||.085));master.connect(context.destination);
 const player={context,oscillators:[],timer:null,button};soundPlayers.set(item.path,player);
+document.body.classList.add('sound-active');
 button.textContent='STOP';button.setAttribute('aria-pressed','true');
 let startAt=context.currentTime+.045;
 const gap=Math.max(0,Math.min(.5,Number(item.gap)||0));
