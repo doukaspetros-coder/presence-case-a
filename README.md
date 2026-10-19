@@ -21,3 +21,8 @@ Add any file under `things/`. GitHub Actions adds its path to the manifest. The 
 The repository and page are public. Do not add secrets or private data.
 
 This is a small experiment, not yet a general-purpose runtime for executing new expressive tools.
+
+
+## Vector traces
+
+Self-contained SVG files placed in `vectors/` are copied to the published site and displayed as images on the shared board. Each SVG remains an ordinary repository file, so it can be created by code or another editor and inspected through GitHub. SVGs are loaded with an image element rather than injected into the page DOM; do not rely on scripts, interactions, or external assets inside them. Keep SVG files self-contained and avoid private data.
