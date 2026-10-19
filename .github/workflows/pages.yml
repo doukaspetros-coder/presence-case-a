@@ -84,6 +84,37 @@ jobs:
                   "digest": hashlib.sha256(path.read_bytes()).hexdigest(),
               })
 
+          trace_paths = set(items) | {item["path"] for item in couplets} | {item["path"] for item in vectors}
+          links_dir = root / "links"
+          links_dir.mkdir(exist_ok=True)
+          links = []
+          for path in sorted(links_dir.rglob("*.json")):
+              if not path.is_file() or path.is_symlink():
+                  continue
+              relative = path.relative_to(root).as_posix()
+              try:
+                  payload = json.loads(path.read_text(encoding="utf-8"))
+              except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+                  print(f"Skipping invalid link file {relative}: {exc}")
+                  continue
+              if not isinstance(payload, dict):
+                  print(f"Skipping invalid link file {relative}: expected an object.")
+                  continue
+              source = payload.get("from")
+              target = payload.get("to")
+              if not isinstance(source, str) or not isinstance(target, str):
+                  print(f"Skipping invalid link file {relative}: 'from' and 'to' must be strings.")
+                  continue
+              if source not in trace_paths or target not in trace_paths:
+                  print(f"Skipping unresolved link file {relative}: endpoints must be existing displayed traces.")
+                  continue
+              links.append({
+                  "path": relative,
+                  "from": source,
+                  "to": target,
+                  "digest": hashlib.sha256(path.read_bytes()).hexdigest(),
+              })
+
           manifest = {
               "repository": repository,
               "commit": commit_sha,
@@ -91,12 +122,13 @@ jobs:
               "items": items,
               "couplets": couplets,
               "vectors": vectors,
+              "links": links,
           }
           (site / "manifest.json").write_text(
               json.dumps(manifest, ensure_ascii=False, separators=(",", ":")) + "\n",
               encoding="utf-8",
           )
-          print(f"Indexed {len(items)} presence file(s), {len(couplets)} couplet(s), and {len(vectors)} vector trace(s).")
+          print(f"Indexed {len(items)} presence file(s), {len(couplets)} couplet(s), {len(vectors)} vector trace(s), and {len(links)} connection(s).")
           PY
 
       - name: Upload static site

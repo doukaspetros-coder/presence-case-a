@@ -11,6 +11,7 @@
 html,body{margin:0;min-height:100%;background:#080a10}
 body{color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:radial-gradient(ellipse at 50% 44%,rgba(37,48,71,.42),transparent 57%),#080a10;overflow-x:hidden}
 #field{position:fixed;inset:0;overflow:hidden;pointer-events:none}
+#connections{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:0}
 #field:before{content:"";position:absolute;inset:-20%;opacity:.22;background-image:radial-gradient(rgba(184,199,219,.22) .7px,transparent .8px);background-size:31px 31px;mask-image:radial-gradient(ellipse at center,#000,transparent 78%);animation:drift 100s linear infinite}
 .presence{--x:50%;--y:50%;position:absolute;left:var(--x);top:var(--y);z-index:1;display:block;width:7px;height:7px;padding:0;transform:translate(-50%,-50%);border:0;border-radius:50%;background:rgba(218,232,255,.88);box-shadow:0 0 8px rgba(152,195,255,.72),0 0 25px rgba(91,153,226,.25);cursor:pointer;opacity:.9;animation:appear .75s ease-out both;pointer-events:auto}
 .presence:before,.presence:after{content:"";position:absolute;inset:-7px;border:1px solid rgba(171,204,250,.32);border-radius:50%;animation:pulse 3.6s ease-out infinite}
@@ -43,19 +44,20 @@ body{color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,mon
 </style>
 </head>
 <body>
-<div id="field" aria-hidden="true"></div>
+<div id="field" aria-hidden="true"><svg id="connections" xmlns="http://www.w3.org/2000/svg"></svg></div>
 <main id="board"></main>
 <div id="readout" aria-live="off">
 <span>TRACES <span class="value" id="count">0</span></span>
 <span>COUPLETS <span class="value" id="couplet-count">0</span></span>
 <span>VECTORS <span class="value" id="vector-count">0</span></span>
+<span>LINKS <span class="value" id="link-count">0</span></span>
 <span>NEW → SEEN <span class="value" id="latency">—</span></span>
 </div>
 <div id="state" data-state="wait"><span id="state-mark"></span><span id="state-text">WAITING</span></div>
 <script>
 (()=>{'use strict';
-const POLL_MS=3000,field=document.getElementById('field'),board=document.getElementById('board'),countNode=document.getElementById('count'),coupletCountNode=document.getElementById('couplet-count'),vectorCountNode=document.getElementById('vector-count'),latencyNode=document.getElementById('latency'),stateNode=document.getElementById('state'),stateText=document.getElementById('state-text');
-const points=new Map(),markers=new Map(),coupletNodes=new Map(),vectorNodes=new Map();let knownItems=new Set(),knownCouplets=new Map(),knownVectors=new Map(),initialized=false,busy=false;
+const POLL_MS=3000,field=document.getElementById('field'),board=document.getElementById('board'),connections=document.getElementById('connections'),countNode=document.getElementById('count'),coupletCountNode=document.getElementById('couplet-count'),vectorCountNode=document.getElementById('vector-count'),linkCountNode=document.getElementById('link-count'),latencyNode=document.getElementById('latency'),stateNode=document.getElementById('state'),stateText=document.getElementById('state-text');
+const points=new Map(),markers=new Map(),coupletNodes=new Map(),vectorNodes=new Map(),connectionNodes=new Map();let knownItems=new Set(),knownCouplets=new Map(),knownVectors=new Map(),knownLinks=new Map(),currentLinks=[],initialized=false,busy=false;
 function hash(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function pointFor(id){if(!points.has(id))points.set(id,{x:7+(hash(id+':x')%8600)/100,y:9+(hash(id+':y')%8000)/100});return points.get(id)}
 function setState(value,label){stateNode.dataset.state=value;stateText.textContent=label}
@@ -90,7 +92,7 @@ if(typeof item.path!=='string'||!item.path.startsWith('vectors/')||!item.path.to
 let el=vectorNodes.get(item.path);
 if(!el){
 el=document.createElement('a');el.className='vector-trace';el.target='_blank';el.rel='noopener noreferrer';el.setAttribute('aria-label','Vector trace: '+item.path);el.title=item.path;
-const img=document.createElement('img');img.alt='';img.loading='lazy';img.decoding='async';img.referrerPolicy='no-referrer';el.appendChild(img);board.appendChild(el);vectorNodes.set(item.path,el);
+const img=document.createElement('img');img.alt='';img.loading='lazy';img.decoding='async';img.referrerPolicy='no-referrer';img.addEventListener('load',drawConnections);el.appendChild(img);board.appendChild(el);vectorNodes.set(item.path,el);
 }
 el.href=fileUrl(manifest,item.path);
 const img=el.querySelector('img'),revision=String(item.digest||manifest.commit||'');
@@ -103,6 +105,66 @@ if(changed.has(item.path))flash(el,'changed');
 }
 vectorCountNode.textContent=String(entries.length);
 }
+function traceNode(path){return markers.get(path)||coupletNodes.get(path)||vectorNodes.get(path)||null}
+function edgePoint(rect,targetX,targetY){
+const cx=rect.left+rect.width/2,cy=rect.top+rect.height/2,dx=targetX-cx,dy=targetY-cy;
+if(dx===0&&dy===0)return{x:cx,y:cy};
+const factors=[];
+if(dx!==0)factors.push((rect.width/2)/Math.abs(dx));
+if(dy!==0)factors.push((rect.height/2)/Math.abs(dy));
+const t=Math.min(...factors);
+return{x:cx+dx*t,y:cy+dy*t};
+}
+function drawConnections(){
+const width=Math.max(1,window.innerWidth||document.documentElement.clientWidth||1),height=Math.max(1,window.innerHeight||document.documentElement.clientHeight||1);
+connections.setAttribute('viewBox','0 0 '+width+' '+height);connections.setAttribute('width',String(width));connections.setAttribute('height',String(height));
+for(const item of currentLinks){
+const nodes=connectionNodes.get(item.path);if(!nodes)continue;
+const from=traceNode(item.from),to=traceNode(item.to);
+if(!from||!to){nodes.group.style.display='none';continue}
+nodes.group.style.display='';
+const a=from.getBoundingClientRect(),b=to.getBoundingClientRect();
+let d,sx,sy,ex,ey;
+if(item.from===item.to){
+const cx=a.left+a.width/2,cy=a.top+a.height/2;
+sx=cx-7;sy=cy-3;ex=cx+7;ey=cy-3;
+d='M '+sx+' '+sy+' C '+(cx-25)+' '+(cy-31)+', '+(cx+25)+' '+(cy-31)+', '+ex+' '+ey;
+}else{
+const acx=a.left+a.width/2,acy=a.top+a.height/2,bcx=b.left+b.width/2,bcy=b.top+b.height/2;
+const start=edgePoint(a,bcx,bcy),end=edgePoint(b,acx,acy);
+sx=start.x;sy=start.y;ex=end.x;ey=end.y;
+d='M '+sx+' '+sy+' L '+ex+' '+ey;
+}
+nodes.path.setAttribute('d',d);
+nodes.start.setAttribute('cx',String(sx));nodes.start.setAttribute('cy',String(sy));
+nodes.end.setAttribute('cx',String(ex));nodes.end.setAttribute('cy',String(ey));
+}
+}
+function renderLinks(entries,manifest,changed){
+const live=new Set(entries.map(item=>item.path));
+for(const [path,nodes] of connectionNodes){if(!live.has(path)){nodes.group.remove();connectionNodes.delete(path)}}
+currentLinks=[];
+let visible=0;
+for(const item of entries){
+if(typeof item.path!=='string'||!item.path.startsWith('links/')||!item.path.toLowerCase().endsWith('.json')||typeof item.from!=='string'||typeof item.to!=='string')continue;
+let nodes=connectionNodes.get(item.path);
+if(!nodes){
+const group=document.createElementNS('http://www.w3.org/2000/svg','g');group.setAttribute('class','connection');
+const line=document.createElementNS('http://www.w3.org/2000/svg','path');line.setAttribute('fill','none');line.setAttribute('stroke','#91b8e8');line.setAttribute('stroke-width','1.2');line.setAttribute('stroke-opacity','0.62');line.setAttribute('stroke-linecap','round');line.setAttribute('vector-effect','non-scaling-stroke');
+const start=document.createElementNS('http://www.w3.org/2000/svg','circle');start.setAttribute('r','2');start.setAttribute('fill','#b7d2f5');start.setAttribute('fill-opacity','0.68');
+const end=document.createElementNS('http://www.w3.org/2000/svg','circle');end.setAttribute('r','2');end.setAttribute('fill','#b7d2f5');end.setAttribute('fill-opacity','0.68');
+group.appendChild(line);group.appendChild(start);group.appendChild(end);connections.appendChild(group);
+nodes={group,path:line,start,end};connectionNodes.set(item.path,nodes);
+}
+if(changed.has(item.path))nodes.group.setAttribute('data-changed','true');else nodes.group.removeAttribute('data-changed');
+currentLinks.push(item);
+if(traceNode(item.from)&&traceNode(item.to))visible++;
+}
+linkCountNode.textContent=String(visible);
+drawConnections();
+}
+window.addEventListener('resize',drawConnections,{passive:true});
+window.addEventListener('scroll',drawConnections,{passive:true});
 async function poll(){if(busy)return;busy=true;try{
 const url=new URL('./manifest.json',location.href);url.searchParams.set('_',String(Date.now()));
 const response=await fetch(url,{cache:'no-store',headers:{Accept:'application/json'}});if(!response.ok)throw Error('manifest '+response.status);
@@ -112,13 +174,15 @@ const couplets=manifest.couplets.filter(item=>item&&typeof item.path==='string'&
 for(const item of couplets){nextCouplets.set(item.path,item.text);if(knownCouplets.has(item.path)&&knownCouplets.get(item.path)!==item.text)changedCouplets.add(item.path);else if(initialized&&!knownCouplets.has(item.path))changedCouplets.add(item.path)}
 const vectors=(Array.isArray(manifest.vectors)?manifest.vectors:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('vectors/')&&item.path.toLowerCase().endsWith('.svg')),nextVectors=new Map(),changedVectors=new Set();
 for(const item of vectors){const revision=String(item.digest||manifest.commit||'');nextVectors.set(item.path,revision);if(knownVectors.has(item.path)&&knownVectors.get(item.path)!==revision)changedVectors.add(item.path);else if(initialized&&!knownVectors.has(item.path))changedVectors.add(item.path)}
+const links=(Array.isArray(manifest.links)?manifest.links:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('links/')&&item.path.toLowerCase().endsWith('.json')&&typeof item.from==='string'&&typeof item.to==='string'),nextLinks=new Map(),changedLinks=new Set();
+for(const item of links){const revision=String(item.digest||item.from+'→'+item.to);nextLinks.set(item.path,revision);if(knownLinks.has(item.path)&&knownLinks.get(item.path)!==revision)changedLinks.add(item.path);else if(initialized&&!knownLinks.has(item.path))changedLinks.add(item.path)}
 if(initialized){
 ids.forEach(id=>{if(!knownItems.has(id))freshItems.add(id)});
-const hasNew=freshItems.size>0||changedCouplets.size>0||changedVectors.size>0;
+const hasNew=freshItems.size>0||changedCouplets.size>0||changedVectors.size>0||changedLinks.size>0;
 if(hasNew){const stamp=Date.parse(manifest.commit_at||'');if(Number.isFinite(stamp)){const seconds=Math.max(0,(Date.now()-stamp)/1000);latencyNode.textContent=seconds<10?seconds.toFixed(1)+'s':Math.round(seconds)+'s'}}
 }
-renderItems(ids,manifest,freshItems);renderCouplets(couplets,manifest,changedCouplets);renderVectors(vectors,manifest,changedVectors);
-knownItems=nextItems;knownCouplets=nextCouplets;knownVectors=nextVectors;initialized=true;setState('live','LIVE');
+renderItems(ids,manifest,freshItems);renderCouplets(couplets,manifest,changedCouplets);renderVectors(vectors,manifest,changedVectors);renderLinks(links,manifest,changedLinks);
+knownItems=nextItems;knownCouplets=nextCouplets;knownVectors=nextVectors;knownLinks=nextLinks;initialized=true;setState('live','LIVE');
 }catch(e){setState('error',initialized?'RETRYING':'WAITING')}finally{busy=false}}
 poll();setInterval(poll,POLL_MS);
 })();

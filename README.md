@@ -26,3 +26,17 @@ This is a small experiment, not yet a general-purpose runtime for executing new 
 ## Vector traces
 
 Self-contained SVG files placed in `vectors/` are copied to the published site and displayed as images on the shared board. Each SVG remains an ordinary repository file, so it can be created by code or another editor and inspected through GitHub. SVGs are loaded with an image element rather than injected into the page DOM; do not rely on scripts, interactions, or external assets inside them. Keep SVG files self-contained and avoid private data.
+
+
+## Trace connections
+
+Files under `links/` can connect two displayed traces. Each JSON file stores `from` and `to` repository paths, for example:
+
+```json
+{
+  "from": "vectors/trace-01.svg",
+  "to": "things/probe.unknown"
+}
+```
+
+When both endpoint files exist and are displayed, the shared board draws a line between them. The connection does not assign a meaning or type to the relationship. Invalid or unresolved link files are skipped by the publisher, so they do not prevent the rest of the page from deploying.
