@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -34,10 +36,12 @@ jobs:
         run: |
           python3 - <<'PY'
           import hashlib
+          import io
           import json
           import os
           import shutil
           import subprocess
+          import tarfile
           from pathlib import Path
 
           root = Path.cwd()
@@ -129,6 +133,93 @@ jobs:
               encoding="utf-8",
           )
           print(f"Indexed {len(items)} presence file(s), {len(couplets)} couplet(s), {len(vectors)} vector trace(s), and {len(links)} connection(s).")
+
+          history_rows = subprocess.check_output(
+              ["git", "log", "--first-parent", "-n", "40", "--format=%H%x09%cI%x09%s"],
+              text=True,
+          ).splitlines()
+          snapshots = []
+          for row in history_rows:
+              parts = row.split("\t", 2)
+              if len(parts) != 3:
+                  continue
+              history_sha, history_at, history_subject = parts
+              archive_bytes = subprocess.run(
+                  ["git", "archive", "--format=tar", history_sha],
+                  check=True,
+                  stdout=subprocess.PIPE,
+              ).stdout
+              with tarfile.open(fileobj=io.BytesIO(archive_bytes), mode="r:") as archive:
+                  members = {
+                      member.name: member
+                      for member in archive.getmembers()
+                      if member.isfile()
+                  }
+                  def read_member(path):
+                      handle = archive.extractfile(members[path])
+                      return handle.read() if handle else b""
+
+                  history_items = sorted(
+                      path for path in members
+                      if path.startswith("things/")
+                      and path != "things/.gitkeep"
+                  )
+                  history_couplets = [
+                      {"path": path, "text": read_member(path).decode("utf-8")}
+                      for path in sorted(members)
+                      if path.startswith("couplets/")
+                      and path.endswith(".txt")
+                  ]
+                  history_vectors = [
+                      {"path": path, "digest": hashlib.sha256(read_member(path)).hexdigest()}
+                      for path in sorted(members)
+                      if path.startswith("vectors/")
+                      and path.lower().endswith(".svg")
+                  ]
+                  history_trace_paths = (
+                      set(history_items)
+                      | {item["path"] for item in history_couplets}
+                      | {item["path"] for item in history_vectors}
+                  )
+                  history_links = []
+                  for path in sorted(members):
+                      if not path.startswith("links/") or not path.endswith(".json"):
+                          continue
+                      raw_link = read_member(path)
+                      try:
+                          payload = json.loads(raw_link.decode("utf-8"))
+                      except (UnicodeDecodeError, json.JSONDecodeError):
+                          continue
+                      if not isinstance(payload, dict):
+                          continue
+                      source, target = payload.get("from"), payload.get("to")
+                      if not isinstance(source, str) or not isinstance(target, str):
+                          continue
+                      if source not in history_trace_paths or target not in history_trace_paths:
+                          continue
+                      history_links.append({
+                          "path": path,
+                          "from": source,
+                          "to": target,
+                          "digest": hashlib.sha256(raw_link).hexdigest(),
+                      })
+                  snapshots.append({
+                      "repository": repository,
+                      "commit": history_sha,
+                      "ref": history_sha,
+                      "commit_at": history_at,
+                      "subject": history_subject,
+                      "items": history_items,
+                      "couplets": history_couplets,
+                      "vectors": history_vectors,
+                      "links": history_links,
+                  })
+
+          (site / "history.json").write_text(
+              json.dumps({"snapshots": snapshots}, ensure_ascii=False, separators=(",", ":")) + "\n",
+              encoding="utf-8",
+          )
+          print(f"Indexed {len(snapshots)} historical state(s).")
           PY
 
       - name: Upload static site
