@@ -45,3 +45,17 @@ When both endpoint files exist and are displayed, the shared board draws a line 
 ## History
 
 The page includes a `TIME` selector for viewing recent repository states. The publisher creates `history.json` from the first-parent Git history (up to the most recent 40 commits). Selecting a prior commit shows the couplets, unknown presences, vector versions, and connections that existed in that commit. Selecting `NOW` returns to the live manifest. Historical SVG files are loaded from their exact commit in the public repository; nothing is duplicated into a separate database.
+
+
+## Text-to-particles transformations
+
+A JSON file under `transformations/` can refer to an existing couplet and project its characters into a deterministic, animated particle field. Current format:
+
+```json
+{
+  "mode": "text-particles",
+  "source": "couplets/01.txt"
+}
+```
+
+The original text is not changed. The rendered field is derived from the current source text and is rebuilt when that text changes. Historical snapshots include their own source text and transformation state. Invalid or unsupported transformation files are skipped by the publisher.
