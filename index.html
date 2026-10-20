@@ -20,6 +20,10 @@ body{color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,mon
 .is-new{animation:appear .75s ease-out both,glow 2.6s ease-out 1!important}
 #board{position:relative;z-index:2;min-height:100svh;width:100%;padding:8vh 6vw 78px;display:flex;flex-wrap:wrap;align-content:center;align-items:center;justify-content:center;gap:clamp(18px,3.6vw,56px);pointer-events:none}
 .couplet{display:block;position:relative;max-width:min(520px,86vw);padding:clamp(14px,2.1vw,28px);border:1px solid rgba(173,194,227,.1);background:rgba(13,17,27,.34);backdrop-filter:blur(4px);color:var(--ink);text-decoration:none;white-space:pre-line;font-family:Georgia,"Times New Roman",serif;font-size:clamp(17px,2.1vw,27px);line-height:1.65;letter-spacing:.015em;box-shadow:0 12px 50px rgba(0,0,0,.08);transition:background .3s,border-color .3s,transform .5s;pointer-events:auto;animation:appear 1.1s ease-out both}
+.color-trace{display:flex;flex:0 0 84px;width:84px;height:84px;align-items:center;justify-content:center;position:relative;border:1px solid rgba(173,194,227,.2);background:rgba(13,17,27,.5);box-shadow:0 12px 35px rgba(0,0,0,.12);text-decoration:none;pointer-events:auto;animation:appear 1.1s ease-out both;transition:transform .3s,border-color .3s}
+.color-swatch{width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,.28);box-shadow:0 0 20px color-mix(in srgb,var(--swatch) 24%,transparent);background:var(--swatch)}
+.color-trace:hover,.color-trace:focus-visible{transform:scale(1.08);border-color:rgba(173,204,250,.5);outline:none}
+.color-trace.changed{animation:appear .7s ease-out both,glow 2.6s ease-out 1!important}
 .couplet:nth-child(3n+1){transform:rotate(-.7deg)}
 .couplet:nth-child(3n+2){transform:rotate(.45deg);margin-top:2vh}
 .couplet:nth-child(3n){transform:rotate(.9deg);margin-bottom:2vh}
@@ -85,6 +89,7 @@ body[data-view="past"] #history-control{border-color:rgba(228,205,161,.3)}
 <div id="readout" aria-live="off">
 <span>TRACES <span class="value" id="count">—</span></span>
 <span>COUPLETS <span class="value" id="couplet-count">—</span></span>
+<span>COLORS <span class="value" id="color-count">—</span></span>
 <span>VECTORS <span class="value" id="vector-count">—</span></span>
 <span>LINKS <span class="value" id="link-count">—</span></span>
 <span>TRANSFORMS <span class="value" id="transform-count">—</span></span>
@@ -96,7 +101,7 @@ body[data-view="past"] #history-control{border-color:rgba(228,205,161,.3)}
 <script>
 (()=>{'use strict';
 const POLL_MS=3000,field=document.getElementById('field'),board=document.getElementById('board'),connections=document.getElementById('connections'),historySelect=document.getElementById('history-select'),countNode=document.getElementById('count'),coupletCountNode=document.getElementById('couplet-count'),vectorCountNode=document.getElementById('vector-count'),linkCountNode=document.getElementById('link-count'),transformCountNode=document.getElementById('transform-count'),soundCountNode=document.getElementById('sound-count'),latencyNode=document.getElementById('latency'),stateNode=document.getElementById('state'),stateText=document.getElementById('state-text');
-const points=new Map(),markers=new Map(),coupletNodes=new Map(),vectorNodes=new Map(),transformNodes=new Map(),soundNodes=new Map(),connectionNodes=new Map(),soundPlayers=new Map();let knownItems=new Set(),knownCouplets=new Map(),knownVectors=new Map(),knownTransforms=new Map(),knownSounds=new Map(),knownLinks=new Map(),currentLinks=[],initialized=false,busy=false,liveManifest=null,historySnapshots=[],selectedHistory='now',historyLoaded=false;
+const points=new Map(),markers=new Map(),coupletNodes=new Map(),colorNodes=new Map(),vectorNodes=new Map(),transformNodes=new Map(),soundNodes=new Map(),connectionNodes=new Map(),soundPlayers=new Map();let knownItems=new Set(),knownCouplets=new Map(),knownColors=new Map(),knownVectors=new Map(),knownTransforms=new Map(),knownSounds=new Map(),knownLinks=new Map(),currentLinks=[],initialized=false,busy=false,liveManifest=null,historySnapshots=[],selectedHistory='now',historyLoaded=false;
 function hash(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function pointFor(id){if(!points.has(id))points.set(id,{x:7+(hash(id+':x')%8600)/100,y:9+(hash(id+':y')%8000)/100});return points.get(id)}
 function setState(value,label){stateNode.dataset.state=value;stateText.textContent=label}
@@ -123,6 +128,22 @@ if(el.textContent!==item.text){el.textContent=item.text;if(changed.has(item.path
 }
 coupletCountNode.textContent=String(entries.length);
 }
+function renderColors(entries,manifest,changed){
+const live=new Set(entries.map(item=>item.path));
+for(const [path,el] of colorNodes){if(!live.has(path)){el.remove();colorNodes.delete(path)}}
+for(const item of entries){
+if(typeof item.path!=='string'||typeof item.color!=='string'||!/^#[0-9a-f]{6}$/i.test(item.color))continue;
+let el=colorNodes.get(item.path);
+if(!el){
+el=document.createElement('a');el.className='color-trace';el.target='_blank';el.rel='noopener noreferrer';el.setAttribute('aria-label','Color trace');el.title=item.path;
+const swatch=document.createElement('span');swatch.className='color-swatch';el.appendChild(swatch);board.appendChild(el);colorNodes.set(item.path,el);
+}
+el.href=fileUrl(manifest,item.path);el.title=item.path+' · '+item.color;
+el.querySelector('.color-swatch').style.setProperty('--swatch',item.color);
+if(changed.has(item.path))flash(el,'changed');
+}
+document.getElementById('color-count').textContent=String(entries.length);
+}
 function renderVectors(entries,manifest,changed){
 const live=new Set(entries.map(item=>item.path));
 for(const [path,el] of vectorNodes){if(!live.has(path)){el.remove();vectorNodes.delete(path)}}
@@ -144,7 +165,7 @@ if(changed.has(item.path))flash(el,'changed');
 }
 vectorCountNode.textContent=String(entries.length);
 }
-function traceNode(path){return markers.get(path)||coupletNodes.get(path)||vectorNodes.get(path)||transformNodes.get(path)||soundNodes.get(path)||null}
+function traceNode(path){return markers.get(path)||coupletNodes.get(path)||colorNodes.get(path)||vectorNodes.get(path)||transformNodes.get(path)||soundNodes.get(path)||null}
 function stopSound(path){
 const player=soundPlayers.get(path);if(!player)return;
 soundPlayers.delete(path);if(player.timer)clearTimeout(player.timer);if(player.frame)cancelAnimationFrame(player.frame);
@@ -360,7 +381,7 @@ drawConnections();
 window.addEventListener('resize',drawConnections,{passive:true});
 window.addEventListener('scroll',drawConnections,{passive:true});
 function resetKnown(){
-knownItems=new Set();knownCouplets=new Map();knownVectors=new Map();knownTransforms=new Map();knownSounds=new Map();knownLinks=new Map();initialized=false;
+knownItems=new Set();knownCouplets=new Map();knownColors=new Map();knownVectors=new Map();knownTransforms=new Map();knownSounds=new Map();knownLinks=new Map();initialized=false;
 }
 function snapshotLabel(item){
 const date=String(item.commit_at||'').replace('T',' ').slice(0,16);
@@ -401,6 +422,8 @@ const viewManifest={...manifest,ref:isHistorical?String(manifest.ref||manifest.c
 const ids=viewManifest.items.filter(id=>typeof id==='string'&&id.length>0),nextItems=new Set(ids),freshItems=new Set();
 const couplets=viewManifest.couplets.filter(item=>item&&typeof item.path==='string'&&typeof item.text==='string'),nextCouplets=new Map(),changedCouplets=new Set();
 for(const item of couplets){nextCouplets.set(item.path,item.text);if(knownCouplets.has(item.path)&&knownCouplets.get(item.path)!==item.text)changedCouplets.add(item.path);else if(initialized&&!knownCouplets.has(item.path))changedCouplets.add(item.path)}
+const colors=(Array.isArray(viewManifest.colors)?viewManifest.colors:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('colors/')&&/^#[0-9a-f]{6}$/i.test(item.color)),nextColors=new Map(),changedColors=new Set();
+for(const item of colors){nextColors.set(item.path,item.color);if(knownColors.has(item.path)&&knownColors.get(item.path)!==item.color)changedColors.add(item.path);else if(initialized&&!knownColors.has(item.path))changedColors.add(item.path)}
 const vectors=(Array.isArray(viewManifest.vectors)?viewManifest.vectors:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('vectors/')&&item.path.toLowerCase().endsWith('.svg')),nextVectors=new Map(),changedVectors=new Set();
 for(const item of vectors){const revision=String(item.digest||viewManifest.commit||'');nextVectors.set(item.path,revision);if(knownVectors.has(item.path)&&knownVectors.get(item.path)!==revision)changedVectors.add(item.path);else if(initialized&&!knownVectors.has(item.path))changedVectors.add(item.path)}
 const transformations=(Array.isArray(viewManifest.transformations)?viewManifest.transformations:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('transformations/')&&typeof item.source==='string'&&((item.mode==='text-particles'&&typeof item.source_text==='string')||(item.mode==='signal-field'&&Array.isArray(item.values)&&item.values.length>0))),nextTransforms=new Map(),changedTransforms=new Set();
@@ -411,12 +434,12 @@ const links=(Array.isArray(viewManifest.links)?viewManifest.links:[]).filter(ite
 for(const item of links){const revision=String(item.digest||item.from+'→'+item.to);nextLinks.set(item.path,revision);if(knownLinks.has(item.path)&&knownLinks.get(item.path)!==revision)changedLinks.add(item.path);else if(initialized&&!knownLinks.has(item.path))changedLinks.add(item.path)}
 if(initialized&&!isHistorical){
 ids.forEach(id=>{if(!knownItems.has(id))freshItems.add(id)});
-const hasNew=freshItems.size>0||changedCouplets.size>0||changedVectors.size>0||changedTransforms.size>0||changedSounds.size>0||changedLinks.size>0;
+const hasNew=freshItems.size>0||changedCouplets.size>0||changedColors.size>0||changedVectors.size>0||changedTransforms.size>0||changedSounds.size>0||changedLinks.size>0;
 if(hasNew){const stamp=Date.parse(viewManifest.commit_at||'');if(Number.isFinite(stamp)){const seconds=Math.max(0,(Date.now()-stamp)/1000);latencyNode.textContent=seconds<10?seconds.toFixed(1)+'s':Math.round(seconds)+'s'}}
 }
 if(isHistorical)latencyNode.textContent='—';
-renderItems(ids,viewManifest,freshItems);renderCouplets(couplets,viewManifest,changedCouplets);renderVectors(vectors,viewManifest,changedVectors);renderTransformations(transformations,viewManifest,changedTransforms);renderSounds(sounds,viewManifest,changedSounds);renderLinks(links,viewManifest,changedLinks);
-knownItems=nextItems;knownCouplets=nextCouplets;knownVectors=nextVectors;knownTransforms=nextTransforms;knownSounds=nextSounds;knownLinks=nextLinks;initialized=true;
+renderItems(ids,viewManifest,freshItems);renderCouplets(couplets,viewManifest,changedCouplets);renderColors(colors,viewManifest,changedColors);renderVectors(vectors,viewManifest,changedVectors);renderTransformations(transformations,viewManifest,changedTransforms);renderSounds(sounds,viewManifest,changedSounds);renderLinks(links,viewManifest,changedLinks);
+knownItems=nextItems;knownCouplets=nextCouplets;knownColors=nextColors;knownVectors=nextVectors;knownTransforms=nextTransforms;knownSounds=nextSounds;knownLinks=nextLinks;initialized=true;
 document.body.dataset.view=isHistorical?'past':'live';setState(isHistorical?'past':'live',isHistorical?'PAST':'LIVE');
 }catch(e){setState('error',initialized?'RETRYING':'WAITING')}finally{busy=false}}
 
