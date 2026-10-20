@@ -149,20 +149,28 @@ jobs:
 
           def parse_pixel_art(path, raw_bytes):
               try:
-                  text = raw_bytes.decode("utf-8")
+                  lines = raw_bytes.decode("utf-8").splitlines()
               except UnicodeDecodeError:
                   return None
-              rows = [line for line in text.splitlines() if line.strip()]
+              if not lines:
+                  return None
+              anchor = re.fullmatch(r"at\\s+(\\d+)\\s*,\\s*(\\d+)", lines[0].strip(), re.IGNORECASE)
+              if not anchor:
+                  return None
+              x, y = int(anchor.group(1)), int(anchor.group(2))
+              rows = [line.strip() for line in lines[1:] if line.strip()]
               if not 1 <= len(rows) <= 32:
                   return None
               width = len(rows[0])
-              if not 1 <= width <= 32:
+              if not 1 <= width <= 32 or x + width > 64 or y + len(rows) > 64:
                   return None
-              allowed = set(".#@+*")
+              allowed = set(".#@+*-")
               if any(len(row) != width or any(char not in allowed for char in row) for row in rows):
                   return None
               return {
                   "path": path,
+                  "x": x,
+                  "y": y,
                   "width": width,
                   "height": len(rows),
                   "rows": rows,
@@ -176,6 +184,7 @@ jobs:
           (site / "particle-life.html").write_bytes((root / "particle-life.html").read_bytes())
           (site / "sound-space.html").write_bytes((root / "sound-space.html").read_bytes())
           (site / "score-space.html").write_bytes((root / "score-space.html").read_bytes())
+          (site / "canvas.html").write_bytes((root / "canvas.html").read_bytes())
           (site / ".nojekyll").touch()
 
           commit_sha = os.environ["COMMIT_SHA"]
@@ -319,7 +328,7 @@ jobs:
               relative = path.relative_to(root).as_posix()
               art = parse_pixel_art(relative, path.read_bytes())
               if art is None:
-                  print(f"Skipping invalid pixel art {relative}: expected a rectangular grid using . # @ + *.")
+                  print(f"Skipping invalid pixel art {relative}: expected "at x,y" and a rectangular grid using . # @ + * -.")
                   continue
               pixels.append(art)
 
