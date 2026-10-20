@@ -75,6 +75,18 @@ jobs:
               if path.is_file() and not path.is_symlink()
           ]
 
+          colors_dir = root / "colors"
+          colors_dir.mkdir(exist_ok=True)
+          colors = []
+          for path in sorted(colors_dir.rglob("*.txt")):
+              if not path.is_file() or path.is_symlink():
+                  continue
+              color = path.read_text(encoding="utf-8").strip()
+              if len(color) != 7 or color[0] != "#" or any(c not in "0123456789abcdefABCDEF" for c in color[1:]):
+                  print(f"Skipping invalid color {path.relative_to(root).as_posix()}: expected #RRGGBB.")
+                  continue
+              colors.append({"path": path.relative_to(root).as_posix(), "color": color.lower()})
+
           vectors_dir = root / "vectors"
           vectors_dir.mkdir(exist_ok=True)
           vectors = []
@@ -261,6 +273,7 @@ jobs:
               "commit_at": commit_at,
               "items": items,
               "couplets": couplets,
+              "colors": colors,
               "vectors": vectors,
               "transformations": transformations,
               "sounds": sounds,
@@ -270,7 +283,7 @@ jobs:
               json.dumps(manifest, ensure_ascii=False, separators=(",", ":")) + "\n",
               encoding="utf-8",
           )
-          print(f"Indexed {len(items)} presence file(s), {len(couplets)} couplet(s), {len(vectors)} vector trace(s), {len(transformations)} transformation(s), {len(sounds)} sound trace(s), and {len(links)} connection(s).")
+          print(f"Indexed {len(items)} presence file(s), {len(couplets)} couplet(s), {len(colors)} color trace(s), {len(vectors)} vector trace(s), {len(transformations)} transformation(s), {len(sounds)} sound trace(s), and {len(links)} connection(s).")
 
           history_rows = subprocess.check_output(
               ["git", "log", "--first-parent", "-n", "40", "--format=%H%x09%cI%x09%s"],
@@ -308,6 +321,16 @@ jobs:
                       if path.startswith("couplets/")
                       and path.endswith(".txt")
                   ]
+                  history_colors = []
+                  for path in sorted(members):
+                      if not path.startswith("colors/") or not path.endswith(".txt"):
+                          continue
+                      try:
+                          color = read_member(path).decode("utf-8").strip()
+                      except UnicodeDecodeError:
+                          continue
+                      if len(color) == 7 and color[0] == "#" and all(c in "0123456789abcdefABCDEF" for c in color[1:]):
+                          history_colors.append({"path": path, "color": color.lower()})
                   history_vectors = [
                       {"path": path, "digest": hashlib.sha256(read_member(path)).hexdigest()}
                       for path in sorted(members)
@@ -425,6 +448,7 @@ jobs:
                   history_trace_paths = (
                       set(history_items)
                       | {item["path"] for item in history_couplets}
+                      | {item["path"] for item in history_colors}
                       | {item["path"] for item in history_vectors}
                       | {item["path"] for item in history_transformations}
                       | {item["path"] for item in history_sounds}
@@ -459,6 +483,7 @@ jobs:
                       "subject": history_subject,
                       "items": history_items,
                       "couplets": history_couplets,
+                      "colors": history_colors,
                       "vectors": history_vectors,
                       "transformations": history_transformations,
                       "sounds": history_sounds,
