@@ -38,11 +38,61 @@ jobs:
           import hashlib
           import io
           import json
+          import math
           import os
+          import re
           import shutil
           import subprocess
           import tarfile
           from pathlib import Path
+
+          def parse_score(path, raw_bytes):
+              try:
+                  payload = json.loads(raw_bytes.decode("utf-8"))
+              except (UnicodeDecodeError, json.JSONDecodeError):
+                  return None
+              if not isinstance(payload, dict):
+                  return None
+              title = payload.get("title", Path(path).stem)
+              tempo = payload.get("tempo", 96)
+              meter = payload.get("meter", "4/4")
+              measures = payload.get("measures")
+              if (not isinstance(title, str) or not title.strip() or len(title) > 100
+                  or not isinstance(tempo, (int, float)) or isinstance(tempo, bool)
+                  or not float(tempo).is_integer() or not 40 <= tempo <= 200
+                  or meter != "4/4" or not isinstance(measures, list) or not 1 <= len(measures) <= 64):
+                  return None
+              safe_measures = []
+              allowed_beats = (0.25, 0.5, 1, 2, 4)
+              for measure in measures:
+                  notes = measure.get("notes") if isinstance(measure, dict) else None
+                  if not isinstance(notes, list) or not 1 <= len(notes) <= 16:
+                      return None
+                  safe_notes = []
+                  total_beats = 0.0
+                  for note in notes:
+                      if not isinstance(note, dict):
+                          return None
+                      pitch = note.get("pitch")
+                      beats = note.get("beats")
+                      if (not isinstance(pitch, str) or not re.fullmatch(r"(?:[A-G](?:#|b)?[3-6]|rest)", pitch)
+                          or not isinstance(beats, (int, float)) or isinstance(beats, bool)
+                          or not any(math.isclose(float(beats), allowed, abs_tol=0.0001) for allowed in allowed_beats)):
+                          return None
+                      beats = float(beats)
+                      total_beats += beats
+                      safe_notes.append({"pitch": pitch, "beats": beats})
+                  if not math.isclose(total_beats, 4.0, abs_tol=0.0001):
+                      return None
+                  safe_measures.append({"notes": safe_notes})
+              return {
+                  "path": path,
+                  "title": title.strip(),
+                  "tempo": int(tempo),
+                  "meter": "4/4",
+                  "measures": safe_measures,
+                  "digest": hashlib.sha256(raw_bytes).hexdigest(),
+              }
 
           root = Path.cwd()
           site = root / "_site"
@@ -50,6 +100,7 @@ jobs:
           (site / "index.html").write_bytes((root / "index.html").read_bytes())
           (site / "particle-life.html").write_bytes((root / "particle-life.html").read_bytes())
           (site / "sound-space.html").write_bytes((root / "sound-space.html").read_bytes())
+          (site / "score-space.html").write_bytes((root / "score-space.html").read_bytes())
           (site / ".nojekyll").touch()
 
           commit_sha = os.environ["COMMIT_SHA"]
@@ -160,6 +211,19 @@ jobs:
                   "digest": hashlib.sha256(path.read_bytes()).hexdigest(),
               }
               sounds.append(safe_payload)
+
+          scores_dir = root / "scores"
+          scores_dir.mkdir(exist_ok=True)
+          scores = []
+          for path in sorted(scores_dir.rglob("*.json")):
+              if not path.is_file() or path.is_symlink():
+                  continue
+              relative = path.relative_to(root).as_posix()
+              score = parse_score(relative, path.read_bytes())
+              if score is None:
+                  print(f"Skipping invalid score {relative}: expected complete 4/4 measures.")
+                  continue
+              scores.append(score)
 
           sounds_by_path = {item["path"]: item for item in sounds}
           transformations_dir = root / "transformations"
@@ -277,13 +341,14 @@ jobs:
               "vectors": vectors,
               "transformations": transformations,
               "sounds": sounds,
+              "scores": scores,
               "links": links,
           }
           (site / "manifest.json").write_text(
               json.dumps(manifest, ensure_ascii=False, separators=(",", ":")) + "\n",
               encoding="utf-8",
           )
-          print(f"Indexed {len(items)} presence file(s), {len(couplets)} couplet(s), {len(colors)} color trace(s), {len(vectors)} vector trace(s), {len(transformations)} transformation(s), {len(sounds)} sound trace(s), and {len(links)} connection(s).")
+          print(f"Indexed {len(items)} presence file(s), {len(couplets)} couplet(s), {len(colors)} color trace(s), {len(vectors)} vector trace(s), {len(transformations)} transformation(s), {len(sounds)} sound trace(s), {len(scores)} score trace(s), and {len(links)} connection(s).")
 
           history_rows = subprocess.check_output(
               ["git", "log", "--first-parent", "-n", "40", "--format=%H%x09%cI%x09%s"],
@@ -382,6 +447,13 @@ jobs:
                           "digest": hashlib.sha256(raw_sound).hexdigest(),
                       })
                   history_sounds_by_path = {item["path"]: item for item in history_sounds}
+                  history_scores = []
+                  for path in sorted(members):
+                      if not path.startswith("scores/") or not path.endswith(".json"):
+                          continue
+                      score = parse_score(path, read_member(path))
+                      if score is not None:
+                          history_scores.append(score)
                   history_transformations = []
                   for path in sorted(members):
                       if not path.startswith("transformations/") or not path.endswith(".json"):
@@ -487,6 +559,7 @@ jobs:
                       "vectors": history_vectors,
                       "transformations": history_transformations,
                       "sounds": history_sounds,
+                      "scores": history_scores,
                       "links": history_links,
                   })
 
