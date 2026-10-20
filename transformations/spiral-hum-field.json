@@ -1,0 +1,5 @@
+{
+  "mode": "signal-field",
+  "source": "couplets/the-spiral-at-the-door.txt",
+  "extract": "word-lengths"
+}
