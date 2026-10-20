@@ -67,7 +67,7 @@ code{color:#cbdaf0}
     <div class="muted">Choose a pitch and its duration, then add it in order. A measure contains exactly four beats; shorter notes leave room for more notes or rests.</div>
     <div class="editor-grid">
       <label>NAME<input id="draft-title" maxlength="100" value="A new phrase"></label>
-      <label>TEMPO · BPM<input id="draft-tempo" type="number" min="40" max="200" value="96"></label>
+      <label>TEMPO · BPM<input id="draft-tempo" type="number" min="40" max="200" step="1" value="96"></label>
       <label>NOTE<select id="draft-pitch"></select></label>
       <label>DURATION<select id="draft-beats"><option value="4">Whole · 4 beats</option><option value="2">Half · 2 beats</option><option value="1" selected>Quarter · 1 beat</option><option value="0.5">Eighth · ½ beat</option><option value="0.25">Sixteenth · ¼ beat</option></select></label>
     </div>
@@ -152,7 +152,7 @@ draftNode.replaceChildren();
 bars.forEach((bar,i)=>{const slot=document.createElement('div');slot.className='measure';createSvgMeasure(slot,bar.notes,i);draftNode.append(slot)});
 const used=usedInCurrentBar(draftNotes),remaining=Math.max(0,4-used),complete=draftNotes.length>0&&remaining===0;
 editorStatus.textContent='Measures: '+bars.length+' · Current measure: '+(remaining===0&&draftNotes.length?4:used)+' / 4 beats used · '+(complete?'All measures complete.':'Next measure has '+remaining.toFixed(2)+' beats remaining.');
-downloadButton.disabled=!complete||bars.length===0||Number(tempoInput.value)<40||Number(tempoInput.value)>200;
+downloadButton.disabled=!complete||bars.length===0||Number(tempoInput.value)<40||Number(tempoInput.value)>200||!Number.isInteger(Number(tempoInput.value));
 }
 function renderScoreCard(score){
 const card=document.createElement('article');card.className='score-card';
