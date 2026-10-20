@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Shared canvas — Presence</title>
+<style>
+:root{color-scheme:dark;--ink:#e8edf4;--muted:#8995a8;--line:rgba(173,194,227,.18);--blue:#a5c8f4}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#080a10}
+body{color:var(--ink);font:13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:radial-gradient(ellipse at 50% 18%,rgba(37,48,71,.5),transparent 62%),#080a10}
+a{color:inherit}
+nav{display:flex;gap:8px;flex-wrap:wrap;padding:14px 18px}
+nav a{padding:9px 11px;border:1px solid var(--line);background:rgba(8,10,16,.72);color:var(--muted);font-size:10px;letter-spacing:.1em;text-decoration:none}
+nav a:hover{color:var(--ink);border-color:rgba(173,204,250,.5)}
+main{width:min(980px,94vw);margin:0 auto;padding:25px 0 72px}
+.kicker{color:var(--muted);font-size:10px;letter-spacing:.2em;text-transform:uppercase}
+h1{margin:12px 0;font-size:clamp(30px,6vw,58px);font-weight:400;letter-spacing:-.06em}
+.intro{max-width:650px;color:#a5afbf;line-height:1.8}
+#frame{width:min(100%,760px);margin:28px auto 12px;padding:clamp(8px,2vw,18px);border:1px solid rgba(173,194,227,.24);background:rgba(5,8,14,.75);box-shadow:0 22px 80px rgba(0,0,0,.24)}
+#shared-canvas{display:block;width:100%;height:auto;aspect-ratio:1;image-rendering:pixelated;background:#0a0e17}
+#status{width:min(100%,760px);margin:0 auto;color:var(--muted);font-size:10px;line-height:1.8;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.panel{width:min(100%,760px);margin:25px auto 0;padding:18px;border:1px solid var(--line);background:rgba(13,17,27,.52)}
+.panel h2{font-size:12px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;margin:0 0 12px}
+pre{margin:12px 0;padding:12px;overflow:auto;border:1px solid rgba(173,194,227,.1);background:#080b12;color:#c8dcf4;font-size:12px;line-height:1.65}
+.note{color:#a5afbf;font-size:11px;line-height:1.85}
+#layers{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}
+#layers a{padding:6px 8px;border:1px solid rgba(173,194,227,.12);color:var(--muted);font-size:10px;text-decoration:none;overflow-wrap:anywhere}
+#layers a:hover{color:var(--ink);border-color:rgba(173,204,250,.45)}
+footer{width:min(100%,760px);margin:18px auto;color:var(--muted);font-size:10px;line-height:1.8}
+code{color:#d6e2f4}
+@media(max-width:560px){nav{padding:9px}main{padding-top:17px}nav a{padding:8px;font-size:9px}.panel{padding:12px}pre{font-size:11px}}
+</style>
+</head>
+<body>
+<nav><a href="./">← SHARED SPACE</a><a href="./score-space.html">SCORE SPACE ↗</a><a href="./sound-space.html">SOUND SPACE ↗</a></nav>
+<main>
+  <div class="kicker">One surface · many traces</div>
+  <h1>Shared canvas</h1>
+  <p class="intro">This is one common 64 × 64 canvas. Each text file paints a small transparent layer at a chosen position. All layers meet on the same surface; a new trace can extend, cover, or erase part of what is already there.</p>
+  <div id="frame"><svg id="shared-canvas" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="The shared pixel canvas"></svg></div>
+  <div id="status"><span id="sync-state">Connecting to the shared space…</span><span id="layer-count">0 layers</span></div>
+
+  <section class="panel">
+    <h2>A layer is only text</h2>
+    <div class="note">Create a new unused file under <code>pixels/</code>. The first line sets its upper-left position on the common canvas. Each following character is a pixel. A dot leaves whatever is underneath untouched.</div>
+    <pre>at 28,24
+....@@..
+...@@@@.
+..@@@@@@
+.@@+..+@
+.@@@@@@.
+..@..@..
+...@@...
+........</pre>
+    <div class="note"><code>.</code> transparent · <code>#</code> blue · <code>@</code> gold · <code>+</code> mint · <code>*</code> rose · <code>-</code> erase. The canvas is 64 × 64; each layer can be up to 32 × 32. Layers are composited in filename order, so higher numbered files paint over lower numbered ones.</div>
+  </section>
+  <section class="panel">
+    <h2>Layers on this canvas</h2>
+    <div class="note">These files are not separate pictures. They are the layers that currently compose this one shared canvas.</div>
+    <div id="layers"></div>
+  </section>
+  <footer>The page reads committed files and refreshes automatically. It does not require a graphical editor, and it does not write to the repository. Visitors can create, change, or remove a layer directly in GitHub; the canvas is recomposed after publication.</footer>
+</main>
+<script>
+(()=>{'use strict';
+const NS='http://www.w3.org/2000/svg';
+const svg=document.getElementById('shared-canvas'),state=document.getElementById('sync-state'),count=document.getElementById('layer-count'),layerList=document.getElementById('layers');
+const palette={'#':'#a5c8f4','@':'#e4cda1','+':'#9fc9b1','*':'#d8a7e0'};
+function node(tag,attrs){const el=document.createElementNS(NS,tag);Object.entries(attrs||{}).forEach(([k,v])=>el.setAttribute(k,String(v)));return el}
+function compose(entries){
+while(svg.firstChild)svg.removeChild(svg.firstChild);
+svg.appendChild(node('rect',{x:0,y:0,width:64,height:64,fill:'#0a0e17'}));
+const cells=new Map();
+for(const item of [...entries].sort((a,b)=>a.path.localeCompare(b.path))){
+if(!Array.isArray(item.rows)||!Number.isInteger(item.x)||!Number.isInteger(item.y))continue;
+item.rows.forEach((row,dy)=>{for(let dx=0;dx<row.length;dx++){
+const ch=row[dx],x=item.x+dx,y=item.y+dy,key=y*64+x;
+if(ch==='.')continue;
+if(ch==='-'){cells.delete(key);continue}
+const color=palette[ch];if(color)cells.set(key,{x,y,color});
+}});
+}
+for(const cell of cells.values())svg.appendChild(node('rect',{x:cell.x,y:cell.y,width:1,height:1,fill:cell.color}));
+const grid=node('path',{d:Array.from({length:65},(_,n)=>'M '+n+' 0 V 64').join(' ')+' '+Array.from({length:65},(_,n)=>'M 0 '+n+' H 64').join(' '),fill:'none',stroke:'#b6c9e3','stroke-width':'.025','stroke-opacity':'.17','vector-effect':'non-scaling-stroke'});
+svg.appendChild(grid);
+layerList.replaceChildren();
+for(const item of [...entries].sort((a,b)=>a.path.localeCompare(b.path))){
+const link=document.createElement('a');link.href='https://github.com/doukaspetros-coder/presence-case-a/blob/main/'+item.path.split('/').map(encodeURIComponent).join('/');link.target='_blank';link.rel='noopener noreferrer';link.textContent=item.path;link.title='Open this canvas layer in GitHub';layerList.appendChild(link);
+}
+count.textContent=entries.length+' layer'+(entries.length===1?'':'s');
+}
+async function sync(){
+try{
+const res=await fetch('./manifest.json?ts='+Date.now(),{cache:'no-store'});if(!res.ok)throw Error('manifest HTTP '+res.status);
+const data=await res.json();const entries=Array.isArray(data.pixels)?data.pixels:[];
+compose(entries);state.textContent='LIVE · commit '+String(data.commit||'').slice(0,7)+' · '+new Date().toLocaleTimeString();
+}catch(e){state.textContent='SYNC UNAVAILABLE · '+e.message}
+}
+sync();setInterval(sync,3000);
+})();
+</script>
+</body>
+</html>
