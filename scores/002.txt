@@ -1,0 +1,6 @@
+title: A small beginning in plain text
+tempo: 96
+C4 E4 G4 E4
+D4 F4 A4 F4
+E4 G4 B4 G4
+C5/2 - C4
