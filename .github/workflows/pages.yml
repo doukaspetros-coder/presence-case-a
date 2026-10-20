@@ -94,6 +94,59 @@ jobs:
                   "digest": hashlib.sha256(raw_bytes).hexdigest(),
               }
 
+          def parse_score_text(path, raw_bytes):
+              try:
+                  text = raw_bytes.decode("utf-8")
+              except UnicodeDecodeError:
+                  return None
+              title = Path(path).stem.replace("-", " ").replace("_", " ")
+              tempo = 96
+              measures = []
+              for raw_line in text.splitlines():
+                  line = raw_line.strip()
+                  if not line or line.startswith("#"):
+                      continue
+                  lower = line.lower()
+                  if lower.startswith("title:"):
+                      title = line.split(":", 1)[1].strip()
+                      continue
+                  if lower.startswith("tempo:"):
+                      try:
+                          tempo_value = float(line.split(":", 1)[1].strip())
+                      except ValueError:
+                          return None
+                      if not tempo_value.is_integer():
+                          return None
+                      tempo = int(tempo_value)
+                      continue
+                  safe_notes = []
+                  total_beats = 0.0
+                  for token in line.split():
+                      if token == "-":
+                          pitch, beats = "rest", 1.0
+                      else:
+                          match = re.fullmatch(r"([A-G](?:#|b)?[3-6])(?:/(0\.25|0\.5|1|2|4))?", token)
+                          if not match:
+                              return None
+                          pitch = match.group(1)
+                          beats = float(match.group(2) or "1")
+                      total_beats += beats
+                      safe_notes.append({"pitch": pitch, "beats": beats})
+                  if not safe_notes or len(safe_notes) > 16 or not math.isclose(total_beats, 4.0, abs_tol=0.0001):
+                      return None
+                  measures.append({"notes": safe_notes})
+              if (not title or len(title) > 100 or not isinstance(tempo, int)
+                  or not 40 <= tempo <= 200 or not 1 <= len(measures) <= 64):
+                  return None
+              return {
+                  "path": path,
+                  "title": title,
+                  "tempo": tempo,
+                  "meter": "4/4",
+                  "measures": measures,
+                  "digest": hashlib.sha256(raw_bytes).hexdigest(),
+              }
+
           root = Path.cwd()
           site = root / "_site"
           site.mkdir(exist_ok=True)
@@ -224,6 +277,16 @@ jobs:
                   print(f"Skipping invalid score {relative}: expected complete 4/4 measures.")
                   continue
               scores.append(score)
+          for path in sorted(scores_dir.rglob("*.txt")):
+              if not path.is_file() or path.is_symlink():
+                  continue
+              relative = path.relative_to(root).as_posix()
+              score = parse_score_text(relative, path.read_bytes())
+              if score is None:
+                  print(f"Skipping invalid score {relative}: each line must fill one 4/4 measure.")
+                  continue
+              scores.append(score)
+          scores.sort(key=lambda item: item["path"])
 
           sounds_by_path = {item["path"]: item for item in sounds}
           transformations_dir = root / "transformations"
@@ -454,6 +517,13 @@ jobs:
                       score = parse_score(path, read_member(path))
                       if score is not None:
                           history_scores.append(score)
+                  for path in sorted(members):
+                      if not path.startswith("scores/") or not path.endswith(".txt"):
+                          continue
+                      score = parse_score_text(path, read_member(path))
+                      if score is not None:
+                          history_scores.append(score)
+                  history_scores.sort(key=lambda item: item["path"])
                   history_transformations = []
                   for path in sorted(members):
                       if not path.startswith("transformations/") or not path.endswith(".json"):
