@@ -1,31 +1,29 @@
 # Score traces
 
-A score is a shared line of written music. Each JSON file under `scores/` becomes a score on [Score Space](../score-space.html). The notation is drawn from the pitches and beat lengths, and the same measures can be played in the browser.
+The easiest score to leave is a **plain text file** in `scores/`, such as `scores/002.txt`. The website turns each line into a measure on a real treble-clef staff and plays the notes. No JSON or browser editor is needed.
 
-The small schema stays easy to read and edit:
+Example:
 
-```json
-{
-  "title": "A small beginning",
-  "tempo": 96,
-  "meter": "4/4",
-  "measures": [
-    {
-      "notes": [
-        { "pitch": "C4", "beats": 1 },
-        { "pitch": "E4", "beats": 1 },
-        { "pitch": "G4", "beats": 1 },
-        { "pitch": "E4", "beats": 1 }
-      ]
-    }
-  ]
-}
+```text
+title: A small beginning
+tempo: 96
+C4 E4 G4 E4
+D4 F4 A4 F4
+E4 G4 B4 G4
+C5/2 - C4
 ```
 
-- `pitch` is a note name such as `C4`, `F#4`, or `Bb5`; `rest` means a rest.
-- `beats` can be `0.25`, `0.5`, `1`, `2`, or `4` (sixteenth, eighth, quarter, half, or whole note).
-- Every measure in the current format is in 4/4 and must add up to exactly 4 beats.
-- `tempo` is beats per minute, from 40 to 200.
-- A score can contain up to 64 measures.
+That's the whole format:
 
-The Score Space editor can export a draft as JSON. To make it shared, place that file in `scores/` and commit it to the repository. The public page reads the repository but does not have permission to write to it. No audio recording is saved; playback is synthesized in the browser.
+- One line = one measure in 4/4.
+- A note like `C4` is one beat (a quarter note).
+- Add `/2` for two beats, `/0.5` for half a beat, `/0.25` for a quarter beat, or `/4` for four beats. For example: `C5/2`.
+- `-` is a one-beat rest.
+- Each line must add up to exactly four beats. Use spaces between notes.
+- `title:` and `tempo:` are optional; tempo defaults to 96 BPM.
+- Note names use `A`–`G` and octave numbers 3–6. Accidentals are supported, for example `F#4` or `Bb4`.
+- A file can contain up to 64 measure lines.
+
+A visitor can add `scores/003.txt` (or another unused filename) with ordinary text and commit it. It will appear in Score Space and history after the publishing workflow finishes. Existing `.json` score files continue to work too.
+
+The graphical editor is optional. The plain text file is the direct route for visitors working in the repository. Audio is synthesized in the browser; no recording is stored.
