@@ -122,7 +122,7 @@ return bars;
 function usedInCurrentBar(notes){let total=0;for(const note of notes){total+=Number(note.beats);if(Math.abs(total-4)<.0001)total=0}return total}
 function createSvgMeasure(target,notes,index){
 target.replaceChildren();
-const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','staff');svg.setAttribute('viewBox','0 0 720 138');svg.setAttribute('role','img');svg.setAttribute('aria-label','Treble clef staff, measure '+(index+1));
+const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','staff');svg.setAttribute('viewBox','0 0 720 170');svg.setAttribute('role','img');svg.setAttribute('aria-label','Treble clef staff, measure '+(index+1));
 function el(tag,attrs,text){const node=document.createElementNS('http://www.w3.org/2000/svg',tag);Object.entries(attrs||{}).forEach(([k,v])=>node.setAttribute(k,String(v)));if(text!==undefined)node.textContent=text;svg.append(node);return node}
 [60,70,80,90,100].forEach(y=>el('line',{x1:26,y1:y,x2:698,y2:y}));
 el('line',{x1:698,y1:54,x2:698,y2:107,class:'barline'});
@@ -198,7 +198,7 @@ draftNotes.push({pitch:pitch,beats:beats});renderDraft();
 }
 document.getElementById('add-note').addEventListener('click',()=>addEvent(pitchSelect.value));
 document.getElementById('add-rest').addEventListener('click',()=>addEvent('rest'));
-document.getElementById('fill-rest').addEventListener('click',()=>{let remaining=Number((4-usedInCurrentBar(draftNotes)).toFixed(2));for(const part of [2,1,.5,.25])while(remaining>=part-.0001){draftNotes.push({pitch:'rest',beats:part});remaining=Number((remaining-part).toFixed(2))}renderDraft()});
+document.getElementById('fill-rest').addEventListener('click',()=>{let remaining=Number((4-usedInCurrentBar(draftNotes)).toFixed(2));if(remaining<.0001||remaining>=4)return;for(const part of [2,1,.5,.25])while(remaining>=part-.0001){draftNotes.push({pitch:'rest',beats:part});remaining=Number((remaining-part).toFixed(2))}renderDraft()});
 document.getElementById('remove-note').addEventListener('click',()=>{draftNotes.pop();renderDraft()});
 document.getElementById('clear-draft').addEventListener('click',()=>{draftNotes=[];renderDraft()});
 tempoInput.addEventListener('input',renderDraft);
