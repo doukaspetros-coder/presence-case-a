@@ -33,12 +33,12 @@ body{color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,mon
 .vector-trace img{display:block;width:100%;height:auto;max-width:100%;max-height:50vh;object-fit:contain}
 .vector-trace:hover,.vector-trace:focus-visible{background:rgba(28,36,53,.64);border-color:rgba(173,204,250,.38);outline:none}
 .vector-trace.changed{animation:appear .7s ease-out both,glow 2.6s ease-out 1!important}
-.pixel-trace{display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;flex:0 1 min(360px,86vw);max-width:min(360px,86vw);min-width:min(220px,86vw);padding:clamp(12px,1.8vw,22px);border:1px solid rgba(173,194,227,.13);background:rgba(13,17,27,.48);box-shadow:0 12px 45px rgba(0,0,0,.1);text-decoration:none;pointer-events:auto;animation:appear 1.1s ease-out both;transition:background .3s,border-color .3s}
-.pixel-head{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;color:var(--muted);font-size:9px;letter-spacing:.09em;overflow-wrap:anywhere}
-.pixel-kind{color:#d6e2f4}
-.pixel-grid{display:block;width:100%;height:auto;max-height:42vh;image-rendering:pixelated;shape-rendering:crispEdges;background:rgba(7,11,18,.65);border:1px solid rgba(173,194,227,.08)}
-.pixel-trace:hover,.pixel-trace:focus-visible{background:rgba(28,36,53,.64);border-color:rgba(173,204,250,.38);outline:none}
-.pixel-trace.changed{animation:appear .7s ease-out both,glow 2.6s ease-out 1!important}
+.shared-canvas-trace{display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;flex:0 1 min(420px,88vw);max-width:min(420px,88vw);min-width:min(250px,88vw);padding:clamp(12px,1.8vw,22px);border:1px solid rgba(173,194,227,.2);background:rgba(13,17,27,.6);box-shadow:0 12px 45px rgba(0,0,0,.16);text-decoration:none;pointer-events:auto;animation:appear 1.1s ease-out both;transition:background .3s,border-color .3s}
+.shared-canvas-head{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;color:var(--muted);font-size:9px;letter-spacing:.09em;overflow-wrap:anywhere}
+.shared-canvas-label{color:#d6e2f4}
+.shared-canvas-preview{display:block;width:100%;height:auto;aspect-ratio:1;image-rendering:pixelated;shape-rendering:crispEdges;background:#0a0e17;border:1px solid rgba(173,194,227,.12)}
+.shared-canvas-trace:hover,.shared-canvas-trace:focus-visible{background:rgba(28,36,53,.72);border-color:rgba(173,204,250,.48);outline:none}
+.shared-canvas-trace.changed{animation:appear .7s ease-out both,glow 2.6s ease-out 1!important}
 .transform-trace{display:block;position:relative;flex:0 1 min(430px,86vw);max-width:min(430px,86vw);padding:clamp(14px,2.1vw,28px);border:1px solid rgba(173,194,227,.12);background:rgba(13,17,27,.42);box-shadow:0 12px 50px rgba(0,0,0,.1);text-decoration:none;pointer-events:auto;animation:appear 1.1s ease-out both;transition:background .3s,border-color .3s}
 .transform-meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:9px;line-height:1.5;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);overflow-wrap:anywhere}
 .transform-kind{color:#d6e2f4}
@@ -47,10 +47,11 @@ body{color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,mon
 .particle-trail{fill:none;stroke:#799cc5;stroke-opacity:.3;stroke-width:.65;stroke-linecap:round;stroke-linejoin:round}
 .particle-dot{transform-box:fill-box;transform-origin:center;animation:particle-float 5.8s ease-in-out infinite alternate}
 #particle-life-link{position:fixed;z-index:8;top:15px;left:18px;padding:8px 10px;border:1px solid rgba(173,194,227,.14);background:rgba(8,10,16,.68);color:var(--muted);font-size:10px;letter-spacing:.12em;text-decoration:none;backdrop-filter:blur(8px)}
-#particle-life-link:hover,#particle-life-link:focus-visible,#sound-space-link:hover,#sound-space-link:focus-visible,#score-space-link:hover,#score-space-link:focus-visible{color:var(--ink);border-color:rgba(173,204,250,.5);outline:none}
+#particle-life-link:hover,#particle-life-link:focus-visible,#sound-space-link:hover,#sound-space-link:focus-visible,#score-space-link:hover,#score-space-link:focus-visible,#shared-canvas-link:hover,#shared-canvas-link:focus-visible{color:var(--ink);border-color:rgba(173,204,250,.5);outline:none}
 #sound-space-link{position:fixed;z-index:8;top:54px;left:18px;padding:8px 10px;border:1px solid rgba(173,194,227,.14);background:rgba(8,10,16,.68);color:var(--muted);font-size:10px;letter-spacing:.12em;text-decoration:none;backdrop-filter:blur(8px)}
 #score-space-link{position:fixed;z-index:8;top:93px;left:18px;padding:8px 10px;border:1px solid rgba(173,194,227,.14);background:rgba(8,10,16,.68);color:var(--muted);font-size:10px;letter-spacing:.12em;text-decoration:none;backdrop-filter:blur(8px)}
-@media(max-width:540px){#particle-life-link{top:10px;left:10px;font-size:9px;padding:7px 8px}#sound-space-link{top:47px;left:10px;font-size:9px;padding:7px 8px}#score-space-link{top:84px;left:10px;font-size:9px;padding:7px 8px}}
+#shared-canvas-link{position:fixed;z-index:8;top:132px;left:18px;padding:8px 10px;border:1px solid rgba(173,194,227,.2);background:rgba(8,10,16,.78);color:#d6e2f4;font-size:10px;letter-spacing:.12em;text-decoration:none;backdrop-filter:blur(8px)}
+@media(max-width:540px){#particle-life-link{top:10px;left:10px;font-size:9px;padding:7px 8px}#sound-space-link{top:47px;left:10px;font-size:9px;padding:7px 8px}#score-space-link{top:84px;left:10px;font-size:9px;padding:7px 8px}#shared-canvas-link{top:121px;left:10px;font-size:9px;padding:7px 8px}}
 body.sound-active .particle-field{border-color:rgba(228,205,161,.62);box-shadow:0 0 28px rgba(228,205,161,.16)}
 body.sound-active .particle-dot{filter:drop-shadow(0 0 4px rgba(228,205,161,.82))}
 .transform-trace:hover,.transform-trace:focus-visible{background:rgba(28,36,53,.64);border-color:rgba(173,204,250,.38);outline:none}
@@ -94,11 +95,12 @@ body[data-view="past"] #history-control{border-color:rgba(228,205,161,.3)}
 <a id="particle-life-link" href="./particle-life.html">PARTICLE LIFE ↗</a>
 <a id="sound-space-link" href="./sound-space.html">SOUND SPACE ↗</a>
 <a id="score-space-link" href="./score-space.html">SCORE SPACE ↗</a>
+<a id="shared-canvas-link" href="./canvas.html">SHARED CANVAS ↗</a>
 <div id="readout" aria-live="off">
 <span>TRACES <span class="value" id="count">—</span></span>
 <span>COUPLETS <span class="value" id="couplet-count">—</span></span>
 <span>COLORS <span class="value" id="color-count">—</span></span>
-<span>PIXELS <span class="value" id="pixel-count">—</span></span>
+<span>CANVAS LAYERS <span class="value" id="pixel-count">—</span></span>
 <span>VECTORS <span class="value" id="vector-count">—</span></span>
 <span>LINKS <span class="value" id="link-count">—</span></span>
 <span>TRANSFORMS <span class="value" id="transform-count">—</span></span>
@@ -155,31 +157,38 @@ document.getElementById('color-count').textContent=String(entries.length);
 }
 function renderPixels(entries,manifest,changed){
 const live=new Set(entries.map(item=>item.path));
-for(const [path,el] of pixelNodes){if(!live.has(path)){el.remove();pixelNodes.delete(path)}}
-const palette={'#':'#a5c8f4','@':'#e4cda1','+':'#9fc9b1','*':'#d8a7e0'};
-for(const item of entries){
-if(typeof item.path!=='string'||!item.path.startsWith('pixels/')||!Array.isArray(item.rows)||!Number.isInteger(item.width)||!Number.isInteger(item.height)||item.width<1||item.height<1)continue;
-let el=pixelNodes.get(item.path);
+for(const path of pixelNodes.keys()){if(!live.has(path))pixelNodes.delete(path)}
+let el=document.getElementById('shared-canvas-trace');
+if(!entries.length){
+if(el)el.remove();pixelNodes.clear();document.getElementById('pixel-count').textContent='0';return;
+}
 if(!el){
-el=document.createElement('a');el.className='pixel-trace';el.target='_blank';el.rel='noopener noreferrer';el.setAttribute('aria-label','Pixel art: '+item.path);
-const head=document.createElement('div');head.className='pixel-head';
-const kind=document.createElement('span');kind.className='pixel-kind';kind.textContent='PIXEL TRACE';head.appendChild(kind);
-const source=document.createElement('span');source.className='pixel-source';head.appendChild(source);el.appendChild(head);
-const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.classList.add('pixel-grid');svg.setAttribute('role','img');el.appendChild(svg);
-board.appendChild(el);pixelNodes.set(item.path,el);
+el=document.createElement('a');el.id='shared-canvas-trace';el.className='shared-canvas-trace';el.href='./canvas.html';el.setAttribute('aria-label','Open the shared canvas');
+const head=document.createElement('div');head.className='shared-canvas-head';
+const label=document.createElement('span');label.className='shared-canvas-label';label.textContent='SHARED CANVAS';head.appendChild(label);
+const meta=document.createElement('span');meta.className='shared-canvas-meta';head.appendChild(meta);el.appendChild(head);
+const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.classList.add('shared-canvas-preview');svg.setAttribute('viewBox','0 0 64 64');svg.setAttribute('role','img');svg.setAttribute('aria-label','Preview of the common 64 by 64 canvas');el.appendChild(svg);
+board.appendChild(el);
 }
-el.href=fileUrl(manifest,item.path);el.title=item.path;
-el.querySelector('.pixel-source').textContent=item.path;
-const svg=el.querySelector('.pixel-grid'),revision=String(item.digest||JSON.stringify(item.rows));
-if(svg.dataset.revision!==revision){
+el.href='./canvas.html';el.title='Open the shared 64 × 64 pixel canvas';
+const svg=el.querySelector('.shared-canvas-preview'),cells=new Map(),palette={'#':'#a5c8f4','@':'#e4cda1','+':'#9fc9b1','*':'#d8a7e0'};
+for(const item of [...entries].sort((a,b)=>a.path.localeCompare(b.path))){
+if(!Array.isArray(item.rows)||!Number.isInteger(item.x)||!Number.isInteger(item.y))continue;
+pixelNodes.set(item.path,el);
+item.rows.forEach((row,dy)=>{for(let dx=0;dx<row.length;dx++){
+const ch=row[dx],x=item.x+dx,y=item.y+dy,key=y*64+x;
+if(ch==='.')continue;
+if(ch==='-'){cells.delete(key);continue}
+const color=palette[ch];if(color)cells.set(key,{x,y,color});
+}});
+}
 while(svg.firstChild)svg.removeChild(svg.firstChild);
-svg.setAttribute('viewBox','0 0 '+item.width+' '+item.height);svg.setAttribute('width',String(item.width*18));svg.setAttribute('height',String(item.height*18));svg.setAttribute('preserveAspectRatio','xMidYMid meet');svg.setAttribute('aria-label',item.width+' by '+item.height+' pixel image');
-item.rows.forEach((row,y)=>{for(let x=0;x<Math.min(item.width,row.length);x++){const color=palette[row[x]];if(!color)continue;const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');rect.setAttribute('x',String(x));rect.setAttribute('y',String(y));rect.setAttribute('width','1');rect.setAttribute('height','1');rect.setAttribute('fill',color);svg.appendChild(rect)}});
-svg.dataset.revision=revision;
-}
-if(changed.has(item.path))flash(el,'changed');
-}
+const bg=document.createElementNS('http://www.w3.org/2000/svg','rect');bg.setAttribute('x','0');bg.setAttribute('y','0');bg.setAttribute('width','64');bg.setAttribute('height','64');bg.setAttribute('fill','#0a0e17');svg.appendChild(bg);
+for(const cell of cells.values()){const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');rect.setAttribute('x',String(cell.x));rect.setAttribute('y',String(cell.y));rect.setAttribute('width','1');rect.setAttribute('height','1');rect.setAttribute('fill',cell.color);svg.appendChild(rect)}
+const grid=document.createElementNS('http://www.w3.org/2000/svg','path');grid.setAttribute('d',Array.from({length:65},(_,n)=>'M '+n+' 0 V 64').join(' ')+' '+Array.from({length:65},(_,n)=>'M 0 '+n+' H 64').join(' '));grid.setAttribute('fill','none');grid.setAttribute('stroke','#b6c9e3');grid.setAttribute('stroke-width','.025');grid.setAttribute('stroke-opacity','.17');grid.setAttribute('vector-effect','non-scaling-stroke');svg.appendChild(grid);
+el.querySelector('.shared-canvas-meta').textContent='64 × 64 · '+entries.length+' LAYER'+(entries.length===1?'':'S');
 document.getElementById('pixel-count').textContent=String(entries.length);
+if(changed.size)flash(el,'changed');
 }
 function renderVectors(entries,manifest,changed){
 const live=new Set(entries.map(item=>item.path));
