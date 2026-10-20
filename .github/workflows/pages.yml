@@ -154,7 +154,7 @@ jobs:
                   return None
               if not lines:
                   return None
-              anchor = re.fullmatch(r"at\\s+(\\d+)\\s*,\\s*(\\d+)", lines[0].strip(), re.IGNORECASE)
+              anchor = re.fullmatch(r"at\s+(\d+)\s*,\s*(\d+)", lines[0].strip(), re.IGNORECASE)
               if not anchor:
                   return None
               x, y = int(anchor.group(1)), int(anchor.group(2))
