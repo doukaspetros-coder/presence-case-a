@@ -329,7 +329,7 @@ jobs:
               relative = path.relative_to(root).as_posix()
               art = parse_pixel_art(relative, path.read_bytes())
               if art is None:
-                  print(f"Skipping invalid pixel art {relative}: expected "at x,y" and a rectangular grid using . # @ + * -.")
+                  print(f'Skipping invalid pixel art {relative}: expected "at x,y" and a rectangular grid using . # @ + * -.')
                   continue
               pixels.append(art)
 
