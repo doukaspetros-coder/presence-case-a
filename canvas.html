@@ -68,6 +68,7 @@ code{color:#d6e2f4}
 const NS='http://www.w3.org/2000/svg';
 const svg=document.getElementById('shared-canvas'),state=document.getElementById('sync-state'),count=document.getElementById('layer-count'),layerList=document.getElementById('layers');
 const palette={'#':'#a5c8f4','@':'#e4cda1','+':'#9fc9b1','*':'#d8a7e0'};
+let lastRevision='';
 function node(tag,attrs){const el=document.createElementNS(NS,tag);Object.entries(attrs||{}).forEach(([k,v])=>el.setAttribute(k,String(v)));return el}
 function compose(entries){
 while(svg.firstChild)svg.removeChild(svg.firstChild);
@@ -95,7 +96,9 @@ async function sync(){
 try{
 const res=await fetch('./manifest.json?ts='+Date.now(),{cache:'no-store'});if(!res.ok)throw Error('manifest HTTP '+res.status);
 const data=await res.json();const entries=Array.isArray(data.pixels)?data.pixels:[];
-compose(entries);state.textContent='LIVE · commit '+String(data.commit||'').slice(0,7)+' · '+new Date().toLocaleTimeString();
+const revision=JSON.stringify(entries.map(item=>[item.path,item.digest,item.x,item.y]));
+if(revision!==lastRevision){compose(entries);lastRevision=revision}
+state.textContent='LIVE · commit '+String(data.commit||'').slice(0,7)+' · '+new Date().toLocaleTimeString();
 }catch(e){state.textContent='SYNC UNAVAILABLE · '+e.message}
 }
 sync();setInterval(sync,3000);
