@@ -1,0 +1,7 @@
+title: The shadow keeps the pitch
+tempo: 72
+G3/2 - G3/2
+C4 D4 E4 G4
+A4/2 G4/2
+E4/2 - C4/2
+G3/4
