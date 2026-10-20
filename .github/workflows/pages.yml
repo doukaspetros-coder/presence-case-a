@@ -185,6 +185,7 @@ jobs:
           (site / "sound-space.html").write_bytes((root / "sound-space.html").read_bytes())
           (site / "score-space.html").write_bytes((root / "score-space.html").read_bytes())
           (site / "canvas.html").write_bytes((root / "canvas.html").read_bytes())
+          (site / "canvas.html").write_bytes((root / "canvas.html").read_bytes())
           (site / ".nojekyll").touch()
 
           commit_sha = os.environ["COMMIT_SHA"]
