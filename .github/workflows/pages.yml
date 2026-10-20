@@ -236,7 +236,7 @@ jobs:
                   "digest": hashlib.sha256(path.read_bytes() + b"\\0" + source_fingerprint).hexdigest(),
               })
 
-          trace_paths = set(items) | {item["path"] for item in couplets} | {item["path"] for item in vectors} | {item["path"] for item in transformations} | {item["path"] for item in sounds}
+          trace_paths = set(items) | {item["path"] for item in couplets} | {item["path"] for item in colors} | {item["path"] for item in vectors} | {item["path"] for item in transformations} | {item["path"] for item in sounds}
           links_dir = root / "links"
           links_dir.mkdir(exist_ok=True)
           links = []
