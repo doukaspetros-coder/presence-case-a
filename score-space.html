@@ -59,7 +59,7 @@ code{color:#cbdaf0}
   <div class="kicker">Shared notation · 4/4</div>
   <h1>Score space</h1>
   <p class="intro">Musical traces can be made of measures, not only note sequences. Each measure below is a real, playable line of notes. Build a phrase in the editor, hear it, and export it as a small file that can become part of the shared repository.</p>
-  <div class="section-head"><div class="kicker">Shared scores · <span id="score-count">—</span></div><button id="play-field" type="button">PLAY ALL SCORES</button></div>
+  <div class="section-head"><div class="kicker">Shared scores · <span id="score-count">—</span></div><div class="actions"><button id="play-field" type="button">PLAY ALL SCORES</button><button id="stop-playback" type="button">STOP</button></div></div>
   <section id="scores" aria-live="polite"><div class="empty">Waiting for shared scores…</div></section>
 
   <div class="section-head"><div class="kicker">Compose a measure or a longer phrase</div></div>
@@ -131,7 +131,7 @@ let elapsed=0;
 for(const note of notes){
 const beats=Number(note.beats)||1,x=112+(elapsed+beats/2)/4*520;
 elapsed+=beats;
-if(note.pitch==='rest'){el('text',{x:x-7,y:84,class:'rest'},'𝄽');continue}
+if(note.pitch==='rest'){const symbol=beats>=4?'𝄻':beats>=2?'𝄼':beats>=1?'𝄽':beats>=.5?'𝄾':'𝄿';el('text',{x:x-7,y:84,class:'rest'},symbol);continue}
 const info=pitchInfo(note.pitch);if(!info)continue;const y=info.y;
 if(y<60){for(let ly=50;ly>=y;ly-=10)el('line',{x1:x-11,y1:ly,x2:x+11,y2:ly})}
 if(y>100){for(let ly=110;ly<=y;ly+=10)el('line',{x1:x-11,y1:ly,x2:x+11,y2:ly})}
@@ -198,7 +198,7 @@ draftNotes.push({pitch:pitch,beats:beats});renderDraft();
 }
 document.getElementById('add-note').addEventListener('click',()=>addEvent(pitchSelect.value));
 document.getElementById('add-rest').addEventListener('click',()=>addEvent('rest'));
-document.getElementById('fill-rest').addEventListener('click',()=>{const used=usedInCurrentBar(draftNotes),remaining=4-used;if(remaining>.0001){draftNotes.push({pitch:'rest',beats:Number(remaining.toFixed(2))});renderDraft()}});
+document.getElementById('fill-rest').addEventListener('click',()=>{let remaining=Number((4-usedInCurrentBar(draftNotes)).toFixed(2));for(const part of [2,1,.5,.25])while(remaining>=part-.0001){draftNotes.push({pitch:'rest',beats:part});remaining=Number((remaining-part).toFixed(2))}renderDraft()});
 document.getElementById('remove-note').addEventListener('click',()=>{draftNotes.pop();renderDraft()});
 document.getElementById('clear-draft').addEventListener('click',()=>{draftNotes=[];renderDraft()});
 tempoInput.addEventListener('input',renderDraft);
