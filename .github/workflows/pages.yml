@@ -147,6 +147,28 @@ jobs:
                   "digest": hashlib.sha256(raw_bytes).hexdigest(),
               }
 
+          def parse_pixel_art(path, raw_bytes):
+              try:
+                  text = raw_bytes.decode("utf-8")
+              except UnicodeDecodeError:
+                  return None
+              rows = [line for line in text.splitlines() if line.strip()]
+              if not 1 <= len(rows) <= 32:
+                  return None
+              width = len(rows[0])
+              if not 1 <= width <= 32:
+                  return None
+              allowed = set(".#@+*")
+              if any(len(row) != width or any(char not in allowed for char in row) for row in rows):
+                  return None
+              return {
+                  "path": path,
+                  "width": width,
+                  "height": len(rows),
+                  "rows": rows,
+                  "digest": hashlib.sha256(raw_bytes).hexdigest(),
+              }
+
           root = Path.cwd()
           site = root / "_site"
           site.mkdir(exist_ok=True)
@@ -288,6 +310,19 @@ jobs:
               scores.append(score)
           scores.sort(key=lambda item: item["path"])
 
+          pixels_dir = root / "pixels"
+          pixels_dir.mkdir(exist_ok=True)
+          pixels = []
+          for path in sorted(pixels_dir.rglob("*.txt")):
+              if not path.is_file() or path.is_symlink():
+                  continue
+              relative = path.relative_to(root).as_posix()
+              art = parse_pixel_art(relative, path.read_bytes())
+              if art is None:
+                  print(f"Skipping invalid pixel art {relative}: expected a rectangular grid using . # @ + *.")
+                  continue
+              pixels.append(art)
+
           sounds_by_path = {item["path"]: item for item in sounds}
           transformations_dir = root / "transformations"
           transformations_dir.mkdir(exist_ok=True)
@@ -363,7 +398,7 @@ jobs:
                   "digest": hashlib.sha256(path.read_bytes() + b"\\0" + source_fingerprint).hexdigest(),
               })
 
-          trace_paths = set(items) | {item["path"] for item in couplets} | {item["path"] for item in colors} | {item["path"] for item in vectors} | {item["path"] for item in transformations} | {item["path"] for item in sounds}
+          trace_paths = set(items) | {item["path"] for item in couplets} | {item["path"] for item in colors} | {item["path"] for item in vectors} | {item["path"] for item in transformations} | {item["path"] for item in sounds} | {item["path"] for item in pixels}
           links_dir = root / "links"
           links_dir.mkdir(exist_ok=True)
           links = []
@@ -405,13 +440,14 @@ jobs:
               "transformations": transformations,
               "sounds": sounds,
               "scores": scores,
+              "pixels": pixels,
               "links": links,
           }
           (site / "manifest.json").write_text(
               json.dumps(manifest, ensure_ascii=False, separators=(",", ":")) + "\n",
               encoding="utf-8",
           )
-          print(f"Indexed {len(items)} presence file(s), {len(couplets)} couplet(s), {len(colors)} color trace(s), {len(vectors)} vector trace(s), {len(transformations)} transformation(s), {len(sounds)} sound trace(s), {len(scores)} score trace(s), and {len(links)} connection(s).")
+          print(f"Indexed {len(items)} presence file(s), {len(couplets)} couplet(s), {len(colors)} color trace(s), {len(vectors)} vector trace(s), {len(transformations)} transformation(s), {len(sounds)} sound trace(s), {len(scores)} score trace(s), {len(pixels)} pixel-art trace(s), and {len(links)} connection(s).")
 
           history_rows = subprocess.check_output(
               ["git", "log", "--first-parent", "-n", "40", "--format=%H%x09%cI%x09%s"],
@@ -465,6 +501,13 @@ jobs:
                       if path.startswith("vectors/")
                       and path.lower().endswith(".svg")
                   ]
+                  history_pixels = []
+                  for path in sorted(members):
+                      if not path.startswith("pixels/") or not path.endswith(".txt"):
+                          continue
+                      art = parse_pixel_art(path, read_member(path))
+                      if art is not None:
+                          history_pixels.append(art)
                   history_couplets_by_path = {item["path"]: item["text"] for item in history_couplets}
                   history_sounds = []
                   for path in sorted(members):
@@ -594,6 +637,7 @@ jobs:
                       | {item["path"] for item in history_vectors}
                       | {item["path"] for item in history_transformations}
                       | {item["path"] for item in history_sounds}
+                      | {item["path"] for item in history_pixels}
                   )
                   history_links = []
                   for path in sorted(members):
@@ -630,6 +674,7 @@ jobs:
                       "transformations": history_transformations,
                       "sounds": history_sounds,
                       "scores": history_scores,
+                      "pixels": history_pixels,
                       "links": history_links,
                   })
 
