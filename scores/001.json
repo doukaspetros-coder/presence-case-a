@@ -1,0 +1,83 @@
+{
+  "title": "A small beginning",
+  "tempo": 96,
+  "meter": "4/4",
+  "measures": [
+    {
+      "notes": [
+        {
+          "pitch": "C4",
+          "beats": 1
+        },
+        {
+          "pitch": "E4",
+          "beats": 1
+        },
+        {
+          "pitch": "G4",
+          "beats": 1
+        },
+        {
+          "pitch": "E4",
+          "beats": 1
+        }
+      ]
+    },
+    {
+      "notes": [
+        {
+          "pitch": "D4",
+          "beats": 1
+        },
+        {
+          "pitch": "F4",
+          "beats": 1
+        },
+        {
+          "pitch": "A4",
+          "beats": 1
+        },
+        {
+          "pitch": "F4",
+          "beats": 1
+        }
+      ]
+    },
+    {
+      "notes": [
+        {
+          "pitch": "E4",
+          "beats": 1
+        },
+        {
+          "pitch": "G4",
+          "beats": 1
+        },
+        {
+          "pitch": "B4",
+          "beats": 1
+        },
+        {
+          "pitch": "G4",
+          "beats": 1
+        }
+      ]
+    },
+    {
+      "notes": [
+        {
+          "pitch": "C5",
+          "beats": 2
+        },
+        {
+          "pitch": "G4",
+          "beats": 1
+        },
+        {
+          "pitch": "C4",
+          "beats": 1
+        }
+      ]
+    }
+  ]
+}
