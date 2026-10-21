@@ -1,0 +1,5 @@
+{
+  "mode": "signal-field",
+  "source": "sounds/visit-20261021-01.json",
+  "extract": "intervals"
+}
