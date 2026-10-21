@@ -305,6 +305,7 @@ const title=document.createElement('div');title.className='image-title';card.app
 const description=document.createElement('div');description.className='external-source-description';card.appendChild(description);
 const meta=document.createElement('div');meta.className='external-source-meta';card.appendChild(meta);
 const foot=document.createElement('div');foot.className='external-source-foot';
+const resource=document.createElement('a');resource.className='external-source-origin';resource.target='_blank';resource.rel='noopener noreferrer';resource.referrerPolicy='no-referrer';resource.textContent='OPEN RESOURCE ↗';foot.appendChild(resource);
 const origin=document.createElement('a');origin.className='external-source-origin';origin.target='_blank';origin.rel='noopener noreferrer';origin.referrerPolicy='no-referrer';origin.textContent='SOURCE PAGE ↗';foot.appendChild(origin);card.appendChild(foot);
 board.appendChild(card);sourceNodes.set(item.path,card);
 }
@@ -319,7 +320,7 @@ card.querySelector('.image-title').textContent=item.title||'';
 card.querySelector('.external-source-description').textContent=item.description||'';
 const details=[item.creator?'BY '+item.creator:'',item.license?'LICENSE '+item.license:''].filter(Boolean);
 card.querySelector('.external-source-meta').textContent=details.join(' · ');
-const origin=card.querySelector('.external-source-origin');origin.href=item.page||item.url;origin.hidden=!item.page||item.page===item.url;
+const footerLinks=card.querySelectorAll('.external-source-origin');footerLinks[0].href=item.url;footerLinks[1].href=item.page||item.url;footerLinks[1].hidden=!item.page||item.page===item.url;
 if(changed.has(item.path))flash(card,'changed');
 }
 sourceCountNode.textContent=String(entries.length);
