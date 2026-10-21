@@ -88,7 +88,7 @@ const grid=node('path',{d:Array.from({length:65},(_,n)=>'M '+n+' 0 V 64').join('
 svg.appendChild(grid);
 layerList.replaceChildren();
 for(const item of [...entries].sort((a,b)=>a.path.localeCompare(b.path))){
-const link=document.createElement('a');link.href='https://github.com/doukaspetros-coder/presence-case-a/blob/main/'+item.path.split('/').map(encodeURIComponent).join('/');link.target='_blank';link.rel='noopener noreferrer';link.textContent=item.path;link.title='Open this canvas layer in GitHub';layerList.appendChild(link);
+const link=document.createElement('a');const sourcePath=item.generated_from||item.path;link.href='https://github.com/doukaspetros-coder/presence-case-a/blob/main/'+sourcePath.split('/').map(encodeURIComponent).join('/');link.target='_blank';link.rel='noopener noreferrer';link.textContent=item.path;link.title=item.generated_from?'Generated from '+item.generated_from+'; open its source sound in GitHub':'Open this canvas layer in GitHub';layerList.appendChild(link);
 }
 count.textContent=entries.length+' layer'+(entries.length===1?'':'s');
 }
