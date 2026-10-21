@@ -177,6 +177,39 @@ jobs:
                   "digest": hashlib.sha256(raw_bytes).hexdigest(),
               }
 
+          def build_pixel_sound(source_art, payload):
+              waveform = payload.get("waveform", "triangle")
+              gap = payload.get("gap", 0.08)
+              gain = payload.get("gain", 0.055)
+              if waveform not in {"sine", "triangle", "square", "sawtooth"}:
+                  return None
+              if (not isinstance(gap, (int, float)) or isinstance(gap, bool)
+                  or not 0 <= gap <= 0.5
+                  or not isinstance(gain, (int, float)) or isinstance(gain, bool)
+                  or not 0.01 <= gain <= 0.16):
+                  return None
+              notes = []
+              for column in range(source_art["width"]):
+                  ys = [
+                      source_art["y"] + row_index
+                      for row_index, row in enumerate(source_art["rows"])
+                      if row[column] in "#@+*"
+                  ]
+                  if not ys:
+                      continue
+                  center_y = sum(ys) / len(ys)
+                  frequency = max(70.0, min(1600.0, 880.0 * (2.0 ** (-center_y / 21.0))))
+                  duration = min(0.8, 0.12 + 0.04 * max(0, len(ys) - 1))
+                  notes.append({"frequency": round(frequency, 2), "duration": round(duration, 2)})
+              if not notes:
+                  return None
+              return {
+                  "waveform": waveform,
+                  "gap": float(gap),
+                  "gain": float(gain),
+                  "notes": notes[:64],
+              }
+
           root = Path.cwd()
           site = root / "_site"
           site.mkdir(exist_ok=True)
@@ -334,6 +367,8 @@ jobs:
               pixels.append(art)
 
           sounds_by_path = {item["path"]: item for item in sounds}
+          pixels_by_path = {item["path"]: item for item in pixels}
+          derived_sounds = []
           transformations_dir = root / "transformations"
           transformations_dir.mkdir(exist_ok=True)
           transformations = []
@@ -351,6 +386,31 @@ jobs:
                   continue
               mode = payload.get("mode")
               source = payload.get("source")
+              if mode == "pixel-sound":
+                  if not isinstance(source, str) or source not in pixels_by_path:
+                      print(f"Skipping unresolved transformation {relative}: source must be an existing pixel layer.")
+                      continue
+                  sound = build_pixel_sound(pixels_by_path[source], payload)
+                  if sound is None:
+                      print(f"Skipping invalid pixel-sound transformation {relative}: check waveform, gap, gain, and visible pixels.")
+                      continue
+                  source_fingerprint = str(pixels_by_path[source]["digest"]).encode("utf-8")
+                  digest = hashlib.sha256(path.read_bytes() + b"\\0" + source_fingerprint).hexdigest()
+                  transformations.append({
+                      "path": relative,
+                      "mode": "pixel-sound",
+                      "source": source,
+                      **sound,
+                      "digest": digest,
+                  })
+                  derived_sounds.append({
+                      "path": relative,
+                      "mode": "sequence",
+                      "source": source,
+                      **sound,
+                      "digest": digest,
+                  })
+                  continue
               if mode == "text-particles":
                   if not isinstance(source, str) or source not in couplets_by_path:
                       print(f"Skipping unresolved transformation {relative}: source must be an existing couplet.")
@@ -408,6 +468,7 @@ jobs:
                   "digest": hashlib.sha256(path.read_bytes() + b"\\0" + source_fingerprint).hexdigest(),
               })
 
+          sounds.extend(derived_sounds)
           trace_paths = set(items) | {item["path"] for item in couplets} | {item["path"] for item in colors} | {item["path"] for item in vectors} | {item["path"] for item in transformations} | {item["path"] for item in sounds} | {item["path"] for item in pixels}
           links_dir = root / "links"
           links_dir.mkdir(exist_ok=True)
@@ -518,6 +579,7 @@ jobs:
                       art = parse_pixel_art(path, read_member(path))
                       if art is not None:
                           history_pixels.append(art)
+                  history_pixels_by_path = {item["path"]: item for item in history_pixels}
                   history_couplets_by_path = {item["path"]: item["text"] for item in history_couplets}
                   history_sounds = []
                   for path in sorted(members):
@@ -590,6 +652,29 @@ jobs:
                           continue
                       mode = payload.get("mode")
                       source = payload.get("source")
+                      if mode == "pixel-sound":
+                          if not isinstance(source, str) or source not in history_pixels_by_path:
+                              continue
+                          sound = build_pixel_sound(history_pixels_by_path[source], payload)
+                          if sound is None:
+                              continue
+                          source_fingerprint = str(history_pixels_by_path[source]["digest"]).encode("utf-8")
+                          digest = hashlib.sha256(raw_transform + b"\\0" + source_fingerprint).hexdigest()
+                          history_transformations.append({
+                              "path": path,
+                              "mode": "pixel-sound",
+                              "source": source,
+                              **sound,
+                              "digest": digest,
+                          })
+                          history_sounds.append({
+                              "path": path,
+                              "mode": "sequence",
+                              "source": source,
+                              **sound,
+                              "digest": digest,
+                          })
+                          continue
                       if mode == "text-particles":
                           if not isinstance(source, str) or source not in history_couplets_by_path:
                               continue
