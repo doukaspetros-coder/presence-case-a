@@ -1,0 +1,7 @@
+{
+  "mode": "pixel-sound",
+  "source": "pixels/030-where-the-light-went.txt",
+  "waveform": "triangle",
+  "gap": 0.06,
+  "gain": 0.05
+}
