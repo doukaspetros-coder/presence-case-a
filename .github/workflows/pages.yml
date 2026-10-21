@@ -527,6 +527,34 @@ jobs:
               })
 
           sounds.extend(derived_sounds)
+          # This connection also defines a sound-to-pixel transformation.
+          sound_pixel_link_path = "links/sound-to-pixels-013.json"
+          if (root / sound_pixel_link_path).is_file():
+              try:
+                  sound_pixel_link = json.loads((root / sound_pixel_link_path).read_text(encoding="utf-8"))
+              except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+                  sound_pixel_link = {}
+              source_sound_path = sound_pixel_link.get("from")
+              target_pixel_path = sound_pixel_link.get("to")
+              if (isinstance(source_sound_path, str) and source_sound_path in sounds_by_path
+                  and isinstance(target_pixel_path, str) and target_pixel_path in pixels_by_path):
+                  art = build_sound_pixels(sounds_by_path[source_sound_path], {"x": 27, "y": 24}, target_pixel_path)
+                  if art is not None:
+                      digest = hashlib.sha256(
+                          (root / sound_pixel_link_path).read_bytes()
+                          + b"\\0" + str(sounds_by_path[source_sound_path]["digest"]).encode("utf-8")
+                      ).hexdigest()
+                      art["digest"] = digest
+                      pixels = [item for item in pixels if item["path"] != target_pixel_path] + [art]
+                      pixels.sort(key=lambda item: item["path"])
+                      pixels_by_path = {item["path"]: item for item in pixels}
+                      transformations.append({
+                          "path": sound_pixel_link_path, "mode": "sound-pixels",
+                          "source": source_sound_path, "target": target_pixel_path,
+                          "x": art["x"], "y": art["y"], "width": art["width"], "height": art["height"],
+                          "rows": art["rows"], "digest": digest,
+                      })
+
           trace_paths = set(items) | {item["path"] for item in couplets} | {item["path"] for item in colors} | {item["path"] for item in vectors} | {item["path"] for item in transformations} | {item["path"] for item in sounds} | {item["path"] for item in pixels}
           links_dir = root / "links"
           links_dir.mkdir(exist_ok=True)
@@ -801,6 +829,32 @@ jobs:
                           "values": values,
                           "digest": hashlib.sha256(raw_transform + b"\\0" + source_fingerprint).hexdigest(),
                       })
+                  sound_pixel_link_path = "links/sound-to-pixels-013.json"
+                  if sound_pixel_link_path in members:
+                      try:
+                          sound_pixel_link = json.loads(read_member(sound_pixel_link_path).decode("utf-8"))
+                      except (UnicodeDecodeError, json.JSONDecodeError):
+                          sound_pixel_link = {}
+                      source_sound_path = sound_pixel_link.get("from")
+                      target_pixel_path = sound_pixel_link.get("to")
+                      if (isinstance(source_sound_path, str) and source_sound_path in history_sounds_by_path
+                          and isinstance(target_pixel_path, str) and target_pixel_path in history_pixels_by_path):
+                          art = build_sound_pixels(history_sounds_by_path[source_sound_path], {"x": 27, "y": 24}, target_pixel_path)
+                          if art is not None:
+                              digest = hashlib.sha256(
+                                  read_member(sound_pixel_link_path)
+                                  + b"\\0" + str(history_sounds_by_path[source_sound_path]["digest"]).encode("utf-8")
+                              ).hexdigest()
+                              art["digest"] = digest
+                              history_pixels = [item for item in history_pixels if item["path"] != target_pixel_path] + [art]
+                              history_pixels.sort(key=lambda item: item["path"])
+                              history_pixels_by_path = {item["path"]: item for item in history_pixels}
+                              history_transformations.append({
+                                  "path": sound_pixel_link_path, "mode": "sound-pixels",
+                                  "source": source_sound_path, "target": target_pixel_path,
+                                  "x": art["x"], "y": art["y"], "width": art["width"], "height": art["height"],
+                                  "rows": art["rows"], "digest": digest,
+                              })
                   history_trace_paths = (
                       set(history_items)
                       | {item["path"] for item in history_couplets}
