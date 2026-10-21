@@ -1,0 +1,7 @@
+{
+  "mode": "pixel-sound",
+  "source": "pixels/017-inside-the-middle.txt",
+  "waveform": "sine",
+  "gap": 0.08,
+  "gain": 0.05
+}

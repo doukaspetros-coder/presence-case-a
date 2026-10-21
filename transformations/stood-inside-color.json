@@ -1,0 +1,5 @@
+{
+  "mode": "score-color",
+  "source": "scores/stood-inside.txt",
+  "target": "colors/derived-stood-inside.txt"
+}
