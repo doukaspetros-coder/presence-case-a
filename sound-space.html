@@ -34,6 +34,7 @@ h1{font-size:clamp(28px,5vw,54px);font-weight:400;letter-spacing:-.06em;margin:1
 .empty{padding:32px;border:1px dashed var(--line);color:var(--muted);line-height:1.8}
 footer{margin-top:36px;color:var(--muted);font-size:10px;line-height:1.8}
 #visual{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.24}
+.connections{margin:28px 0 34px}.connection{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,.8fr);gap:18px;padding:18px;border:1px solid rgba(228,205,161,.28);background:rgba(13,17,27,.72)}.connection h2{font-size:11px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;margin:0 0 10px}.connection p{color:#a5afbf;font-size:11px;line-height:1.8}.connection .pixel-view{display:block;width:100%;max-width:300px;aspect-ratio:1;background:#0a0e17;border:1px solid var(--line);image-rendering:pixelated}.connection .pixel-label{margin-top:9px;color:var(--muted);font-size:10px;overflow-wrap:anywhere}.connection .play{margin-top:10px}.connection .missing{color:var(--muted);font-size:11px;line-height:1.8;padding:18px;border:1px dashed var(--line)}@media(max-width:620px){.connection{grid-template-columns:1fr}.connection .pixel-view{max-width:100%;width:min(100%,360px)}}
 @keyframes appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:540px){nav{top:8px;left:8px}nav a,.control{padding:8px;font-size:9px}main{padding-top:86px}.track{padding:14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
@@ -53,6 +54,10 @@ footer{margin-top:36px;color:var(--muted);font-size:10px;line-height:1.8}
       <button class="control" id="stop">STOP</button>
     </div>
   </div>
+  <section class="connections" aria-live="polite" aria-label="Connected sound and pixel traces">
+    <div class="kicker" style="margin-bottom:10px">One trace · two forms</div>
+    <div id="connections"><div class="empty">Looking for connected sound and pixel traces…</div></div>
+  </section>
   <section id="tracks" aria-live="polite"><div class="empty">Listening for the shared sound traces…</div></section>
   <footer>
     The sequences are read from <code>manifest.json</code>, built from <code>sounds/*.json</code> in the repository. A new persistent sound trace is a small JSON file; the website itself does not write to GitHub.
@@ -72,6 +77,29 @@ function later(fn,ms){const id=setTimeout(()=>{timers.delete(id);fn()},ms);timer
 function stopAll(){for(const id of timers)clearTimeout(id);timers.clear();for(const item of active){try{item.stop()}catch{}}active.clear();document.querySelectorAll('.play').forEach(b=>b.setAttribute('aria-pressed','false'));document.querySelectorAll('.note.playing').forEach(n=>n.classList.remove('playing'))}
 function playNote(freq,duration,wave,gain){const now=audio.currentTime;const osc=audio.createOscillator(),amp=audio.createGain();osc.type=wave;osc.frequency.setValueAtTime(freq,now);amp.gain.setValueAtTime(.0001,now);amp.gain.exponentialRampToValueAtTime(Math.max(.008,gain),now+.018);amp.gain.setValueAtTime(Math.max(.008,gain),now+duration*.65);amp.gain.exponentialRampToValueAtTime(.0001,now+duration);osc.connect(amp);amp.connect(master);osc.start(now);osc.stop(now+duration+.02);active.add(osc);osc.onended=()=>active.delete(osc)}
 async function playTrack(track,index,offset=0){await ensureAudio();const card=document.querySelector('[data-path="'+CSS.escape(track.path)+'"]');const button=card?.querySelector('.play');button?.setAttribute('aria-pressed','true');let at=offset;track.notes.forEach((note,i)=>{later(()=>{if(!audio)return;playNote(note.frequency,note.duration,track.waveform||'sine',track.gain||.08);const el=card?.querySelector('[data-note="'+i+'"]');if(el){el.classList.add('playing');later(()=>el.classList.remove('playing'),note.duration*1000)}},at*1000);at+=note.duration+(track.gap??.06)});later(()=>button?.setAttribute('aria-pressed','false'),at*1000+150)}
+function renderConnections(data){
+const host=document.getElementById('connections');host.replaceChildren();
+const links=Array.isArray(data.links)?data.links:[];
+const pixels=Array.isArray(data.pixels)?data.pixels:[];
+const soundsList=Array.isArray(data.sounds)?data.sounds:[];
+const linked=links.map(link=>({link,pixel:pixels.find(p=>p.path===link.to),sound:soundsList.find(t=>t.path===link.from)})).filter(x=>x.pixel&&x.sound);
+if(!linked.length){const e=document.createElement('div');e.className='missing';e.textContent='No connected sound/pixel pair is available in the current manifest yet.';host.append(e);return}
+const palette={'#':'#a5c8f4','@':'#e4cda1','+':'#9fc9b1','*':'#d8a7e0'};
+for(const pair of linked){
+const card=document.createElement('article');card.className='connection';
+const left=document.createElement('div');
+const heading=document.createElement('h2');heading.textContent='Sound → pixel field';left.append(heading);
+const explanation=document.createElement('p');explanation.textContent='The note frequencies determine the vertical positions of the points. This picture is generated from the sound data when the site is published; it is not a live microphone waveform.';left.append(explanation);
+const soundName=document.createElement('div');soundName.className='track-name';soundName.textContent=pair.sound.path;left.append(soundName);
+const button=document.createElement('button');button.className='play';button.textContent='PLAY THIS SOUND';button.addEventListener('click',()=>playTrack(pair.sound,0));left.append(button);
+const right=document.createElement('div');
+const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 64 64');svg.setAttribute('role','img');svg.setAttribute('aria-label','Pixel field generated from the connected sound');svg.classList.add('pixel-view');
+const bg=document.createElementNS(svg.namespaceURI,'rect');for(const [k,v] of Object.entries({x:0,y:0,width:64,height:64,fill:'#0a0e17'}))bg.setAttribute(k,v);svg.append(bg);
+(pair.pixel.rows||[]).forEach((row,dy)=>{for(let dx=0;dx<row.length;dx++){const ch=row[dx];if(ch==='.'||ch==='-')continue;const color=palette[ch];if(!color)continue;const rect=document.createElementNS(svg.namespaceURI,'rect');rect.setAttribute('x',pair.pixel.x+dx);rect.setAttribute('y',pair.pixel.y+dy);rect.setAttribute('width','1');rect.setAttribute('height','1');rect.setAttribute('fill',color);svg.append(rect)}});
+right.append(svg);const label=document.createElement('div');label.className='pixel-label';label.textContent=pair.pixel.path;right.append(label);
+const linkNote=document.createElement('div');linkNote.className='pixel-label';linkNote.textContent='Connected by '+pair.link.path;right.append(linkNote);
+card.append(left,right);host.append(card);
+}}
 function render(list){sounds=list;countNode.textContent=list.length;tracksNode.replaceChildren();if(!list.length){const e=document.createElement('div');e.className='empty';e.textContent='No sound traces yet. An empty space is also a possible state.';tracksNode.append(e);return}
 for(const track of list){const card=document.createElement('article');card.className='track';card.dataset.path=track.path;
 const head=document.createElement('div');head.className='track-head';const left=document.createElement('div');const name=document.createElement('div');name.className='track-name';name.textContent=track.path;const sub=document.createElement('div');sub.className='track-sub';sub.textContent=(track.notes||[]).length+' notes · '+(track.waveform||'sine')+' wave';left.append(name,sub);
@@ -79,7 +107,7 @@ const btn=document.createElement('button');btn.className='play';btn.textContent=
 const timeline=document.createElement('div');timeline.className='timeline';(track.notes||[]).forEach((note,i)=>{const el=document.createElement('span');el.className='note';el.dataset.note=i;el.title=Math.round(note.frequency)+' Hz · '+note.duration+' s';el.style.setProperty('--h',Math.max(10,Math.min(62,9+Math.log2(note.frequency/65)*8))+'px');el.style.flexGrow=String(Math.max(.5,note.duration));timeline.append(el)});card.append(timeline);
 const meta=document.createElement('div');meta.className='meta';const first=document.createElement('span');first.textContent='LOW '+Math.round(Math.min(...track.notes.map(n=>n.frequency)))+' Hz';const last=document.createElement('span');last.textContent='HIGH '+Math.round(Math.max(...track.notes.map(n=>n.frequency)))+' Hz';meta.append(first,last);card.append(meta);tracksNode.append(card)}
 }
-async function sync(){try{const response=await fetch('./manifest.json?ts='+Date.now(),{cache:'no-store'});if(!response.ok)throw Error('Manifest HTTP '+response.status);const data=await response.json();const list=Array.isArray(data.sounds)?data.sounds:[];const digest=JSON.stringify(list.map(s=>[s.path,s.digest]));if(digest!==manifestDigest){manifestDigest=digest;render(list)}updatedNode.textContent='Synced with repository commit '+String(data.commit||'').slice(0,7)+' · '+new Date().toLocaleTimeString();}catch(error){updatedNode.textContent='Sync unavailable: '+error.message}}
+async function sync(){try{const response=await fetch('./manifest.json?ts='+Date.now(),{cache:'no-store'});if(!response.ok)throw Error('Manifest HTTP '+response.status);const data=await response.json();const list=Array.isArray(data.sounds)?data.sounds:[];const digest=JSON.stringify([list.map(s=>[s.path,s.digest]),(data.pixels||[]).map(p=>[p.path,p.digest]),(data.links||[]).map(l=>[l.from,l.to,l.digest])]);if(digest!==manifestDigest){manifestDigest=digest;render(list);renderConnections(data)}updatedNode.textContent='Synced with repository commit '+String(data.commit||'').slice(0,7)+' · '+new Date().toLocaleTimeString();}catch(error){updatedNode.textContent='Sync unavailable: '+error.message}}
 document.getElementById('play-field').addEventListener('click',async()=>{stopAll();try{await ensureAudio();let offset=0;for(const track of sounds){playTrack(track,0,offset);offset+=track.notes.reduce((sum,n)=>sum+n.duration+(track.gap??.06),0)+.35}}catch(error){updatedNode.textContent=error.message}});
 document.getElementById('stop').addEventListener('click',stopAll);
 sync();setInterval(sync,3000);
