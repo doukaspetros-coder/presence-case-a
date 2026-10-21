@@ -90,15 +90,23 @@ const px=Math.round(index*(pair.pixel.width-1)/Math.max(1,notes.length-1));
 const py=pair.pixel.height-1-Math.round(normalized*(pair.pixel.height-1));
 return {x:pair.pixel.x+px+.5,y:pair.pixel.y+py+.5};
 });
+const trail=document.createElementNS(svg.namespaceURI,'path');
+trail.setAttribute('fill','none');trail.setAttribute('stroke','#e4cda1');trail.setAttribute('stroke-width','.42');trail.setAttribute('stroke-linecap','round');trail.setAttribute('stroke-linejoin','round');trail.setAttribute('opacity','.95');
+svg.insertBefore(trail,marker);
+let trailPoints=[];
 function moveBetween(from,to,duration){
 if(!to||duration<=0)return;
 const start=performance.now();
 function step(now){
 if(token!==playbackToken)return;
 const t=Math.min(1,(now-start)/duration);
-marker.setAttribute('cx',from.x+(to.x-from.x)*t);
-marker.setAttribute('cy',from.y+(to.y-from.y)*t);
+const current={x:from.x+(to.x-from.x)*t,y:from.y+(to.y-from.y)*t};
+marker.setAttribute('cx',current.x);
+marker.setAttribute('cy',current.y);
+const pathPoints=trailPoints.concat([current]);
+trail.setAttribute('d',pathPoints.map((point,index)=>(index?'L':'M')+point.x+' '+point.y).join(' '));
 if(t<1){const id=requestAnimationFrame(next=>{animationFrames.delete(id);step(next)});animationFrames.add(id)}
+else trailPoints.push(to);
 }
 step(start);
 }
@@ -111,6 +119,7 @@ const point=points[index];
 marker.setAttribute('cx',point.x);
 marker.setAttribute('cy',point.y);
 playNote(note.frequency,note.duration,pair.sound.waveform||'sine',pair.sound.gain||.08);
+if(index===0)trailPoints=[point];
 moveBetween(point,points[index+1],segmentMs);
 },at*1000);
 at+=note.duration+(pair.sound.gap??.06);
