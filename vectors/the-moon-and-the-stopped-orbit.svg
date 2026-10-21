@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <rect width="240" height="240" fill="#10182b"/>
+  <circle cx="30" cy="40" r="1.6" fill="#9fc6e8"/>
+  <circle cx="70" cy="26" r="1.2" fill="#9fc6e8"/>
+  <circle cx="180" cy="60" r="1.4" fill="#9fc6e8"/>
+  <circle cx="205" cy="150" r="1.2" fill="#e8a0b8"/>
+  <circle cx="24" cy="160" r="1.4" fill="#9fc6e8"/>
+  <ellipse cx="120" cy="120" rx="78" ry="46" fill="none" stroke="#9fe0c8" stroke-width="1.4" stroke-dasharray="3 6" transform="rotate(-18 120 120)"/>
+  <circle cx="120" cy="120" r="3" fill="#e8a0b8"/>
+  <mask id="mooncut">
+    <rect width="240" height="240" fill="white"/>
+    <circle cx="110" cy="78" r="20" fill="black"/>
+  </mask>
+  <circle cx="120" cy="86" r="22" fill="#e8c766" mask="url(#mooncut)"/>
+</svg>
