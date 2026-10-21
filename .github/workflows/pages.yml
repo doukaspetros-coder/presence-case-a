@@ -36,6 +36,7 @@ jobs:
         run: |
           python3 - <<'PY'
           import hashlib
+          import colorsys
           import io
           import json
           import math
@@ -424,6 +425,38 @@ jobs:
                   continue
               mode = payload.get("mode")
               source = payload.get("source")
+              if mode == "score-color":
+                  target = payload.get("target")
+                  score_by_path = {item["path"]: item for item in scores}
+                  if (not isinstance(source, str) or source not in score_by_path
+                      or not isinstance(target, str) or not target.startswith("colors/") or not target.endswith(".txt")):
+                      print(f"Skipping unresolved score-color transformation {relative}: source score and colors/ target must exist.")
+                      continue
+                  pitches = []
+                  for measure in score_by_path[source]["measures"]:
+                      for note in measure["notes"]:
+                          pitch = note["pitch"]
+                          if pitch == "rest":
+                              continue
+                          match = re.fullmatch(r"([A-G])(#|b)?([3-6])", pitch)
+                          if not match:
+                              continue
+                          semitone = {"C":0,"D":2,"E":4,"F":5,"G":7,"A":9,"B":11}[match.group(1)]
+                          semitone += 1 if match.group(2) == "#" else -1 if match.group(2) == "b" else 0
+                          pitches.append((int(match.group(3)) + 1) * 12 + semitone)
+                  if not pitches:
+                      print(f"Skipping score-color transformation {relative}: source score has no pitched notes.")
+                      continue
+                  mean_pitch = sum(pitches) / len(pitches)
+                  hue = (mean_pitch * 7.0) % 360.0
+                  red, green, blue = colorsys.hls_to_rgb(hue / 360.0, 0.62, 0.48)
+                  color = "#{:02x}{:02x}{:02x}".format(round(red*255), round(green*255), round(blue*255))
+                  colors = [item for item in colors if item["path"] != target]
+                  colors.append({"path": target, "color": color, "generated_from": source,
+                                 "digest": hashlib.sha256(path.read_bytes() + str(score_by_path[source]["digest"]).encode("utf-8")).hexdigest()})
+                  transformations.append({"path": relative, "mode": mode, "source": source, "target": target,
+                                           "color": color, "digest": hashlib.sha256(path.read_bytes() + str(score_by_path[source]["digest"]).encode("utf-8")).hexdigest()})
+                  continue
               if mode == "sound-pixels":
                   target = payload.get("target")
                   if not isinstance(source, str) or source not in sounds_by_path or not isinstance(target, str) or target not in pixels_by_path:
