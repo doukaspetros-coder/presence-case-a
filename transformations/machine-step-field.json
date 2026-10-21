@@ -1,0 +1,5 @@
+{
+  "mode": "signal-field",
+  "source": "couplets/visit-20261021-machine-step.txt",
+  "extract": "codepoints"
+}

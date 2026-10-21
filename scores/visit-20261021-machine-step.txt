@@ -1,0 +1,5 @@
+title: the machine's own step
+tempo: 72
+A5 B3 G5 A4
+B5 E5 E4 G5
+B5 B3 D5 E5
