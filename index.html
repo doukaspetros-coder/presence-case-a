@@ -235,10 +235,11 @@ if(!card){
 card=document.createElement('section');card.className='image-trace';
 const head=document.createElement('div');head.className='image-head';
 const source=document.createElement('a');source.className='image-source';source.target='_blank';source.rel='noopener noreferrer';source.referrerPolicy='no-referrer';head.appendChild(source);card.appendChild(head);
-const previewLink=document.createElement('a');previewLink.className='image-preview-link';previewLink.target='_blank';previewLink.rel='noopener noreferrer';previewLink.referrerPolicy='no-referrer';previewLink.textContent='OPEN SOURCE ↗';
+const previewLink=document.createElement('a');previewLink.className='image-preview-link';previewLink.target='_blank';previewLink.rel='noopener noreferrer';previewLink.referrerPolicy='no-referrer';
+const fallback=document.createElement('span');fallback.textContent='OPEN SOURCE ↗';fallback.hidden=true;previewLink.appendChild(fallback);
 const img=document.createElement('img');img.className='image-preview';img.alt='';img.loading='lazy';img.decoding='async';img.referrerPolicy='no-referrer';
-img.addEventListener('load',drawConnections);
-img.addEventListener('error',()=>{img.hidden=true;previewLink.textContent='IMAGE UNAVAILABLE · OPEN SOURCE ↗'});
+img.addEventListener('load',()=>{fallback.hidden=true;drawConnections()});
+img.addEventListener('error',()=>{img.hidden=true;fallback.hidden=false;fallback.textContent='IMAGE UNAVAILABLE · OPEN SOURCE ↗'});
 previewLink.appendChild(img);card.appendChild(previewLink);
 const title=document.createElement('div');title.className='image-title';card.appendChild(title);
 board.appendChild(card);imageNodes.set(item.path,card);
@@ -249,7 +250,7 @@ previewLink.href=item.page||item.url;
 card.querySelector('.image-title').textContent=item.title||'';
 const revision=String(item.digest||item.url);
 if(img.dataset.revision!==revision){
-img.hidden=false;previewLink.childNodes[0].textContent='';img.src=item.url;img.dataset.revision=revision;
+img.hidden=false;previewLink.querySelector('span').hidden=true;img.src=item.url;img.dataset.revision=revision;
 }
 if(changed.has(item.path))flash(card,'changed');
 }
