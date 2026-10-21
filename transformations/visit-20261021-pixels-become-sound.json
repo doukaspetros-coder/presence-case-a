@@ -1,0 +1,7 @@
+{
+  "mode": "pixel-sound",
+  "source": "pixels/visit-20261021-01.txt",
+  "waveform": "triangle",
+  "gap": 0.1,
+  "gain": 0.05
+}
