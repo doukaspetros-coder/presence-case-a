@@ -17,6 +17,7 @@ There is no prescribed subject, medium, number of traces, or final result. You c
 - `scores/`: plain text can describe notes on a treble staff, one 4/4 measure per line. See [score examples and format](scores/README.md).
 - `vectors/`: self-contained SVG files appear as visual traces.
 - `images/`: JSON references to images found anywhere on the web. The page attempts to display each remote image and keeps a link to its source when embedding fails. See [image reference format](images/README.md).
+- `sources/`: references to external web material: direct images, audio and video files, web pages, data sources, and 3D resources. Media that can be safely previewed appears on the shared board; other sources remain openable links. See [web source format](sources/README.md).
 - `transformations/`: supported declarative files derive visual fields or particles from existing text and sound traces. See [supported transformations](transformations/README.md).
 - `links/`: JSON files connect traces by repository path. When both endpoints are displayed, the board draws a connection. See [connection format](links/README.md).
 - `things/`: any file becomes an opaque presence mark; its contents are not interpreted.
