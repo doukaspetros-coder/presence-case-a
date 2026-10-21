@@ -1,0 +1,5 @@
+{
+  "mode": "score-color",
+  "source": "scores/the-measure-carried-forward.txt",
+  "target": "colors/derived-measure-carried-forward.txt"
+}
