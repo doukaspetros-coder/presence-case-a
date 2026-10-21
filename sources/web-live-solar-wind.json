@@ -1,0 +1,8 @@
+{
+  "type": "data",
+  "url": "https://services.swpc.noaa.gov/products/summary/solar-wind-speed.json",
+  "page": "https://www.swpc.noaa.gov/products/solar-wind",
+  "title": "Live solar-wind speed — NOAA SWPC",
+  "description": "A public data endpoint for a changing physical signal.",
+  "creator": "NOAA Space Weather Prediction Center"
+}
