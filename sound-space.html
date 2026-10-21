@@ -76,13 +76,33 @@ function ensureAudio(){if(!audio){const AC=window.AudioContext||window.webkitAud
 function later(fn,ms){const id=setTimeout(()=>{timers.delete(id);fn()},ms);timers.add(id);return id}
 function stopAll(){playbackToken++;for(const id of timers)clearTimeout(id);timers.clear();for(const id of animationFrames)cancelAnimationFrame(id);animationFrames.clear();for(const item of active){try{item.stop()}catch{}}active.clear();document.querySelectorAll('.play').forEach(b=>b.setAttribute('aria-pressed','false'));document.querySelectorAll('.note.playing').forEach(n=>n.classList.remove('playing'))}
 function playNote(freq,duration,wave,gain){const now=audio.currentTime;const osc=audio.createOscillator(),amp=audio.createGain();osc.type=wave;osc.frequency.setValueAtTime(freq,now);amp.gain.setValueAtTime(.0001,now);amp.gain.exponentialRampToValueAtTime(Math.max(.008,gain),now+.018);amp.gain.setValueAtTime(Math.max(.008,gain),now+duration*.65);amp.gain.exponentialRampToValueAtTime(.0001,now+duration);osc.connect(amp);amp.connect(master);osc.start(now);osc.stop(now+duration+.02);active.add(osc);osc.onended=()=>active.delete(osc)}
-async function playTrack(track,index,offset=0){await ensureAudio();const card=document.querySelector('[data-path="'+CSS.escape(track.path)+'"]');const button=card?.querySelector('.play');button?.setAttribute('aria-pressed','true');let at=offset;track.notes.forEach((note,i)=>{later(()=>{if(!audio)return;playNote(note.frequency,note.duration,track.waveform||'sine',track.gain||.08);const el=card?.querySelector('[data-note="'+i+'"]');if(el){el.classList.add('playing');later(()=>el.classList.remove('playing'async function playConnected(pair,svg,marker,button){
+async function playTrack(track,index,offset=0){
+await ensureAudio();
+const card=document.querySelector('[data-path="'+CSS.escape(track.path)+'"]');
+const button=card?.querySelector('.play');
+button?.setAttribute('aria-pressed','true');
+let at=offset;
+(track.notes||[]).forEach((note,i)=>{
+later(()=>{
+if(!audio)return;
+playNote(note.frequency,note.duration,track.waveform||'sine',track.gain||.08);
+const el=card?.querySelector('[data-note="'+i+'"]');
+if(el){
+el.classList.add('playing');
+later(()=>el.classList.remove('playing'),note.duration*1000);
+}
+},at*1000);
+at+=note.duration+(track.gap??.06);
+});
+later(()=>button?.setAttribute('aria-pressed','false'),Math.max(0,(at-offset)*1000+100));
+}
+async function playConnected(pair,svg,marker,button){
 stopAll();
 await ensureAudio();
 const token=playbackToken;
 button.setAttribute('aria-pressed','true');
 marker.setAttribute('opacity','1');
-const notes=pair.sound.notes.slice(0,11);
+const notes=(pair.sound.notes||[]).slice(0,11);
 const points=notes.map((note,index)=>{
 const frequency=Math.max(70,Math.min(1600,note.frequency));
 const normalized=Math.log(frequency/70)/Math.log(1600/70);
@@ -93,7 +113,12 @@ return {x:pair.pixel.x+px+.5,y:pair.pixel.y+py+.5};
 svg.querySelectorAll('.sound-trail').forEach(path=>path.remove());
 const trail=document.createElementNS(svg.namespaceURI,'path');
 trail.classList.add('sound-trail');
-trail.setAttribute('fill','none');trail.setAttribute('stroke','#e4cda1');trail.setAttribute('stroke-width','.42');trail.setAttribute('stroke-linecap','round');trail.setAttribute('stroke-linejoin','round');trail.setAttribute('opacity','.95');
+trail.setAttribute('fill','none');
+trail.setAttribute('stroke','#e4cda1');
+trail.setAttribute('stroke-width','.42');
+trail.setAttribute('stroke-linecap','round');
+trail.setAttribute('stroke-linejoin','round');
+trail.setAttribute('opacity','.95');
 svg.insertBefore(trail,marker);
 let trailPoints=[];
 function moveBetween(from,to,duration){
@@ -105,10 +130,14 @@ const t=Math.min(1,(now-start)/duration);
 const current={x:from.x+(to.x-from.x)*t,y:from.y+(to.y-from.y)*t};
 marker.setAttribute('cx',current.x);
 marker.setAttribute('cy',current.y);
-const pathPoints=trailPoints.concat([current]);
-trail.setAttribute('d',pathPoints.map((point,index)=>(index?'L':'M')+point.x+' '+point.y).join(' '));
-if(t<1){const id=requestAnimationFrame(next=>{animationFrames.delete(id);step(next)});animationFrames.add(id)}
-else trailPoints.push(to);
+trail.setAttribute('d',trailPoints.concat([current]).map((point,index)=>(index?'L':'M')+point.x+' '+point.y).join(' '));
+if(t<1){
+let id;
+id=requestAnimationFrame(next=>{animationFrames.delete(id);step(next)});
+animationFrames.add(id);
+}else{
+trailPoints.push(to);
+}
 }
 step(start);
 }
