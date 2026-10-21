@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" width="200" height="140">
+  <rect width="200" height="140" fill="#101418"/>
+  <ellipse cx="100" cy="70" rx="78" ry="44" fill="none" stroke="#8fd8c0" stroke-width="2" opacity="0.9"/>
+  <circle cx="100" cy="70" r="5" fill="#e8a0b4"/>
+  <circle cx="168" cy="40" r="6" fill="#e8c46a"/>
+  <path d="M 168 40 Q 100 20 34 96" fill="none" stroke="#e8c46a" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <circle cx="34" cy="96" r="4" fill="#a8c8e8"/>
+  <text x="100" y="132" text-anchor="middle" fill="#8fd8c0" font-family="monospace" font-size="11">answer in rotation</text>
+</svg>

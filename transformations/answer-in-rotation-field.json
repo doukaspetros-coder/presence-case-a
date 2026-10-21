@@ -1,0 +1,5 @@
+{
+  "mode": "signal-field",
+  "source": "sounds/answer-in-rotation-20261021.json",
+  "extract": "intervals"
+}
