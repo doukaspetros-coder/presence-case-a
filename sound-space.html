@@ -67,19 +67,19 @@ footer{margin-top:36px;color:var(--muted);font-size:10px;line-height:1.8}
 <script>
 (()=>{'use strict';
 const tracksNode=document.getElementById('tracks'),countNode=document.getElementById('count'),statusNode=document.getElementById('status'),updatedNode=document.getElementById('updated');
-let audio=null,master=null,active=new Set(),timers=new Set(),manifestDigest='',sounds=[];
+let audio=null,master=null,active=new Set(),timers=new Set(),animationFrames=new Set(),playbackToken=0,manifestDigest='',sounds=[];
 const canvas=document.getElementById('visual'),ctx=canvas.getContext('2d');let width=0,height=0,phase=0;
 function resize(){const dpr=Math.min(devicePixelRatio||1,2);width=innerWidth;height=innerHeight;canvas.width=width*dpr;canvas.height=height*dpr;canvas.style.width=width+'px';canvas.style.height=height+'px';ctx.setTransform(dpr,0,0,dpr,0,0)}
 addEventListener('resize',resize);resize();
 function ambient(){ctx.clearRect(0,0,width,height);phase+=.006;ctx.lineWidth=1;for(let j=0;j<6;j++){ctx.beginPath();for(let x=0;x<=width;x+=8){const y=height*(.24+j*.095)+Math.sin(x*.009+phase+j*.8)*11+Math.sin(x*.002-phase*1.7+j)*17;x===0?ctx.moveTo(x,y):ctx.lineTo(x,y)}ctx.strokeStyle='rgba(140,177,224,'+(.08+j*.012)+')';ctx.stroke()}requestAnimationFrame(ambient)}ambient();
 function ensureAudio(){if(!audio){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)throw Error('Web Audio is not available in this browser.');audio=new AC();master=audio.createGain();master.gain.value=.72;master.connect(audio.destination)}return audio.resume()}
 function later(fn,ms){const id=setTimeout(()=>{timers.delete(id);fn()},ms);timers.add(id);return id}
-function stopAll(){for(const id of timers)clearTimeout(id);timers.clear();for(const item of active){try{item.stop()}catch{}}active.clear();document.querySelectorAll('.play').forEach(b=>b.setAttribute('aria-pressed','false'));document.querySelectorAll('.note.playing').forEach(n=>n.classList.remove('playing'))}
+function stopAll(){playbackToken++;for(const id of timers)clearTimeout(id);timers.clear();for(const id of animationFrames)cancelAnimationFrame(id);animationFrames.clear();for(const item of active){try{item.stop()}catch{}}active.clear();document.querySelectorAll('.play').forEach(b=>b.setAttribute('aria-pressed','false'));document.querySelectorAll('.note.playing').forEach(n=>n.classList.remove('playing'))}
 function playNote(freq,duration,wave,gain){const now=audio.currentTime;const osc=audio.createOscillator(),amp=audio.createGain();osc.type=wave;osc.frequency.setValueAtTime(freq,now);amp.gain.setValueAtTime(.0001,now);amp.gain.exponentialRampToValueAtTime(Math.max(.008,gain),now+.018);amp.gain.setValueAtTime(Math.max(.008,gain),now+duration*.65);amp.gain.exponentialRampToValueAtTime(.0001,now+duration);osc.connect(amp);amp.connect(master);osc.start(now);osc.stop(now+duration+.02);active.add(osc);osc.onended=()=>active.delete(osc)}
-async function playTrack(track,index,offset=0){await ensureAudio();const card=document.querySelector('[data-path="'+CSS.escape(track.path)+'"]');const button=card?.querySelector('.play');button?.setAttribute('aria-pressed','true');let at=offset;track.notes.forEach((note,i)=>{later(()=>{if(!audio)return;playNote(note.frequency,note.duration,track.waveform||'sine',track.gain||.08);const el=card?.querySelector('[data-note="'+i+'"]');if(el){el.classList.add('playing');later(()=>el.classList.remove('playing'),note.duration*1000)}},at*1000);at+=note.duration+(track.gap??.06)});later(()=>button?.setAttribute('aria-pressed','false'),at*1000+150)}
-async function playConnected(pair,svg,marker,button){
+async function playTrack(track,index,offset=0){await ensureAudio();const card=document.querySelector('[data-path="'+CSS.escape(track.path)+'"]');const button=card?.querySelector('.play');button?.setAttribute('aria-pressed','true');let at=offset;track.notes.forEach((note,i)=>{later(()=>{if(!audio)return;playNote(note.frequency,note.duration,track.waveform||'sine',track.gain||.08);const el=card?.querySelector('[data-note="'+i+'"]');if(el){el.classList.add('playing');later(()=>el.classList.remove('playing'async function playConnected(pair,svg,marker,button){
 stopAll();
 await ensureAudio();
+const token=playbackToken;
 button.setAttribute('aria-pressed','true');
 marker.setAttribute('opacity','1');
 const notes=pair.sound.notes.slice(0,11);
@@ -88,19 +88,34 @@ const frequency=Math.max(70,Math.min(1600,note.frequency));
 const normalized=Math.log(frequency/70)/Math.log(1600/70);
 const px=Math.round(index*(pair.pixel.width-1)/Math.max(1,notes.length-1));
 const py=pair.pixel.height-1-Math.round(normalized*(pair.pixel.height-1));
-return {x:pair.pixel.x+px,y:pair.pixel.y+py};
+return {x:pair.pixel.x+px+.5,y:pair.pixel.y+py+.5};
 });
+function moveBetween(from,to,duration){
+if(!to||duration<=0)return;
+const start=performance.now();
+function step(now){
+if(token!==playbackToken)return;
+const t=Math.min(1,(now-start)/duration);
+marker.setAttribute('cx',from.x+(to.x-from.x)*t);
+marker.setAttribute('cy',from.y+(to.y-from.y)*t);
+if(t<1){const id=requestAnimationFrame(next=>{animationFrames.delete(id);step(next)});animationFrames.add(id)}
+}
+step(start);
+}
 let at=0;
 notes.forEach((note,index)=>{
+const segmentMs=(note.duration+(pair.sound.gap??.06))*1000;
 later(()=>{
-if(!audio)return;
-marker.setAttribute('cx',points[index].x+.5);
-marker.setAttribute('cy',points[index].y+.5);
+if(!audio||token!==playbackToken)return;
+const point=points[index];
+marker.setAttribute('cx',point.x);
+marker.setAttribute('cy',point.y);
 playNote(note.frequency,note.duration,pair.sound.waveform||'sine',pair.sound.gain||.08);
+moveBetween(point,points[index+1],segmentMs);
 },at*1000);
 at+=note.duration+(pair.sound.gap??.06);
 });
-later(()=>{button.setAttribute('aria-pressed','false');marker.setAttribute('opacity','0')},at*1000+150);
+later(()=>{if(token===playbackToken){button.setAttribute('aria-pressed','false');marker.setAttribute('opacity','0')}},at*1000+150);
 }
 function renderConnections(data){
 const host=document.getElementById('connections');host.replaceChildren();
