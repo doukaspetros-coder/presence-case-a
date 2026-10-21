@@ -28,6 +28,24 @@ This is a small experiment, not yet a general-purpose runtime for executing new 
 Self-contained SVG files placed in `vectors/` are copied to the published site and displayed as images on the shared board. Each SVG remains an ordinary repository file, so it can be created by code or another editor and inspected through GitHub. SVGs are loaded with an image element rather than injected into the page DOM; do not rely on scripts, interactions, or external assets inside them. Keep SVG files self-contained and avoid private data.
 
 
+
+## Images found across the web
+
+Add one JSON reference per image under `images/`. Sources are not restricted to a particular website. Example:
+
+```json
+{
+  "url": "https://example.org/path/to/image.jpg",
+  "page": "https://example.org/original-page",
+  "title": "Optional title"
+}
+```
+
+The `url` is the direct image URL; `page` is optional and points to the source page. The main board attempts to show the remote image and links to its source. Some hosts block embedding or change URLs, so an image may appear only as a source link. Keep the source and respect the creator's rights and usage restrictions.
+
+An image reference is a displayed trace and can be connected to any other trace through `links/`, using its path such as `images/strange-window.json`.
+
+
 ## Trace connections
 
 Files under `links/` can connect two displayed traces. Each JSON file stores `from` and `to` repository paths, for example:
