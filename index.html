@@ -282,7 +282,7 @@ function renderSounds(entries,manifest,changed){
 const live=new Set(entries.map(item=>item.path));
 for(const [path,card] of soundNodes){if(!live.has(path)){stopSound(path);card.remove();soundNodes.delete(path)}}
 for(const item of entries){
-if(typeof item.path!=='string'||!item.path.startsWith('sounds/')||!item.path.toLowerCase().endsWith('.json')||item.mode!=='sequence'||!Array.isArray(item.notes))continue;
+if(typeof item.path!=='string'||!(item.path.startsWith('sounds/')||item.path.startsWith('transformations/'))||!item.path.toLowerCase().endsWith('.json')||item.mode!=='sequence'||!Array.isArray(item.notes))continue;
 let card=soundNodes.get(item.path);
 if(!card){
 card=document.createElement('section');card.className='sound-trace';
@@ -480,7 +480,7 @@ const vectors=(Array.isArray(viewManifest.vectors)?viewManifest.vectors:[]).filt
 for(const item of vectors){const revision=String(item.digest||viewManifest.commit||'');nextVectors.set(item.path,revision);if(knownVectors.has(item.path)&&knownVectors.get(item.path)!==revision)changedVectors.add(item.path);else if(initialized&&!knownVectors.has(item.path))changedVectors.add(item.path)}
 const transformations=(Array.isArray(viewManifest.transformations)?viewManifest.transformations:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('transformations/')&&typeof item.source==='string'&&((item.mode==='text-particles'&&typeof item.source_text==='string')||(item.mode==='signal-field'&&Array.isArray(item.values)&&item.values.length>0))),nextTransforms=new Map(),changedTransforms=new Set();
 for(const item of transformations){const revision=String(item.digest||(item.mode==='signal-field'?hash(JSON.stringify(item.values)):hash(item.source_text)));nextTransforms.set(item.path,revision);if(knownTransforms.has(item.path)&&knownTransforms.get(item.path)!==revision)changedTransforms.add(item.path);else if(initialized&&!knownTransforms.has(item.path))changedTransforms.add(item.path)}
-const sounds=(Array.isArray(viewManifest.sounds)?viewManifest.sounds:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('sounds/')&&item.mode==='sequence'&&Array.isArray(item.notes)),nextSounds=new Map(),changedSounds=new Set();
+const sounds=(Array.isArray(viewManifest.sounds)?viewManifest.sounds:[]).filter(item=>item&&typeof item.path==='string'&&(item.path.startsWith('sounds/')||item.path.startsWith('transformations/'))&&item.mode==='sequence'&&Array.isArray(item.notes)),nextSounds=new Map(),changedSounds=new Set();
 for(const item of sounds){const revision=String(item.digest||JSON.stringify(item.notes));nextSounds.set(item.path,revision);if(knownSounds.has(item.path)&&knownSounds.get(item.path)!==revision)changedSounds.add(item.path);else if(initialized&&!knownSounds.has(item.path))changedSounds.add(item.path)}
 const links=(Array.isArray(viewManifest.links)?viewManifest.links:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('links/')&&item.path.toLowerCase().endsWith('.json')&&typeof item.from==='string'&&typeof item.to==='string'),nextLinks=new Map(),changedLinks=new Set();
 for(const item of links){const revision=String(item.digest||item.from+'→'+item.to);nextLinks.set(item.path,revision);if(knownLinks.has(item.path)&&knownLinks.get(item.path)!==revision)changedLinks.add(item.path);else if(initialized&&!knownLinks.has(item.path))changedLinks.add(item.path)}
