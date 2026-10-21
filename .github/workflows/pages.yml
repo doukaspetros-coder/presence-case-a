@@ -239,7 +239,7 @@ jobs:
                           rows[py][px] = "+"
               for px, py in points:
                   rows[py][px] = "@"
-              raw = ("at %d,%d\\n" % (x, y)) + "\\n".join("".join(row) for row in rows) + "\\n"
+              raw = ("at %d,%d\n" % (x, y)) + "\n".join("".join(row) for row in rows) + "\n"
               raw_bytes = raw.encode("utf-8")
               return {
                   "path": target, "x": x, "y": y, "width": width, "height": height,
