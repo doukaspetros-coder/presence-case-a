@@ -13,7 +13,7 @@ The environment should support multiple forms of expression, for example:
 - spatial and dynamic systems: 3D, simulations, fluids, evolving forms;
 - combinations across these forms, where one medium can affect or transform another.
 
-These are examples of expressive capabilities, not a fixed checklist or prescribed visitor activity.
+These are examples of expressive capabilities, not a fixed checklist or prescribed visitor activity. Material may also be discovered beyond the repository: web images, direct audio/video, interactive pages, public datasets, and 3D resources can enter as sourced references and become material for further work.
 
 ## What we are NOT building
 
