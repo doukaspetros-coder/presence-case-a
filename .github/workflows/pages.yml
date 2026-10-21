@@ -619,7 +619,46 @@ jobs:
                   "digest": hashlib.sha256(path.read_bytes()).hexdigest(),
               })
 
-          trace_paths = set(items) | {item["path"] for item in couplets} | {item["path"] for item in colors} | {item["path"] for item in vectors} | {item["path"] for item in transformations} | {item["path"] for item in sounds} | {item["path"] for item in pixels} | {item["path"] for item in images}
+          sources_dir = root / "sources"
+          sources_dir.mkdir(exist_ok=True)
+          sources = []
+          allowed_source_types = {"image", "audio", "video", "page", "data", "3d"}
+          for path in sorted(sources_dir.rglob("*.json")):
+              if not path.is_file() or path.is_symlink():
+                  continue
+              relative = path.relative_to(root).as_posix()
+              try:
+                  payload = json.loads(path.read_text(encoding="utf-8"))
+              except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+                  print(f"Skipping invalid web source {relative}: {exc}")
+                  continue
+              if not isinstance(payload, dict):
+                  continue
+              kind = payload.get("type")
+              url = payload.get("url")
+              page = payload.get("page", "")
+              title = payload.get("title", Path(path).stem)
+              description = payload.get("description", "")
+              license_name = payload.get("license", "")
+              creator = payload.get("creator", "")
+              if (not isinstance(kind, str) or kind not in allowed_source_types
+                  or not isinstance(url, str) or len(url) > 2000 or not re.match(r"^https?://", url, re.IGNORECASE)
+                  or not isinstance(page, str) or len(page) > 2000 or (page and not re.match(r"^https?://", page, re.IGNORECASE))
+                  or not isinstance(title, str) or len(title) > 160
+                  or not isinstance(description, str) or len(description) > 600
+                  or not isinstance(license_name, str) or len(license_name) > 200
+                  or not isinstance(creator, str) or len(creator) > 160):
+                  print(f"Skipping invalid web source {relative}: check type, URL, page, title, description, creator and license.")
+                  continue
+              sources.append({
+                  "path": relative, "type": kind, "url": url, "page": page or url,
+                  "title": title.strip() or Path(path).stem,
+                  "description": description.strip(),
+                  "license": license_name.strip(), "creator": creator.strip(),
+                  "digest": hashlib.sha256(path.read_bytes()).hexdigest(),
+              })
+
+          trace_paths = set(items) | {item["path"] for item in couplets} | {item["path"] for item in colors} | {item["path"] for item in vectors} | {item["path"] for item in transformations} | {item["path"] for item in sounds} | {item["path"] for item in pixels} | {item["path"] for item in images} | {item["path"] for item in sources}
           links_dir = root / "links"
           links_dir.mkdir(exist_ok=True)
           links = []
@@ -663,13 +702,14 @@ jobs:
               "scores": scores,
               "pixels": pixels,
               "images": images,
+              "sources": sources,
               "links": links,
           }
           (site / "manifest.json").write_text(
               json.dumps(manifest, ensure_ascii=False, separators=(",", ":")) + "\n",
               encoding="utf-8",
           )
-          print(f"Indexed {len(items)} presence file(s), {len(couplets)} couplet(s), {len(colors)} color trace(s), {len(vectors)} vector trace(s), {len(transformations)} transformation(s), {len(sounds)} sound trace(s), {len(scores)} score trace(s), {len(pixels)} pixel-art trace(s), and {len(links)} connection(s).")
+          print(f"Indexed {len(items)} presence file(s), {len(couplets)} couplet(s), {len(colors)} color trace(s), {len(vectors)} vector trace(s), {len(transformations)} transformation(s), {len(sounds)} sound trace(s), {len(scores)} score trace(s), {len(pixels)} pixel-art trace(s), {len(images)} image reference(s), {len(sources)} external source(s), and {len(links)} connection(s).")
 
           history_rows = subprocess.check_output(
               ["git", "log", "--first-parent", "-n", "40", "--format=%H%x09%cI%x09%s"],
@@ -943,6 +983,39 @@ jobs:
                           "title": title.strip() or Path(path).stem,
                           "digest": hashlib.sha256(raw_image).hexdigest(),
                       })
+                  history_sources = []
+                  allowed_source_types = {"image", "audio", "video", "page", "data", "3d"}
+                  for path in sorted(members):
+                      if not path.startswith("sources/") or not path.endswith(".json"):
+                          continue
+                      raw_source = read_member(path)
+                      try:
+                          payload = json.loads(raw_source.decode("utf-8"))
+                      except (UnicodeDecodeError, json.JSONDecodeError):
+                          continue
+                      if not isinstance(payload, dict):
+                          continue
+                      kind, url = payload.get("type"), payload.get("url")
+                      page = payload.get("page", "")
+                      title = payload.get("title", Path(path).stem)
+                      description = payload.get("description", "")
+                      license_name = payload.get("license", "")
+                      creator = payload.get("creator", "")
+                      if (not isinstance(kind, str) or kind not in allowed_source_types
+                          or not isinstance(url, str) or len(url) > 2000 or not re.match(r"^https?://", url, re.IGNORECASE)
+                          or not isinstance(page, str) or len(page) > 2000 or (page and not re.match(r"^https?://", page, re.IGNORECASE))
+                          or not isinstance(title, str) or len(title) > 160
+                          or not isinstance(description, str) or len(description) > 600
+                          or not isinstance(license_name, str) or len(license_name) > 200
+                          or not isinstance(creator, str) or len(creator) > 160):
+                          continue
+                      history_sources.append({
+                          "path": path, "type": kind, "url": url, "page": page or url,
+                          "title": title.strip() or Path(path).stem,
+                          "description": description.strip(),
+                          "license": license_name.strip(), "creator": creator.strip(),
+                          "digest": hashlib.sha256(raw_source).hexdigest(),
+                      })
                   history_trace_paths = (
                       set(history_items)
                       | {item["path"] for item in history_couplets}
@@ -952,6 +1025,7 @@ jobs:
                       | {item["path"] for item in history_sounds}
                       | {item["path"] for item in history_pixels}
                       | {item["path"] for item in history_images}
+                      | {item["path"] for item in history_sources}
                   )
                   history_links = []
                   for path in sorted(members):
@@ -990,6 +1064,7 @@ jobs:
                       "scores": history_scores,
                       "pixels": history_pixels,
                       "images": history_images,
+                      "sources": history_sources,
                       "links": history_links,
                   })
 
