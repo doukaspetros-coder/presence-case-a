@@ -210,6 +210,44 @@ jobs:
                   "notes": notes[:64],
               }
 
+          def build_sound_pixels(source_sound, payload, target):
+              x, y = payload.get("x", 27), payload.get("y", 24)
+              if (not isinstance(x, int) or isinstance(x, bool) or not 0 <= x <= 63
+                  or not isinstance(y, int) or isinstance(y, bool) or not 0 <= y <= 55):
+                  return None
+              notes = source_sound.get("notes")
+              if not isinstance(notes, list) or not notes:
+                  return None
+              points = []
+              selected = notes[:11]
+              width = min(32, max(3, (len(selected) - 1) * 3 + 1))
+              height = 9
+              rows = [["." for _ in range(width)] for _ in range(height)]
+              for index, note in enumerate(selected):
+                  frequency = note["frequency"]
+                  normalized = (math.log(max(70.0, min(1600.0, frequency)) / 70.0)
+                                / math.log(1600.0 / 70.0))
+                  px = round(index * (width - 1) / max(1, len(selected) - 1))
+                  py = height - 1 - round(normalized * (height - 1))
+                  points.append((px, py))
+              for (x0, y0), (x1, y1) in zip(points, points[1:]):
+                  steps = max(abs(x1 - x0), abs(y1 - y0), 1)
+                  for step in range(steps + 1):
+                      px = round(x0 + (x1 - x0) * step / steps)
+                      py = round(y0 + (y1 - y0) * step / steps)
+                      if rows[py][px] == ".":
+                          rows[py][px] = "+"
+              for px, py in points:
+                  rows[py][px] = "@"
+              raw = ("at %d,%d\\n" % (x, y)) + "\\n".join("".join(row) for row in rows) + "\\n"
+              raw_bytes = raw.encode("utf-8")
+              return {
+                  "path": target, "x": x, "y": y, "width": width, "height": height,
+                  "rows": ["".join(row) for row in rows],
+                  "digest": hashlib.sha256(raw_bytes + str(source_sound["digest"]).encode("utf-8")).hexdigest(),
+                  "generated_from": source_sound["path"],
+              }
+
           root = Path.cwd()
           site = root / "_site"
           site.mkdir(exist_ok=True)
@@ -386,6 +424,26 @@ jobs:
                   continue
               mode = payload.get("mode")
               source = payload.get("source")
+              if mode == "sound-pixels":
+                  target = payload.get("target")
+                  if not isinstance(source, str) or source not in sounds_by_path or not isinstance(target, str) or target not in pixels_by_path:
+                      print(f"Skipping unresolved transformation {relative}: source sound and target pixel layer must exist.")
+                      continue
+                  art = build_sound_pixels(sounds_by_path[source], payload, target)
+                  if art is None:
+                      print(f"Skipping invalid sound-pixels transformation {relative}: check x/y and source notes.")
+                      continue
+                  digest = hashlib.sha256(path.read_bytes() + b"\\0" + str(sounds_by_path[source]["digest"]).encode("utf-8")).hexdigest()
+                  art["digest"] = digest
+                  pixels = [item for item in pixels if item["path"] != target] + [art]
+                  pixels.sort(key=lambda item: item["path"])
+                  pixels_by_path = {item["path"]: item for item in pixels}
+                  transformations.append({
+                      "path": relative, "mode": "sound-pixels", "source": source, "target": target,
+                      "x": art["x"], "y": art["y"], "width": art["width"], "height": art["height"],
+                      "rows": art["rows"], "digest": digest,
+                  })
+                  continue
               if mode == "pixel-sound":
                   if not isinstance(source, str) or source not in pixels_by_path:
                       print(f"Skipping unresolved transformation {relative}: source must be an existing pixel layer.")
@@ -652,6 +710,24 @@ jobs:
                           continue
                       mode = payload.get("mode")
                       source = payload.get("source")
+                      if mode == "sound-pixels":
+                          target = payload.get("target")
+                          if not isinstance(source, str) or source not in history_sounds_by_path or not isinstance(target, str) or target not in history_pixels_by_path:
+                              continue
+                          art = build_sound_pixels(history_sounds_by_path[source], payload, target)
+                          if art is None:
+                              continue
+                          digest = hashlib.sha256(raw_transform + b"\\0" + str(history_sounds_by_path[source]["digest"]).encode("utf-8")).hexdigest()
+                          art["digest"] = digest
+                          history_pixels = [item for item in history_pixels if item["path"] != target] + [art]
+                          history_pixels.sort(key=lambda item: item["path"])
+                          history_pixels_by_path = {item["path"]: item for item in history_pixels}
+                          history_transformations.append({
+                              "path": path, "mode": "sound-pixels", "source": source, "target": target,
+                              "x": art["x"], "y": art["y"], "width": art["width"], "height": art["height"],
+                              "rows": art["rows"], "digest": digest,
+                          })
+                          continue
                       if mode == "pixel-sound":
                           if not isinstance(source, str) or source not in history_pixels_by_path:
                               continue
