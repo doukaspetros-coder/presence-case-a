@@ -77,6 +77,31 @@ function later(fn,ms){const id=setTimeout(()=>{timers.delete(id);fn()},ms);timer
 function stopAll(){for(const id of timers)clearTimeout(id);timers.clear();for(const item of active){try{item.stop()}catch{}}active.clear();document.querySelectorAll('.play').forEach(b=>b.setAttribute('aria-pressed','false'));document.querySelectorAll('.note.playing').forEach(n=>n.classList.remove('playing'))}
 function playNote(freq,duration,wave,gain){const now=audio.currentTime;const osc=audio.createOscillator(),amp=audio.createGain();osc.type=wave;osc.frequency.setValueAtTime(freq,now);amp.gain.setValueAtTime(.0001,now);amp.gain.exponentialRampToValueAtTime(Math.max(.008,gain),now+.018);amp.gain.setValueAtTime(Math.max(.008,gain),now+duration*.65);amp.gain.exponentialRampToValueAtTime(.0001,now+duration);osc.connect(amp);amp.connect(master);osc.start(now);osc.stop(now+duration+.02);active.add(osc);osc.onended=()=>active.delete(osc)}
 async function playTrack(track,index,offset=0){await ensureAudio();const card=document.querySelector('[data-path="'+CSS.escape(track.path)+'"]');const button=card?.querySelector('.play');button?.setAttribute('aria-pressed','true');let at=offset;track.notes.forEach((note,i)=>{later(()=>{if(!audio)return;playNote(note.frequency,note.duration,track.waveform||'sine',track.gain||.08);const el=card?.querySelector('[data-note="'+i+'"]');if(el){el.classList.add('playing');later(()=>el.classList.remove('playing'),note.duration*1000)}},at*1000);at+=note.duration+(track.gap??.06)});later(()=>button?.setAttribute('aria-pressed','false'),at*1000+150)}
+async function playConnected(pair,svg,marker,button){
+stopAll();
+await ensureAudio();
+button.setAttribute('aria-pressed','true');
+marker.setAttribute('opacity','1');
+const notes=pair.sound.notes.slice(0,11);
+const points=notes.map((note,index)=>{
+const frequency=Math.max(70,Math.min(1600,note.frequency));
+const normalized=Math.log(frequency/70)/Math.log(1600/70);
+const px=Math.round(index*(pair.pixel.width-1)/Math.max(1,notes.length-1));
+const py=pair.pixel.height-1-Math.round(normalized*(pair.pixel.height-1));
+return {x:pair.pixel.x+px,y:pair.pixel.y+py};
+});
+let at=0;
+notes.forEach((note,index)=>{
+later(()=>{
+if(!audio)return;
+marker.setAttribute('cx',points[index].x+.5);
+marker.setAttribute('cy',points[index].y+.5);
+playNote(note.frequency,note.duration,pair.sound.waveform||'sine',pair.sound.gain||.08);
+},at*1000);
+at+=note.duration+(pair.sound.gap??.06);
+});
+later(()=>{button.setAttribute('aria-pressed','false');marker.setAttribute('opacity','0')},at*1000+150);
+}
 function renderConnections(data){
 const host=document.getElementById('connections');host.replaceChildren();
 const links=Array.isArray(data.links)?data.links:[];
@@ -91,11 +116,13 @@ const left=document.createElement('div');
 const heading=document.createElement('h2');heading.textContent='Sound → pixel field';left.append(heading);
 const explanation=document.createElement('p');explanation.textContent='The note frequencies determine the vertical positions of the points. This picture is generated from the sound data when the site is published; it is not a live microphone waveform.';left.append(explanation);
 const soundName=document.createElement('div');soundName.className='track-name';soundName.textContent=pair.sound.path;left.append(soundName);
-const button=document.createElement('button');button.className='play';button.textContent='PLAY THIS SOUND';button.addEventListener('click',()=>playTrack(pair.sound,0));left.append(button);
+const button=document.createElement('button');button.className='play';button.textContent='PLAY SOUND + TRACE';left.append(button);
 const right=document.createElement('div');
-const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 64 64');svg.setAttribute('role','img');svg.setAttribute('aria-label','Pixel field generated from the connected sound');svg.classList.add('pixel-view');
+const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 64 64');svg.setAttribute('role','img');svg.setAttribute('aria-label','Pixel field generated from the connected sound; a marker follows each note during playback');svg.classList.add('pixel-view');
 const bg=document.createElementNS(svg.namespaceURI,'rect');for(const [k,v] of Object.entries({x:0,y:0,width:64,height:64,fill:'#0a0e17'}))bg.setAttribute(k,v);svg.append(bg);
 (pair.pixel.rows||[]).forEach((row,dy)=>{for(let dx=0;dx<row.length;dx++){const ch=row[dx];if(ch==='.'||ch==='-')continue;const color=palette[ch];if(!color)continue;const rect=document.createElementNS(svg.namespaceURI,'rect');rect.setAttribute('x',pair.pixel.x+dx);rect.setAttribute('y',pair.pixel.y+dy);rect.setAttribute('width','1');rect.setAttribute('height','1');rect.setAttribute('fill',color);svg.append(rect)}});
+const marker=document.createElementNS(svg.namespaceURI,'circle');marker.setAttribute('r','.85');marker.setAttribute('fill','#ffffff');marker.setAttribute('stroke','#101827');marker.setAttribute('stroke-width','.3');marker.setAttribute('opacity','0');svg.append(marker);
+button.addEventListener('click',()=>playConnected(pair,svg,marker,button));
 right.append(svg);const label=document.createElement('div');label.className='pixel-label';label.textContent=pair.pixel.path;right.append(label);
 const linkNote=document.createElement('div');linkNote.className='pixel-label';linkNote.textContent='Connected by '+pair.link.path;right.append(linkNote);
 card.append(left,right);host.append(card);
