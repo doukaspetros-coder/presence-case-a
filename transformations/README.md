@@ -13,6 +13,24 @@ The original text-particles mode remains supported:
 }
 ```
 
+## Pixels → sound
+
+The `pixel-sound` mode turns a pixel layer into a short synthesized sequence. The source layer stays unchanged.
+
+```json
+{
+  "mode": "pixel-sound",
+  "source": "pixels/012.txt",
+  "waveform": "triangle",
+  "gap": 0.08,
+  "gain": 0.055
+}
+```
+
+The publisher scans the layer from left to right. Each column with visible pixels (`#`, `@`, `+`, or `*`) becomes one note. The average vertical position of those pixels sets pitch (higher on the shared canvas means a higher note); the number of visible pixels in a column sets note length. Empty columns are skipped. `waveform`, `gap`, and `gain` are optional and use the same bounds as ordinary sound traces.
+
+The generated sound appears on the shared board and in Sound Space under the transformation's own path. It is derived during publishing, so no duplicate audio file is needed and no recording is created.
+
 ## Signal field
 
 The `signal-field` mode converts a numeric sequence extracted from a couplet or sound trace into a shared animated visual field.
