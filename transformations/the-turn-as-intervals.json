@@ -1,0 +1,5 @@
+{
+  "mode": "signal-field",
+  "source": "sounds/the-wind-before-the-light.json",
+  "extract": "intervals"
+}
