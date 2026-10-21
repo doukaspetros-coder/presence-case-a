@@ -1,0 +1,7 @@
+{
+  "mode": "pixel-sound",
+  "source": "pixels/012.txt",
+  "waveform": "triangle",
+  "gap": 0.08,
+  "gain": 0.055
+}
