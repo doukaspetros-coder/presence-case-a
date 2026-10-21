@@ -588,7 +588,38 @@ jobs:
                           "rows": art["rows"], "digest": digest,
                       })
 
-          trace_paths = set(items) | {item["path"] for item in couplets} | {item["path"] for item in colors} | {item["path"] for item in vectors} | {item["path"] for item in transformations} | {item["path"] for item in sounds} | {item["path"] for item in pixels}
+          images_dir = root / "images"
+          images_dir.mkdir(exist_ok=True)
+          images = []
+          for path in sorted(images_dir.rglob("*.json")):
+              if not path.is_file() or path.is_symlink():
+                  continue
+              relative = path.relative_to(root).as_posix()
+              try:
+                  payload = json.loads(path.read_text(encoding="utf-8"))
+              except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+                  print(f"Skipping invalid image reference {relative}: {exc}")
+                  continue
+              if not isinstance(payload, dict):
+                  continue
+              url = payload.get("url")
+              page = payload.get("page", "")
+              title = payload.get("title", Path(path).stem)
+              if (not isinstance(url, str) or len(url) > 2000 or not re.match(r"^https?://", url, re.IGNORECASE)
+                  or not isinstance(page, str) or len(page) > 2000
+                  or (page and not re.match(r"^https?://", page, re.IGNORECASE))
+                  or not isinstance(title, str) or len(title) > 160):
+                  print(f"Skipping invalid image reference {relative}: use an http(s) image URL and optional http(s) page/title.")
+                  continue
+              images.append({
+                  "path": relative,
+                  "url": url,
+                  "page": page or url,
+                  "title": title.strip() or Path(path).stem,
+                  "digest": hashlib.sha256(path.read_bytes()).hexdigest(),
+              })
+
+          trace_paths = set(items) | {item["path"] for item in couplets} | {item["path"] for item in colors} | {item["path"] for item in vectors} | {item["path"] for item in transformations} | {item["path"] for item in sounds} | {item["path"] for item in pixels} | {item["path"] for item in images}
           links_dir = root / "links"
           links_dir.mkdir(exist_ok=True)
           links = []
@@ -631,6 +662,7 @@ jobs:
               "sounds": sounds,
               "scores": scores,
               "pixels": pixels,
+              "images": images,
               "links": links,
           }
           (site / "manifest.json").write_text(
@@ -888,6 +920,29 @@ jobs:
                                   "x": art["x"], "y": art["y"], "width": art["width"], "height": art["height"],
                                   "rows": art["rows"], "digest": digest,
                               })
+                  history_images = []
+                  for path in sorted(members):
+                      if not path.startswith("images/") or not path.endswith(".json"):
+                          continue
+                      raw_image = read_member(path)
+                      try:
+                          payload = json.loads(raw_image.decode("utf-8"))
+                      except (UnicodeDecodeError, json.JSONDecodeError):
+                          continue
+                      if not isinstance(payload, dict):
+                          continue
+                      url, page = payload.get("url"), payload.get("page", "")
+                      title = payload.get("title", Path(path).stem)
+                      if (not isinstance(url, str) or len(url) > 2000 or not re.match(r"^https?://", url, re.IGNORECASE)
+                          or not isinstance(page, str) or len(page) > 2000
+                          or (page and not re.match(r"^https?://", page, re.IGNORECASE))
+                          or not isinstance(title, str) or len(title) > 160):
+                          continue
+                      history_images.append({
+                          "path": path, "url": url, "page": page or url,
+                          "title": title.strip() or Path(path).stem,
+                          "digest": hashlib.sha256(raw_image).hexdigest(),
+                      })
                   history_trace_paths = (
                       set(history_items)
                       | {item["path"] for item in history_couplets}
@@ -896,6 +951,7 @@ jobs:
                       | {item["path"] for item in history_transformations}
                       | {item["path"] for item in history_sounds}
                       | {item["path"] for item in history_pixels}
+                      | {item["path"] for item in history_images}
                   )
                   history_links = []
                   for path in sorted(members):
@@ -933,6 +989,7 @@ jobs:
                       "sounds": history_sounds,
                       "scores": history_scores,
                       "pixels": history_pixels,
+                      "images": history_images,
                       "links": history_links,
                   })
 
