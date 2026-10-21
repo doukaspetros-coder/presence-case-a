@@ -45,6 +45,10 @@ The `url` is the direct image URL; `page` is optional and points to the source p
 
 An image reference is a displayed trace and can be connected to any other trace through `links/`, using its path such as `images/strange-window.json`.
 
+## External web sources
+
+JSON references under `sources/` can bring direct images, audio/video files, pages, datasets and 3D resources into the shared board. Supported media types can be previewed; other items remain links. Each source is a trace and can be connected through `links/`. See [the source format](sources/README.md).
+
 
 ## Trace connections
 
