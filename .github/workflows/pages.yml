@@ -641,7 +641,7 @@ jobs:
               description = payload.get("description", "")
               license_name = payload.get("license", "")
               creator = payload.get("creator", "")
-              if (kind not in allowed_source_types
+              if (not isinstance(kind, str) or kind not in allowed_source_types
                   or not isinstance(url, str) or len(url) > 2000 or not re.match(r"^https?://", url, re.IGNORECASE)
                   or not isinstance(page, str) or len(page) > 2000 or (page and not re.match(r"^https?://", page, re.IGNORECASE))
                   or not isinstance(title, str) or len(title) > 160
@@ -1001,7 +1001,7 @@ jobs:
                       description = payload.get("description", "")
                       license_name = payload.get("license", "")
                       creator = payload.get("creator", "")
-                      if (kind not in allowed_source_types
+                      if (not isinstance(kind, str) or kind not in allowed_source_types
                           or not isinstance(url, str) or len(url) > 2000 or not re.match(r"^https?://", url, re.IGNORECASE)
                           or not isinstance(page, str) or len(page) > 2000 or (page and not re.match(r"^https?://", page, re.IGNORECASE))
                           or not isinstance(title, str) or len(title) > 160
