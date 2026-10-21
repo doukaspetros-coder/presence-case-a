@@ -1,0 +1,20 @@
+{
+  "mode": "sequence",
+  "waveform": "sine",
+  "gap": 0.3,
+  "gain": 0.045,
+  "notes": [
+    {
+      "frequency": 73.42,
+      "duration": 1.2
+    },
+    {
+      "frequency": 87.31,
+      "duration": 0.5
+    },
+    {
+      "frequency": 73.42,
+      "duration": 1.4
+    }
+  ]
+}
