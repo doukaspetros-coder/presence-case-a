@@ -245,7 +245,7 @@ function renderImages(entries,manifest,changed){
 const live=new Set(entries.map(item=>item.path));
 for(const [path,card] of imageNodes){if(!live.has(path)){card.remove();imageNodes.delete(path)}}
 for(const item of entries){
-if(!item||typeof item.path!=='string'||!item.path.startsWith('images/')||typeof item.url!=='string'||!/^https?:\\/\\//i.test(item.url))continue;
+if(!item||typeof item.path!=='string'||!item.path.startsWith('images/')||typeof item.url!=='string'||!/^https?:\/\//i.test(item.url))continue;
 let card=imageNodes.get(item.path);
 if(!card){
 card=document.createElement('section');card.className='image-trace';
@@ -277,7 +277,7 @@ function renderSources(entries,manifest,changed){
 const live=new Set(entries.map(item=>item.path));
 for(const [path,card] of sourceNodes){if(!live.has(path)){card.remove();sourceNodes.delete(path)}}
 for(const item of entries){
-if(!item||typeof item.path!=='string'||!item.path.startsWith('sources/')||!['image','audio','video','page','data','3d'].includes(item.type)||typeof item.url!=='string'||!/^https?:\\/\\//i.test(item.url))continue;
+if(!item||typeof item.path!=='string'||!item.path.startsWith('sources/')||!['image','audio','video','page','data','3d'].includes(item.type)||typeof item.url!=='string'||!/^https?:\/\//i.test(item.url))continue;
 let card=sourceNodes.get(item.path);
 if(card&&card.dataset.kind!==item.type){card.remove();sourceNodes.delete(item.path);card=null}
 if(!card){
@@ -596,9 +596,9 @@ const transformations=(Array.isArray(viewManifest.transformations)?viewManifest.
 for(const item of transformations){const revision=String(item.digest||(item.mode==='signal-field'?hash(JSON.stringify(item.values)):hash(item.source_text)));nextTransforms.set(item.path,revision);if(knownTransforms.has(item.path)&&knownTransforms.get(item.path)!==revision)changedTransforms.add(item.path);else if(initialized&&!knownTransforms.has(item.path))changedTransforms.add(item.path)}
 const sounds=(Array.isArray(viewManifest.sounds)?viewManifest.sounds:[]).filter(item=>item&&typeof item.path==='string'&&(item.path.startsWith('sounds/')||item.path.startsWith('transformations/'))&&item.mode==='sequence'&&Array.isArray(item.notes)),nextSounds=new Map(),changedSounds=new Set();
 for(const item of sounds){const revision=String(item.digest||JSON.stringify(item.notes));nextSounds.set(item.path,revision);if(knownSounds.has(item.path)&&knownSounds.get(item.path)!==revision)changedSounds.add(item.path);else if(initialized&&!knownSounds.has(item.path))changedSounds.add(item.path)}
-const images=(Array.isArray(viewManifest.images)?viewManifest.images:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('images/')&&typeof item.url==='string'&&/^https?:\\/\\//i.test(item.url)),nextImages=new Map(),changedImages=new Set();
+const images=(Array.isArray(viewManifest.images)?viewManifest.images:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('images/')&&typeof item.url==='string'&&/^https?:\/\//i.test(item.url)),nextImages=new Map(),changedImages=new Set();
 for(const item of images){const revision=String(item.digest||item.url);nextImages.set(item.path,revision);if(knownImages.has(item.path)&&knownImages.get(item.path)!==revision)changedImages.add(item.path);else if(initialized&&!knownImages.has(item.path))changedImages.add(item.path)}
-const sources=(Array.isArray(viewManifest.sources)?viewManifest.sources:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('sources/')&&['image','audio','video','page','data','3d'].includes(item.type)&&typeof item.url==='string'&&/^https?:\\/\\//i.test(item.url)),nextSources=new Map(),changedSources=new Set();
+const sources=(Array.isArray(viewManifest.sources)?viewManifest.sources:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('sources/')&&['image','audio','video','page','data','3d'].includes(item.type)&&typeof item.url==='string'&&/^https?:\/\//i.test(item.url)),nextSources=new Map(),changedSources=new Set();
 for(const item of sources){const revision=String(item.digest||item.url);nextSources.set(item.path,revision);if(knownSources.has(item.path)&&knownSources.get(item.path)!==revision)changedSources.add(item.path);else if(initialized&&!knownSources.has(item.path))changedSources.add(item.path)}
 const links=(Array.isArray(viewManifest.links)?viewManifest.links:[]).filter(item=>item&&typeof item.path==='string'&&item.path.startsWith('links/')&&item.path.toLowerCase().endsWith('.json')&&typeof item.from==='string'&&typeof item.to==='string'),nextLinks=new Map(),changedLinks=new Set();
 for(const item of links){const revision=String(item.digest||item.from+'→'+item.to);nextLinks.set(item.path,revision);if(knownLinks.has(item.path)&&knownLinks.get(item.path)!==revision)changedLinks.add(item.path);else if(initialized&&!knownLinks.has(item.path))changedLinks.add(item.path)}
