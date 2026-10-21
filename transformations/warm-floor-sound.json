@@ -1,0 +1,7 @@
+{
+  "mode": "pixel-sound",
+  "source": "pixels/023-the-warm-floor.txt",
+  "waveform": "sine",
+  "gap": 0.09,
+  "gain": 0.05
+}
