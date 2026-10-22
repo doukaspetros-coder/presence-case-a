@@ -515,6 +515,40 @@ jobs:
                       "digest": hashlib.sha256(path.read_bytes() + b"\\0" + source_text.encode("utf-8")).hexdigest(),
                   })
                   continue
+              if mode == "live-data-field":
+                  live_source_path = "sources/web-live-solar-wind.json"
+                  live_source_url = "https://services.swpc.noaa.gov/products/summary/solar-wind-speed.json"
+                  if (source != live_source_path
+                      or payload.get("field") != "proton_speed"
+                      or payload.get("timestamp_field") != "time_tag"):
+                      print(f"Skipping invalid live-data-field transformation {relative}.")
+                      continue
+                  live_source_file = root / live_source_path
+                  try:
+                      live_source_payload = json.loads(live_source_file.read_text(encoding="utf-8"))
+                  except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+                      live_source_payload = {}
+                  if (not isinstance(live_source_payload, dict)
+                      or live_source_payload.get("type") != "data"
+                      or live_source_payload.get("url") != live_source_url):
+                      print(f"Skipping live-data-field transformation {relative}: approved NOAA source is missing.")
+                      continue
+                  live_source_bytes = live_source_file.read_bytes()
+                  digest = hashlib.sha256(path.read_bytes() + b"\\0" + live_source_bytes).hexdigest()
+                  transformations.append({
+                      "path": relative,
+                      "mode": "live-data-field",
+                      "source": live_source_path,
+                      "url": live_source_url,
+                      "field": "proton_speed",
+                      "timestamp_field": "time_tag",
+                      "unit": "km/s",
+                      "min_value": 250,
+                      "max_value": 800,
+                      "refresh_seconds": 60,
+                      "digest": digest,
+                  })
+                  continue
               if mode != "signal-field" or not isinstance(source, str):
                   print(f"Skipping unsupported transformation {relative}.")
                   continue
@@ -894,6 +928,36 @@ jobs:
                               "source": source,
                               "source_text": source_text,
                               "digest": hashlib.sha256(raw_transform + b"\\0" + source_text.encode("utf-8")).hexdigest(),
+                          })
+                          continue
+                      if mode == "live-data-field":
+                          live_source_path = "sources/web-live-solar-wind.json"
+                          live_source_url = "https://services.swpc.noaa.gov/products/summary/solar-wind-speed.json"
+                          raw_source = read_member(live_source_path) if live_source_path in members else b""
+                          try:
+                              live_source_payload = json.loads(raw_source.decode("utf-8"))
+                          except (UnicodeDecodeError, json.JSONDecodeError):
+                              live_source_payload = {}
+                          if (source != live_source_path
+                              or payload.get("field") != "proton_speed"
+                              or payload.get("timestamp_field") != "time_tag"
+                              or not isinstance(live_source_payload, dict)
+                              or live_source_payload.get("type") != "data"
+                              or live_source_payload.get("url") != live_source_url):
+                              continue
+                          digest = hashlib.sha256(raw_transform + b"\\0" + raw_source).hexdigest()
+                          history_transformations.append({
+                              "path": path,
+                              "mode": "live-data-field",
+                              "source": live_source_path,
+                              "url": live_source_url,
+                              "field": "proton_speed",
+                              "timestamp_field": "time_tag",
+                              "unit": "km/s",
+                              "min_value": 250,
+                              "max_value": 800,
+                              "refresh_seconds": 60,
+                              "digest": digest,
                           })
                           continue
                       if mode != "signal-field" or not isinstance(source, str):
