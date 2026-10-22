@@ -1,0 +1,7 @@
+{
+  "mode": "pixel-sound",
+  "source": "pixels/036-the-second-part-of-the-circle.txt",
+  "waveform": "triangle",
+  "gap": 0.1,
+  "gain": 0.05
+}
