@@ -16,8 +16,6 @@
  <circle cx="205" cy="210" r="3"/><circle cx="380" cy="210" r="3"/><circle cx="320" cy="210" r="2"/>
 </g>
 <g fill="#8495ae" font-family="monospace" font-size="10" letter-spacing="2">
- <text x="30" y=" thirty"> </text>
- <text x="30" y=" thirty"> </text>
  <text x="30" y="385">SIGNAL / 01</text><text x="610" y="385" text-anchor="end">CROSSING WITHOUT CONTACT</text>
 </g>
 </svg>
