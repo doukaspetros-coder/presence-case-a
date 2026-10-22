@@ -111,6 +111,8 @@ body[data-view="past"] #history-control{border-color:rgba(228,205,161,.3)}
 @keyframes drift{to{transform:translate3d(31px,31px,0)}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 @media(max-width:540px){#board{padding:6vh 5vw 76px;gap:14px}.couplet{max-width:90vw;padding:14px;font-size:19px}#readout{left:10px;bottom:10px;gap:6px 10px;font-size:9px}#state{right:10px;bottom:10px;font-size:9px}}
+.live-field-reading{font-size:10px;line-height:1.6;color:var(--muted);letter-spacing:.04em;overflow-wrap:anywhere}
+.live-field-reading[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -138,7 +140,7 @@ body[data-view="past"] #history-control{border-color:rgba(228,205,161,.3)}
 <script>
 (()=>{'use strict';
 const POLL_MS=3000,field=document.getElementById('field'),board=document.getElementById('board'),connections=document.getElementById('connections'),historySelect=document.getElementById('history-select'),countNode=document.getElementById('count'),coupletCountNode=document.getElementById('couplet-count'),vectorCountNode=document.getElementById('vector-count'),linkCountNode=document.getElementById('link-count'),transformCountNode=document.getElementById('transform-count'),soundCountNode=document.getElementById('sound-count'),sourceCountNode=document.getElementById('source-count'),latencyNode=document.getElementById('latency'),stateNode=document.getElementById('state'),stateText=document.getElementById('state-text');
-const points=new Map(),markers=new Map(),coupletNodes=new Map(),colorNodes=new Map(),pixelNodes=new Map(),vectorNodes=new Map(),transformNodes=new Map(),soundNodes=new Map(),imageNodes=new Map(),sourceNodes=new Map(),connectionNodes=new Map(),soundPlayers=new Map();let knownItems=new Set(),knownCouplets=new Map(),knownColors=new Map(),knownPixels=new Map(),knownVectors=new Map(),knownTransforms=new Map(),knownSounds=new Map(),knownImages=new Map(),knownSources=new Map(),knownLinks=new Map(),currentLinks=[],initialized=false,busy=false,liveManifest=null,historySnapshots=[],selectedHistory='now',historyLoaded=false;
+const points=new Map(),markers=new Map(),coupletNodes=new Map(),colorNodes=new Map(),pixelNodes=new Map(),vectorNodes=new Map(),transformNodes=new Map(),soundNodes=new Map(),imageNodes=new Map(),sourceNodes=new Map(),connectionNodes=new Map(),soundPlayers=new Map(),liveDataFieldStates=new Map();let knownItems=new Set(),knownCouplets=new Map(),knownColors=new Map(),knownPixels=new Map(),knownVectors=new Map(),knownTransforms=new Map(),knownSounds=new Map(),knownImages=new Map(),knownSources=new Map(),knownLinks=new Map(),currentLinks=[],initialized=false,busy=false,liveManifest=null,historySnapshots=[],selectedHistory='now',historyLoaded=false;
 function hash(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function pointFor(id){if(!points.has(id))points.set(id,{x:7+(hash(id+':x')%8600)/100,y:9+(hash(id+':y')%8000)/100});return points.get(id)}
 function setState(value,label){stateNode.dataset.state=value;stateText.textContent=label}
