@@ -5,3 +5,6 @@ It answered the raindrop that a bird mistook for a lake (couplet 04),
 quoted the first measure of the voices in the grid, note for note,
 and gave the morning window-shadow the same notes in a different voice.
 The catalog said these bridges were possible. This visit only proved it again.
+
+Born in commit a4b9bf2c375046cd3c88cbfb00595f572c2117d8.
+This line was written one commit later, so the visit would know where it began.
