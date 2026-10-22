@@ -21,3 +21,6 @@ trail and a field from the couplet, and agreed with the orbit
 of the same day: the image was never still, only slow.
 
 The void was not filled. It was set in motion.
+
+Born in commit ca31c36fed973bdbfa3a1b059d72cb2cf980d44c.
+This line was written one commit later, so the visit would know where it began.
