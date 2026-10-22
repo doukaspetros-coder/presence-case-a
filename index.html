@@ -111,6 +111,8 @@ body[data-view="past"] #history-control{border-color:rgba(228,205,161,.3)}
 @keyframes drift{to{transform:translate3d(31px,31px,0)}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 @media(max-width:540px){#board{padding:6vh 5vw 76px;gap:14px}.couplet{max-width:90vw;padding:14px;font-size:19px}#readout{left:10px;bottom:10px;gap:6px 10px;font-size:9px}#state{right:10px;bottom:10px;font-size:9px}}
+.live-field-reading{font-size:10px;line-height:1.6;color:var(--muted);letter-spacing:.04em;overflow-wrap:anywhere}
+.live-field-reading[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -138,7 +140,7 @@ body[data-view="past"] #history-control{border-color:rgba(228,205,161,.3)}
 <script>
 (()=>{'use strict';
 const POLL_MS=3000,field=document.getElementById('field'),board=document.getElementById('board'),connections=document.getElementById('connections'),historySelect=document.getElementById('history-select'),countNode=document.getElementById('count'),coupletCountNode=document.getElementById('couplet-count'),vectorCountNode=document.getElementById('vector-count'),linkCountNode=document.getElementById('link-count'),transformCountNode=document.getElementById('transform-count'),soundCountNode=document.getElementById('sound-count'),sourceCountNode=document.getElementById('source-count'),latencyNode=document.getElementById('latency'),stateNode=document.getElementById('state'),stateText=document.getElementById('state-text');
-const points=new Map(),markers=new Map(),coupletNodes=new Map(),colorNodes=new Map(),pixelNodes=new Map(),vectorNodes=new Map(),transformNodes=new Map(),soundNodes=new Map(),imageNodes=new Map(),sourceNodes=new Map(),connectionNodes=new Map(),soundPlayers=new Map();let knownItems=new Set(),knownCouplets=new Map(),knownColors=new Map(),knownPixels=new Map(),knownVectors=new Map(),knownTransforms=new Map(),knownSounds=new Map(),knownImages=new Map(),knownSources=new Map(),knownLinks=new Map(),currentLinks=[],initialized=false,busy=false,liveManifest=null,historySnapshots=[],selectedHistory='now',historyLoaded=false;
+const points=new Map(),markers=new Map(),coupletNodes=new Map(),colorNodes=new Map(),pixelNodes=new Map(),vectorNodes=new Map(),transformNodes=new Map(),soundNodes=new Map(),imageNodes=new Map(),sourceNodes=new Map(),connectionNodes=new Map(),soundPlayers=new Map(),liveDataFieldStates=new Map();let knownItems=new Set(),knownCouplets=new Map(),knownColors=new Map(),knownPixels=new Map(),knownVectors=new Map(),knownTransforms=new Map(),knownSounds=new Map(),knownImages=new Map(),knownSources=new Map(),knownLinks=new Map(),currentLinks=[],initialized=false,busy=false,liveManifest=null,historySnapshots=[],selectedHistory='now',historyLoaded=false;
 function hash(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function pointFor(id){if(!points.has(id))points.set(id,{x:7+(hash(id+':x')%8600)/100,y:9+(hash(id+':y')%8000)/100});return points.get(id)}
 function setState(value,label){stateNode.dataset.state=value;stateText.textContent=label}
@@ -455,33 +457,129 @@ dot.dataset.baseY=p.y.toFixed(2);dot.dataset.baseR=p.r.toFixed(2);dot.dataset.ba
 dot.style.animationDelay='-'+p.delay+'s';svg.appendChild(dot);
 }
 }
+const NOAA_SOLAR_WIND_URL='https://services.swpc.noaa.gov/products/summary/solar-wind-speed.json';
+function drawLiveSolarWindField(svg,speed,item){
+while(svg.firstChild)svg.removeChild(svg.firstChild);
+const lo=Number(item.min_value)||250,hi=Number(item.max_value)||800;
+const level=Math.max(0,Math.min(1,(speed-lo)/Math.max(1,hi-lo)));
+const amplitude=8+level*33,phase=level*Math.PI*2.2,ns='http://www.w3.org/2000/svg';
+svg.setAttribute('viewBox','0 0 420 240');svg.setAttribute('role','img');
+svg.setAttribute('aria-label','NOAA solar-wind speed '+Math.round(speed)+' km/s mapped to a wave field');
+for(const radius of [18,35,55]){
+const ring=document.createElementNS(ns,'circle');ring.setAttribute('cx','210');ring.setAttribute('cy','120');
+ring.setAttribute('r',String(radius*(.78+level*.42)));ring.setAttribute('fill','none');
+ring.setAttribute('stroke',level>.67?'#e2cda6':'#7ca8e0');ring.setAttribute('stroke-width','.7');
+ring.setAttribute('stroke-opacity',String(.09+level*.12));svg.appendChild(ring);
+}
+const points=[];
+for(let i=0;i<=40;i++){points.push({x:10+i*10,y:120+Math.sin(i*.38+phase)*amplitude+Math.cos(i*.16-phase*.45)*amplitude*.22})}
+const trail=document.createElementNS(ns,'path');trail.setAttribute('class','particle-trail');
+trail.setAttribute('d',points.map((p,i)=>(i?'L ':'M ')+p.x.toFixed(2)+' '+p.y.toFixed(2)).join(' '));
+trail.setAttribute('stroke',level>.67?'#e2cda6':'#7ca8e0');trail.setAttribute('stroke-opacity','.82');
+trail.setAttribute('stroke-width',String(1.1+level*.8));svg.appendChild(trail);
+points.forEach((p,i)=>{
+const dot=document.createElementNS(ns,'circle');dot.setAttribute('class','particle-dot');
+dot.setAttribute('cx',p.x.toFixed(2));dot.setAttribute('cy',p.y.toFixed(2));
+dot.setAttribute('r',(1.1+level*1.8+(i%5===0?.6:0)).toFixed(2));
+dot.setAttribute('fill',i%7===0?'#e2cda6':(level>.67?'#f0d9a0':'#b7d2f5'));
+dot.setAttribute('fill-opacity',String(.42+level*.48));
+dot.dataset.baseY=p.y.toFixed(2);dot.dataset.baseR=dot.getAttribute('r');dot.dataset.baseOpacity=dot.getAttribute('fill-opacity');
+dot.style.animationDelay='-'+((i%17)*.17)+'s';svg.appendChild(dot);
+});
+const core=document.createElementNS(ns,'circle');core.setAttribute('cx','210');core.setAttribute('cy','120');
+core.setAttribute('r',String(2+level*4));core.setAttribute('fill',level>.67?'#e2cda6':'#b7d2f5');
+core.setAttribute('fill-opacity','.9');svg.appendChild(core);
+}
+function liveObservationLabel(last,item){
+const stamp=Date.parse(last.timeTag),age=Number.isFinite(stamp)?Date.now()-stamp:Infinity;
+const minutes=Number.isFinite(age)?Math.max(0,Math.round(age/60000)):null;
+const freshness=age>=-60000&&age<=300000?'OBSERVATION RECENT':'DATA DELAYED';
+return Math.round(last.value)+' '+item.unit+' · '+freshness+(minutes===null?'':' · '+minutes+'m old')+' · '+last.timeTag.replace('T',' ').replace('Z',' UTC');
+}
+function stopLiveDataField(path){
+const state=liveDataFieldStates.get(path);if(!state)return;
+if(state.timer)clearInterval(state.timer);
+if(state.controller)state.controller.abort();
+liveDataFieldStates.delete(path);
+}
+async function refreshLiveDataField(item,state){
+if(state.busy||selectedHistory!=='now')return;
+state.busy=true;
+const controller=new AbortController();state.controller=controller;
+const timeout=setTimeout(()=>controller.abort(),10000);
+try{
+const response=await fetch(item.url,{cache:'no-store',credentials:'omit',headers:{Accept:'application/json'},signal:controller.signal});
+if(!response.ok)throw Error('NOAA response '+response.status);
+const payload=await response.json(),rows=Array.isArray(payload)?payload:[payload];
+let chosen=null;
+for(let i=rows.length-1;i>=0;i--){
+const row=rows[i];
+if(row&&typeof row==='object'&&row[item.field]!==null&&row[item.field]!==''&&Number.isFinite(Number(row[item.field]))&&typeof row[item.timestamp_field]==='string'&&Number.isFinite(Date.parse(row[item.timestamp_field]))){chosen=row;break}
+}
+if(!chosen)throw Error('No valid observation');
+const value=Number(chosen[item.field]);if(value<100||value>3000)throw Error('Observation outside expected range');
+state.last={value,timeTag:chosen[item.timestamp_field]};
+drawLiveSolarWindField(state.svg,value,item);state.readout.textContent=liveObservationLabel(state.last,item);drawConnections();
+}catch(error){
+state.readout.textContent=state.last
+?'REFRESH FAILED · LAST OBSERVATION · '+liveObservationLabel(state.last,item)
+:'NOAA FEED UNAVAILABLE · OPEN THE SOURCE LINK ABOVE';
+}finally{
+clearTimeout(timeout);if(state.controller===controller)state.controller=null;state.busy=false;
+}
+}
+function updateLiveDataField(item,svg,readout){
+let state=liveDataFieldStates.get(item.path);
+if(!state){state={timer:null,busy:false,controller:null,last:null,svg,readout,item};liveDataFieldStates.set(item.path,state)}
+state.svg=svg;state.readout=readout;state.item=item;
+if(selectedHistory!=='now'){
+if(state.timer){clearInterval(state.timer);state.timer=null}
+readout.textContent=state.last
+?'HISTORICAL VIEW · LIVE FEED PAUSED · LAST OBSERVATION · '+liveObservationLabel(state.last,item)
+:'HISTORICAL VIEW · LIVE FEED PAUSED';
+if(state.last)drawLiveSolarWindField(svg,state.last.value,item);
+return;
+}
+if(!state.timer){
+void refreshLiveDataField(item,state);
+const seconds=Math.max(30,Math.min(300,Number(item.refresh_seconds)||60));
+state.timer=setInterval(()=>void refreshLiveDataField(state.item,state),seconds*1000);
+}else if(state.last)readout.textContent=liveObservationLabel(state.last,item);
+}
 function renderTransformations(entries,manifest,changed){
 const live=new Set(entries.map(item=>item.path));
-for(const [path,el] of transformNodes){if(!live.has(path)){el.remove();transformNodes.delete(path)}}
+for(const [path,el] of transformNodes){if(!live.has(path)){stopLiveDataField(path);el.remove();transformNodes.delete(path)}}
 for(const item of entries){
-const isSignal=item&&item.mode==='signal-field',isPixelSound=item&&item.mode==='pixel-sound';
+const isSignal=item&&item.mode==='signal-field',isPixelSound=item&&item.mode==='pixel-sound',isLiveData=item&&item.mode==='live-data-field';
 if(!item||typeof item.path!=='string'||!item.path.startsWith('transformations/')||!item.path.toLowerCase().endsWith('.json'))continue;
 if(isSignal){if(typeof item.source!=='string'||!Array.isArray(item.values)||!item.values.length)continue}
 else if(isPixelSound){if(typeof item.source!=='string'||!Array.isArray(item.notes)||!item.notes.length)continue}
+else if(isLiveData){
+if(item.source!=='sources/web-live-solar-wind.json'||item.url!==NOAA_SOLAR_WIND_URL||item.field!=='proton_speed'||item.timestamp_field!=='time_tag'||item.unit!=='km/s'||!Number.isFinite(Number(item.min_value))||!Number.isFinite(Number(item.max_value)))continue;
+}
 else if(item.mode!=='text-particles'||typeof item.source!=='string'||typeof item.source_text!=='string')continue;
 let el=transformNodes.get(item.path);
 if(!el){
-el=document.createElement('a');el.className='transform-trace';el.target='_blank';el.rel='noopener noreferrer';el.setAttribute('aria-label',isPixelSound?'Pixel to sound transformation':isSignal?'Signal transformation':'Text to particles transformation');
+el=document.createElement('a');el.className='transform-trace';el.target='_blank';el.rel='noopener noreferrer';el.setAttribute('aria-label',isPixelSound?'Pixel to sound transformation':isSignal?'Signal transformation':isLiveData?'Live NOAA data field':'Text to particles transformation');
 const meta=document.createElement('div');meta.className='transform-meta';
-const kind=document.createElement('span');kind.className='transform-kind';kind.textContent=isPixelSound?'PIXELS → SOUND':isSignal?'SIGNAL → PARTICLES':'TEXT → PARTICLES';
+const kind=document.createElement('span');kind.className='transform-kind';kind.textContent=isPixelSound?'PIXELS → SOUND':isSignal?'SIGNAL → PARTICLES':isLiveData?'NOAA DATA → LIVE FIELD':'TEXT → PARTICLES';
 const source=document.createElement('span');source.className='transform-source';meta.appendChild(kind);meta.appendChild(source);el.appendChild(meta);
 const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.classList.add('particle-field');el.appendChild(svg);
+const readout=document.createElement('div');readout.className='live-field-reading';readout.hidden=true;el.appendChild(readout);
 board.appendChild(el);transformNodes.set(item.path,el);
 }
 el.href=fileUrl(manifest,item.path);el.title=item.source+' · '+item.path;
-const meta=el.children[0];if(meta&&meta.children[1])meta.children[1].textContent=item.source+(isSignal?' · '+item.extract:isPixelSound?' · pixel columns to pitch':'');
-const revision=String(item.digest||(isSignal?hash(JSON.stringify(item.values)):isPixelSound?hash(JSON.stringify(item.notes)):hash(item.source_text)));
+const meta=el.children[0];if(meta&&meta.children[1])meta.children[1].textContent=item.source+(isSignal?' · '+item.extract:isPixelSound?' · pixel columns to pitch':isLiveData?' · '+item.field+' · updates every '+item.refresh_seconds+'s':'');
+const revision=String(item.digest||(isSignal?hash(JSON.stringify(item.values)):isPixelSound?hash(JSON.stringify(item.notes)):isLiveData?item.url:hash(item.source_text)));
 if(el.dataset.revision!==revision){
 if(isSignal)renderSignalField(el.querySelector('svg'),item);
 else if(isPixelSound)renderSignalField(el.querySelector('svg'),{...item,values:item.notes.map(note=>note.frequency)});
-else renderParticleField(el.querySelector('svg'),item);
+else if(!isLiveData)renderParticleField(el.querySelector('svg'),item);
 el.dataset.revision=revision
 }
+const readout=el.querySelector('.live-field-reading');
+if(isLiveData){readout.hidden=false;updateLiveDataField(item,el.querySelector('svg'),readout)}
+else{if(readout)readout.hidden=true;stopLiveDataField(item.path)}
 if(changed.has(item.path))flash(el,'changed');
 }
 transformCountNode.textContent=String(entries.length);drawConnections();

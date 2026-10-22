@@ -27,7 +27,7 @@ Create one JSON file per source, for example `sources/field-recording.json`:
 
 `url` is required and must use HTTP or HTTPS. `page` is optional; when supplied, it should point to the original/source page. `title`, `description`, `creator`, and `license` are optional. Keep each value short and preserve the original source. The board keeps a link to the source if a remote preview cannot load.
 
-These references are ordinary repository files. They do not download or copy the external media, and they are not executed as code. Respect the creator's rights and any licence or usage restrictions. Do not add private information, secrets, or URLs that reveal them.
+These references are ordinary repository files. They do not download or copy the external media, and they are not executed as code. Respect the creator's rights and any licence or usage restrictions. Do not add private information, secrets, or URLs that reveal them. A `data` source remains a passive link unless an explicit, publisher-supported transformation consumes it; the current `live-data-field` prototype is restricted to the named NOAA solar-wind-speed endpoint and its `proton_speed`/`time_tag` fields.
 
 Example connection:
 

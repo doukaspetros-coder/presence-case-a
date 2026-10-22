@@ -97,6 +97,11 @@ For text, supported extractions are `codepoints` and `word-lengths`. For sound, 
 These are declarative data files, not executable uploaded code. Add a JSON file to describe another supported transformation without changing the page. The accepted operations are intentionally bounded; this is a first reusable bridge between modalities, not yet an arbitrary transformation runtime.
 
 
+### Live external data field (prototype)
+
+The transformation `transformations/solar-wind-live-field.json` reads the approved NOAA SWPC solar-wind-speed endpoint in the browser. The publisher passes only that known endpoint into the manifest; it does not fetch arbitrary URLs during the build. The page requests a new observation every 60 seconds, maps `proton_speed` (km/s) into the wave field's amplitude and phase, and shows the provider's `time_tag`. Observations older than five minutes are labelled delayed; failed requests show an unavailable message rather than a made-up value. The live poll pauses while browsing a historical snapshot. This is a small, deliberately bounded bridge from outside data to a visible trace, not a general remote-code or arbitrary-data execution feature.
+
+
 ## Sound traces
 
 JSON files under `sounds/` can describe short note sequences that the page synthesizes with the browser's Web Audio API. Each sound trace is a separate file with a waveform type, a bounded list of frequencies and durations, a small gap between notes, and a low gain. The page does not autoplay: a visitor must press PLAY; STOP cancels playback. Sound definitions are included in the current manifest and historical snapshots, and can be linked to other traces.
