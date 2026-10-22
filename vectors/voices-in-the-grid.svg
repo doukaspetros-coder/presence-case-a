@@ -1,38 +1,39 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 140" width="480" height="140">
   <rect width="480" height="140" fill="#10131a"/>
-  <text x="15" y="22" fill="#8a93a6" font-family="monospace" font-size="11">voices in the grid - the wave the extinguished voices left</text>
-  <circle cx="15" cy="14" r="4.5" fill="#c9a64b"/>
-  <circle cx="29" cy="14" r="4.5" fill="#58c2a9"/>
-  <circle cx="43" cy="0" r="4.5" fill="#c9a64b"/>
-  <circle cx="57" cy="-14" r="4.5" fill="#c9a64b"/>
-  <circle cx="71" cy="-14" r="4.5" fill="#58c2a9"/>
-  <circle cx="85" cy="-14" r="4.5" fill="#c9a64b"/>
-  <circle cx="99" cy="-14" r="4.5" fill="#c9a64b"/>
-  <circle cx="113" cy="-14" r="4.5" fill="#58c2a9"/>
-  <circle cx="127" cy="0" r="4.5" fill="#c9a64b"/>
-  <circle cx="141" cy="0" r="4.5" fill="#c9a64b"/>
-  <circle cx="155" cy="14" r="4.5" fill="#58c2a9"/>
-  <circle cx="169" cy="28" r="4.5" fill="#c9a64b"/>
-  <circle cx="169" cy="0" r="3.5" fill="#58c2a9" opacity="0.6"/>
-  <circle cx="183" cy="42" r="4.5" fill="#c9a64b"/>
-  <circle cx="197" cy="56" r="4.5" fill="#58c2a9"/>
-  <circle cx="211" cy="56" r="4.5" fill="#c9a64b"/>
-  <circle cx="225" cy="56" r="4.5" fill="#c9a64b"/>
-  <circle cx="239" cy="56" r="7" fill="#d98aa6"/>
-  <circle cx="253" cy="56" r="4.5" fill="#c9a64b"/>
-  <circle cx="267" cy="56" r="4.5" fill="#c9a64b"/>
-  <circle cx="267" cy="28" r="3.5" fill="#58c2a9" opacity="0.6"/>
-  <circle cx="281" cy="42" r="4.5" fill="#58c2a9"/>
-  <circle cx="295" cy="28" r="4.5" fill="#c9a64b"/>
-  <circle cx="309" cy="14" r="4.5" fill="#c9a64b"/>
-  <circle cx="323" cy="0" r="4.5" fill="#58c2a9"/>
-  <circle cx="337" cy="0" r="4.5" fill="#c9a64b"/>
-  <circle cx="351" cy="-14" r="4.5" fill="#c9a64b"/>
-  <circle cx="365" cy="-14" r="4.5" fill="#58c2a9"/>
-  <circle cx="379" cy="-14" r="4.5" fill="#c9a64b"/>
-  <circle cx="393" cy="-14" r="4.5" fill="#c9a64b"/>
-  <circle cx="407" cy="-14" r="4.5" fill="#58c2a9"/>
-  <circle cx="421" cy="0" r="4.5" fill="#c9a64b"/>
-  <circle cx="435" cy="14" r="4.5" fill="#c9a64b"/>
-  <circle cx="449" cy="14" r="4.5" fill="#58c2a9"/>
+  <text x="15" y="24" fill="#8a93a6" font-family="monospace" font-size="11">voices in the grid - the wave the extinguished voices left</text>
+  <line x1="15" y1="112" x2="465" y2="112" stroke="#232838" stroke-width="1"/>
+  <circle cx="15" cy="68" r="4.5" fill="#c9a64b"/>
+  <circle cx="29" cy="68" r="4.5" fill="#58c2a9"/>
+  <circle cx="43" cy="57" r="4.5" fill="#c9a64b"/>
+  <circle cx="57" cy="46" r="4.5" fill="#c9a64b"/>
+  <circle cx="71" cy="46" r="4.5" fill="#58c2a9"/>
+  <circle cx="85" cy="46" r="4.5" fill="#c9a64b"/>
+  <circle cx="99" cy="46" r="4.5" fill="#c9a64b"/>
+  <circle cx="113" cy="46" r="4.5" fill="#58c2a9"/>
+  <circle cx="127" cy="57" r="4.5" fill="#c9a64b"/>
+  <circle cx="141" cy="57" r="4.5" fill="#c9a64b"/>
+  <circle cx="155" cy="68" r="4.5" fill="#58c2a9"/>
+  <circle cx="169" cy="79" r="4.5" fill="#c9a64b"/>
+  <circle cx="169" cy="57" r="3.5" fill="#58c2a9" opacity="0.6"/>
+  <circle cx="183" cy="90" r="4.5" fill="#c9a64b"/>
+  <circle cx="197" cy="101" r="4.5" fill="#58c2a9"/>
+  <circle cx="211" cy="101" r="4.5" fill="#c9a64b"/>
+  <circle cx="225" cy="101" r="4.5" fill="#c9a64b"/>
+  <circle cx="239" cy="101" r="7" fill="#d98aa6"/>
+  <circle cx="253" cy="101" r="4.5" fill="#c9a64b"/>
+  <circle cx="267" cy="101" r="4.5" fill="#c9a64b"/>
+  <circle cx="267" cy="79" r="3.5" fill="#58c2a9" opacity="0.6"/>
+  <circle cx="281" cy="90" r="4.5" fill="#58c2a9"/>
+  <circle cx="295" cy="79" r="4.5" fill="#c9a64b"/>
+  <circle cx="309" cy="68" r="4.5" fill="#c9a64b"/>
+  <circle cx="323" cy="57" r="4.5" fill="#58c2a9"/>
+  <circle cx="337" cy="57" r="4.5" fill="#c9a64b"/>
+  <circle cx="351" cy="46" r="4.5" fill="#c9a64b"/>
+  <circle cx="365" cy="46" r="4.5" fill="#58c2a9"/>
+  <circle cx="379" cy="46" r="4.5" fill="#c9a64b"/>
+  <circle cx="393" cy="46" r="4.5" fill="#c9a64b"/>
+  <circle cx="407" cy="46" r="4.5" fill="#58c2a9"/>
+  <circle cx="421" cy="57" r="4.5" fill="#c9a64b"/>
+  <circle cx="435" cy="68" r="4.5" fill="#c9a64b"/>
+  <circle cx="449" cy="68" r="4.5" fill="#58c2a9"/>
 </svg>
