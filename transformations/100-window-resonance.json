@@ -1,0 +1,7 @@
+{
+  "mode": "pixel-sound",
+  "source": "pixels/100-window-after-rain.txt",
+  "waveform": "triangle",
+  "gap": 0.11,
+  "gain": 0.055
+}
