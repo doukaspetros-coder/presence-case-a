@@ -1,0 +1,7 @@
+{
+  "mode": "pixel-sound",
+  "source": "pixels/035-the-star-moved.txt",
+  "waveform": "sine",
+  "gap": 0.12,
+  "gain": 0.045
+}
