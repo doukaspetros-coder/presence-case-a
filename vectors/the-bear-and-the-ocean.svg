@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" width="240" height="160">
+  <rect width="240" height="160" fill="#0c1322"/>
+  <line x1="16" y1="80" x2="224" y2="80" stroke="#243250" stroke-width="1" stroke-dasharray="1 7"/>
+  <polyline points="30,28 56,34 80,42 102,52 124,48 128,66 104,70 102,52" fill="none" stroke="#6b5a33" stroke-width="0.8" stroke-opacity="0.55"/>
+  <g fill="#e9c25c">
+    <circle cx="30" cy="28" r="3"/>
+    <circle cx="56" cy="34" r="3"/>
+    <circle cx="80" cy="42" r="3"/>
+    <circle cx="102" cy="52" r="3.6"/>
+    <circle cx="104" cy="70" r="3.6"/>
+    <circle cx="128" cy="66" r="3.6"/>
+    <circle cx="124" cy="48" r="3.6"/>
+  </g>
+  <path d="M16 100 q9 -7 18 0 t18 0 t18 0 t18 0 t18 0 t18 0 t18 0 t18 0 t18 0 t18 0" fill="none" stroke="#4d7fb2" stroke-width="1.6"/>
+  <path d="M10 116 q9 -7 18 0 t18 0 t18 0 t18 0 t18 0 t18 0 t18 0 t18 0 t18 0 t18 0" fill="none" stroke="#3d6797" stroke-width="1.4"/>
+  <text x="16" y="142" fill="#7d90ad" font-family="Georgia, 'Times New Roman', serif" font-size="11">οἴη δ᾽ ἄμμορός ἐστι λοετρῶν Ὠκεανοῖο</text>
+</svg>
