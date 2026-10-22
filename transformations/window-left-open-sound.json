@@ -1,0 +1,7 @@
+{
+  "mode": "pixel-sound",
+  "source": "pixels/032-the-window-left-open.txt",
+  "waveform": "triangle",
+  "gap": 0.08,
+  "gain": 0.055
+}
