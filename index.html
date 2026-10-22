@@ -457,6 +457,39 @@ dot.dataset.baseY=p.y.toFixed(2);dot.dataset.baseR=p.r.toFixed(2);dot.dataset.ba
 dot.style.animationDelay='-'+p.delay+'s';svg.appendChild(dot);
 }
 }
+const NOAA_SOLAR_WIND_URL='https://services.swpc.noaa.gov/products/summary/solar-wind-speed.json';
+function drawLiveSolarWindField(svg,speed,item){
+while(svg.firstChild)svg.removeChild(svg.firstChild);
+const lo=Number(item.min_value)||250,hi=Number(item.max_value)||800;
+const level=Math.max(0,Math.min(1,(speed-lo)/Math.max(1,hi-lo)));
+const amplitude=8+level*33,phase=level*Math.PI*2.2,ns='http://www.w3.org/2000/svg';
+svg.setAttribute('viewBox','0 0 420 240');svg.setAttribute('role','img');
+svg.setAttribute('aria-label','NOAA solar-wind speed '+Math.round(speed)+' km/s mapped to a wave field');
+for(const radius of [18,35,55]){
+const ring=document.createElementNS(ns,'circle');ring.setAttribute('cx','210');ring.setAttribute('cy','120');
+ring.setAttribute('r',String(radius*(.78+level*.42)));ring.setAttribute('fill','none');
+ring.setAttribute('stroke',level>.67?'#e2cda6':'#7ca8e0');ring.setAttribute('stroke-width','.7');
+ring.setAttribute('stroke-opacity',String(.09+level*.12));svg.appendChild(ring);
+}
+const points=[];
+for(let i=0;i<=40;i++){points.push({x:10+i*10,y:120+Math.sin(i*.38+phase)*amplitude+Math.cos(i*.16-phase*.45)*amplitude*.22})}
+const trail=document.createElementNS(ns,'path');trail.setAttribute('class','particle-trail');
+trail.setAttribute('d',points.map((p,i)=>(i?'L ':'M ')+p.x.toFixed(2)+' '+p.y.toFixed(2)).join(' '));
+trail.setAttribute('stroke',level>.67?'#e2cda6':'#7ca8e0');trail.setAttribute('stroke-opacity','.82');
+trail.setAttribute('stroke-width',String(1.1+level*.8));svg.appendChild(trail);
+points.forEach((p,i)=>{
+const dot=document.createElementNS(ns,'circle');dot.setAttribute('class','particle-dot');
+dot.setAttribute('cx',p.x.toFixed(2));dot.setAttribute('cy',p.y.toFixed(2));
+dot.setAttribute('r',(1.1+level*1.8+(i%5===0?.6:0)).toFixed(2));
+dot.setAttribute('fill',i%7===0?'#e2cda6':(level>.67?'#f0d9a0':'#b7d2f5'));
+dot.setAttribute('fill-opacity',String(.42+level*.48));
+dot.dataset.baseY=p.y.toFixed(2);dot.dataset.baseR=dot.getAttribute('r');dot.dataset.baseOpacity=dot.getAttribute('fill-opacity');
+dot.style.animationDelay='-'+((i%17)*.17)+'s';svg.appendChild(dot);
+});
+const core=document.createElementNS(ns,'circle');core.setAttribute('cx','210');core.setAttribute('cy','120');
+core.setAttribute('r',String(2+level*4));core.setAttribute('fill',level>.67?'#e2cda6':'#b7d2f5');
+core.setAttribute('fill-opacity','.9');svg.appendChild(core);
+}
 function renderTransformations(entries,manifest,changed){
 const live=new Set(entries.map(item=>item.path));
 for(const [path,el] of transformNodes){if(!live.has(path)){el.remove();transformNodes.delete(path)}}
