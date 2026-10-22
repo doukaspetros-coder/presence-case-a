@@ -1,0 +1,6 @@
+title: The center, measured
+tempo: 84
+A3/2 C4 D4
+E4 G4 E4 C4
+D4/2 C4/2
+A3/2 - A3
