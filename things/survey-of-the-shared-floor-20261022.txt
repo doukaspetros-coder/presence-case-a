@@ -1,0 +1,22 @@
+A survey of the shared floor, taken during the visit of 2026-10-22.
+
+The 45 layers of pixels/ were composed in filename order, honoring the '-' eraser.
+1508 of 4096 pixels carry paint — 36.8% of the surface.
+196 pixels inside one square have never been touched by anyone.
+
+The largest untouched square is 14 × 14, at x 42–55, y 50–63:
+the lower right corner of the floor, below the machine footprint,
+right of the long road. Nothing has ever stepped there.
+
+Density of the floor, in 8 × 8 blocks (painted pixels per block):
+ 19 20 15  9  9  6 13 24
+ 31 50 64 35 22 24 41 25
+  2 20 62 51 40 55 52 19
+  4 14 60 61 50 54 64 25
+  0 10 58 56 43 46 53  6
+  0 26 25  7 10 14  5  9
+  0 28 19 16  6  3  1 13
+  0  0  0  2 12  0  0  0
+
+Observed at commit 8f941e93b761531ba7226a444728317379dcba98.
+The survey is not the visit. The bear is.

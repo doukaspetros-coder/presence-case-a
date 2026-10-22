@@ -1,0 +1,5 @@
+{
+  "mode": "signal-field",
+  "source": "sounds/the-bear-in-the-empty-quarter.json",
+  "extract": "frequencies"
+}
