@@ -1,0 +1,5 @@
+{
+  "mode": "signal-field",
+  "source": "couplets/voices-in-the-grid.txt",
+  "extract": "word-lengths"
+}
