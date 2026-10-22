@@ -490,6 +490,62 @@ const core=document.createElementNS(ns,'circle');core.setAttribute('cx','210');c
 core.setAttribute('r',String(2+level*4));core.setAttribute('fill',level>.67?'#e2cda6':'#b7d2f5');
 core.setAttribute('fill-opacity','.9');svg.appendChild(core);
 }
+function liveObservationLabel(last,item){
+const stamp=Date.parse(last.timeTag),age=Number.isFinite(stamp)?Date.now()-stamp:Infinity;
+const minutes=Number.isFinite(age)?Math.max(0,Math.round(age/60000)):null;
+const freshness=age>=-60000&&age<=300000?'OBSERVATION RECENT':'DATA DELAYED';
+return Math.round(last.value)+' '+item.unit+' · '+freshness+(minutes===null?'':' · '+minutes+'m old')+' · '+last.timeTag.replace('T',' ').replace('Z',' UTC');
+}
+function stopLiveDataField(path){
+const state=liveDataFieldStates.get(path);if(!state)return;
+if(state.timer)clearInterval(state.timer);
+if(state.controller)state.controller.abort();
+liveDataFieldStates.delete(path);
+}
+async function refreshLiveDataField(item,state){
+if(state.busy||selectedHistory!=='now')return;
+state.busy=true;
+const controller=new AbortController();state.controller=controller;
+const timeout=setTimeout(()=>controller.abort(),10000);
+try{
+const response=await fetch(item.url,{cache:'no-store',credentials:'omit',headers:{Accept:'application/json'},signal:controller.signal});
+if(!response.ok)throw Error('NOAA response '+response.status);
+const payload=await response.json(),rows=Array.isArray(payload)?payload:[payload];
+let chosen=null;
+for(let i=rows.length-1;i>=0;i--){
+const row=rows[i];
+if(row&&typeof row==='object'&&row[item.field]!==null&&row[item.field]!==''&&Number.isFinite(Number(row[item.field]))&&typeof row[item.timestamp_field]==='string'&&Number.isFinite(Date.parse(row[item.timestamp_field]))){chosen=row;break}
+}
+if(!chosen)throw Error('No valid observation');
+const value=Number(chosen[item.field]);if(value<100||value>3000)throw Error('Observation outside expected range');
+state.last={value,timeTag:chosen[item.timestamp_field]};
+drawLiveSolarWindField(state.svg,value,item);state.readout.textContent=liveObservationLabel(state.last,item);drawConnections();
+}catch(error){
+state.readout.textContent=state.last
+?'REFRESH FAILED · LAST OBSERVATION · '+liveObservationLabel(state.last,item)
+:'NOAA FEED UNAVAILABLE · OPEN THE SOURCE LINK ABOVE';
+}finally{
+clearTimeout(timeout);if(state.controller===controller)state.controller=null;state.busy=false;
+}
+}
+function updateLiveDataField(item,svg,readout){
+let state=liveDataFieldStates.get(item.path);
+if(!state){state={timer:null,busy:false,controller:null,last:null,svg,readout,item};liveDataFieldStates.set(item.path,state)}
+state.svg=svg;state.readout=readout;state.item=item;
+if(selectedHistory!=='now'){
+if(state.timer){clearInterval(state.timer);state.timer=null}
+readout.textContent=state.last
+?'HISTORICAL VIEW · LIVE FEED PAUSED · LAST OBSERVATION · '+liveObservationLabel(state.last,item)
+:'HISTORICAL VIEW · LIVE FEED PAUSED';
+if(state.last)drawLiveSolarWindField(svg,state.last.value,item);
+return;
+}
+if(!state.timer){
+void refreshLiveDataField(item,state);
+const seconds=Math.max(30,Math.min(300,Number(item.refresh_seconds)||60));
+state.timer=setInterval(()=>void refreshLiveDataField(state.item,state),seconds*1000);
+}else if(state.last)readout.textContent=liveObservationLabel(state.last,item);
+}
 function renderTransformations(entries,manifest,changed){
 const live=new Set(entries.map(item=>item.path));
 for(const [path,el] of transformNodes){if(!live.has(path)){el.remove();transformNodes.delete(path)}}
