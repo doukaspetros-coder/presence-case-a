@@ -548,31 +548,38 @@ state.timer=setInterval(()=>void refreshLiveDataField(state.item,state),seconds*
 }
 function renderTransformations(entries,manifest,changed){
 const live=new Set(entries.map(item=>item.path));
-for(const [path,el] of transformNodes){if(!live.has(path)){el.remove();transformNodes.delete(path)}}
+for(const [path,el] of transformNodes){if(!live.has(path)){stopLiveDataField(path);el.remove();transformNodes.delete(path)}}
 for(const item of entries){
-const isSignal=item&&item.mode==='signal-field',isPixelSound=item&&item.mode==='pixel-sound';
+const isSignal=item&&item.mode==='signal-field',isPixelSound=item&&item.mode==='pixel-sound',isLiveData=item&&item.mode==='live-data-field';
 if(!item||typeof item.path!=='string'||!item.path.startsWith('transformations/')||!item.path.toLowerCase().endsWith('.json'))continue;
 if(isSignal){if(typeof item.source!=='string'||!Array.isArray(item.values)||!item.values.length)continue}
 else if(isPixelSound){if(typeof item.source!=='string'||!Array.isArray(item.notes)||!item.notes.length)continue}
+else if(isLiveData){
+if(item.source!=='sources/web-live-solar-wind.json'||item.url!==NOAA_SOLAR_WIND_URL||item.field!=='proton_speed'||item.timestamp_field!=='time_tag'||item.unit!=='km/s'||!Number.isFinite(Number(item.min_value))||!Number.isFinite(Number(item.max_value)))continue;
+}
 else if(item.mode!=='text-particles'||typeof item.source!=='string'||typeof item.source_text!=='string')continue;
 let el=transformNodes.get(item.path);
 if(!el){
-el=document.createElement('a');el.className='transform-trace';el.target='_blank';el.rel='noopener noreferrer';el.setAttribute('aria-label',isPixelSound?'Pixel to sound transformation':isSignal?'Signal transformation':'Text to particles transformation');
+el=document.createElement('a');el.className='transform-trace';el.target='_blank';el.rel='noopener noreferrer';el.setAttribute('aria-label',isPixelSound?'Pixel to sound transformation':isSignal?'Signal transformation':isLiveData?'Live NOAA data field':'Text to particles transformation');
 const meta=document.createElement('div');meta.className='transform-meta';
-const kind=document.createElement('span');kind.className='transform-kind';kind.textContent=isPixelSound?'PIXELS → SOUND':isSignal?'SIGNAL → PARTICLES':'TEXT → PARTICLES';
+const kind=document.createElement('span');kind.className='transform-kind';kind.textContent=isPixelSound?'PIXELS → SOUND':isSignal?'SIGNAL → PARTICLES':isLiveData?'NOAA DATA → LIVE FIELD':'TEXT → PARTICLES';
 const source=document.createElement('span');source.className='transform-source';meta.appendChild(kind);meta.appendChild(source);el.appendChild(meta);
 const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.classList.add('particle-field');el.appendChild(svg);
+const readout=document.createElement('div');readout.className='live-field-reading';readout.hidden=true;el.appendChild(readout);
 board.appendChild(el);transformNodes.set(item.path,el);
 }
 el.href=fileUrl(manifest,item.path);el.title=item.source+' · '+item.path;
-const meta=el.children[0];if(meta&&meta.children[1])meta.children[1].textContent=item.source+(isSignal?' · '+item.extract:isPixelSound?' · pixel columns to pitch':'');
-const revision=String(item.digest||(isSignal?hash(JSON.stringify(item.values)):isPixelSound?hash(JSON.stringify(item.notes)):hash(item.source_text)));
+const meta=el.children[0];if(meta&&meta.children[1])meta.children[1].textContent=item.source+(isSignal?' · '+item.extract:isPixelSound?' · pixel columns to pitch':isLiveData?' · '+item.field+' · updates every '+item.refresh_seconds+'s':'');
+const revision=String(item.digest||(isSignal?hash(JSON.stringify(item.values)):isPixelSound?hash(JSON.stringify(item.notes)):isLiveData?item.url:hash(item.source_text)));
 if(el.dataset.revision!==revision){
 if(isSignal)renderSignalField(el.querySelector('svg'),item);
 else if(isPixelSound)renderSignalField(el.querySelector('svg'),{...item,values:item.notes.map(note=>note.frequency)});
-else renderParticleField(el.querySelector('svg'),item);
+else if(!isLiveData)renderParticleField(el.querySelector('svg'),item);
 el.dataset.revision=revision
 }
+const readout=el.querySelector('.live-field-reading');
+if(isLiveData){readout.hidden=false;updateLiveDataField(item,el.querySelector('svg'),readout)}
+else{if(readout)readout.hidden=true;stopLiveDataField(item.path)}
 if(changed.has(item.path))flash(el,'changed');
 }
 transformCountNode.textContent=String(entries.length);drawConnections();
