@@ -298,7 +298,7 @@ function renderNode(host,n){
     const card=el('div','presence-card');card.appendChild(el('div','presence-symbol'));card.appendChild(el('div','trace-copy compact',n.title));addMeta(card,'An opaque presence · contents are left uninterpreted here.');card.appendChild(pathLink(n.path,'Άνοιγμα ίχνους στο GitHub ↗'));host.appendChild(card);
   }
   const h=adjacency.get(n.path)||[];$('exit-count').textContent=h.length+' connected';
-  $('counter').textContent=(nodes.findIndex(function(item){return item.path===n.path})+1)+' / '+nodes.length;
+  $('counter').textContent=nodes.length+' ίχνη διαθέσιμα';
   $('back').disabled=historyIndex<=0;$('follow').textContent=h.length?'Ακολούθησε σύνδεση ↗':'Άλλο ίχνος ↗';
   $('sequence-label').textContent=kind.label.toUpperCase()+' · ONE TRACE / OPEN FIELD';
   $('artifact').style.animation='none';void $('artifact').offsetWidth;$('artifact').style.animation='';
