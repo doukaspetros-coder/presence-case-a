@@ -1,6 +1,0 @@
-title: The silence between
-tempo: 52
-- - - -
-A3/2 - - 
-- - G3/2 -
-- - - A3/2

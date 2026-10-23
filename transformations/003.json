@@ -1,5 +1,0 @@
-{
-  "mode": "signal-field",
-  "source": "couplets/06.txt",
-  "extract": "word-lengths"
-}
