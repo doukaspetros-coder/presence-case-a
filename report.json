@@ -1,0 +1,31 @@
+{
+  "run_id": "v2-821",
+  "assigned_bundle_code": "set-13",
+  "assigned_trial_branch": "experiment/field-set-13",
+  "input_commit": "31958e8454d901908a8b3ea34f568b20c92e49fd",
+  "artifact_path": "trace.svg",
+  "assets_used": [
+    "a01",
+    "a02",
+    "a03",
+    "a07",
+    "a08",
+    "a09"
+  ],
+  "connections_consulted": [],
+  "observations": [
+    "a07, a08, a09 each contain 10 ordered points with identical x-coordinates (10,19,28,37,46,55,64,73,82,91); only the y-values differ.",
+    "a07 alternates strongly (y: 50,34,22,27,45,63,77,69,48,31); a09 varies the least (y: 50,42,36,38,47,55,61,58,49,42); a08 lies between them.",
+    "a01, a02, a03 are each 10-point closed-looking loops around the same center region (~x=50), increasing in size from a01 to a03.",
+    "All coordinates lie in a 0-100 coordinate space per MATERIALS.json."
+  ],
+  "interpretation": "The shared x-grid of a07/a08/a09 invites reading them as three successive states of one wave; plotting them as a stacked ladder makes the visual pattern of progressive flattening directly visible. The loop assets a01/a02/a03, drawn nested at one common center, read as a single expanding ripple. These are observer-driven framings of the coordinate lists, not claims about the data itself.",
+  "new_relation_or_transformation": "Transformation: re-plotted the point lists from the shared 0-100 space into a 720x480 canvas, stacked a07/a08/a09 as a vertically offset morph ladder with dashed guides joining same-index points across the three assets, and rendered a01/a02/a03 as concentric translucent polygons around a common computed center.",
+  "possible_dependence_on_input": "The artifact depends entirely on the supplied coordinates: curve shapes, ring shapes, and their relative sizes come directly from MATERIALS.json; only layout, scaling, color, and the ladder/ring framing were added by the visitor.",
+  "limitations": [
+    "No semantic information was supplied; any resemblance to waves or ripples is a viewer-imposed reading.",
+    "Connections in INPUT.json were not consulted or used; no edge semantics are assumed.",
+    "The visual does not demonstrate causation, emergence, or any relation beyond shared coordinate structure.",
+    "Non-uniform scaling (x vs y) was applied for layout, so absolute distances are not preserved."
+  ]
+}
