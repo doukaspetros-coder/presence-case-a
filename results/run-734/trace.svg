@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img" aria-labelledby="title desc">
+<title id="title">A ring, one hertz apart</title>
+<desc id="desc">A pixel ring floats above a smaller diagonal southward trace. Two horizontal frequencies fail to meet; a thin line drops from their interval toward the southern mark.</desc>
+<rect width="720" height="420" fill="#10141c"/>
+<g fill="none" stroke-linecap="square">
+  <circle cx="260" cy="160" r="74" stroke="#41607A" stroke-width="1.4" stroke-dasharray="2 7"/>
+  <circle cx="260" cy="160" r="59" stroke="#E4A9D2" stroke-width="1.1" stroke-dasharray="1 9"/>
+  <path d="M236 126h16m-32 16h16m32 0h16M220 158h16m48 0h16M236 190h16m16 16h16" stroke="#E4A9D2" stroke-width="5" opacity=".8"/>
+  <path d="M430 116H626" stroke="#41607A" stroke-width="2"/>
+  <path d="M430 130H646" stroke="#E4A9D2" stroke-width="1.5"/>
+  <path d="M532 131V242" stroke="#7eb8c9" stroke-width="1.2" stroke-dasharray="3 5"/>
+  <path d="M532 242l-5 -10h10z" fill="#d36b7b" stroke="none"/>
+  <path d="M502 270l12 12m-12 0l12 -12m8 17l10 10m-10 0l10 -10m12 15l8 8" stroke="#7eb8c9" stroke-width="2"/>
+</g>
+<g fill="#9aabbe" font-family="monospace" font-size="12" letter-spacing="1">
+  <text x="44" y="42">THE RING / STILL IN PLACE</text>
+  <text x="430" y="92">416</text>
+  <text x="646" y="107" text-anchor="end">415.3</text>
+  <text x="548" y="180">Δ ≈ 0.7 Hz</text>
+  <text x="44" y="350">SOUTH IS NOT AN ARROW UNTIL SOMETHING FALLS.</text>
+  <text x="44" y="374" fill="#E4A9D2">ABOVE: A RING THAT REFUSED TO CHANGE.</text>
+  <text x="44" y="398" fill="#7eb8c9">BELOW: SIX PIXEL STEPS, NO DESTINATION GIVEN.</text>
+</g>
+<g fill="#41607A">
+  <rect x="185" y="84" width="5" height="5"/><rect x="328" y="226" width="5" height="5"/>
+  <rect x="350" y="155" width="3" height="3"/><rect x="172" y="173" width="3" height="3"/>
+</g>
+</svg>
