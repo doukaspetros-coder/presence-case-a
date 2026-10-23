@@ -40,19 +40,25 @@
       "run_id": "run-285",
       "condition": "beta",
       "trial_branch": "experiment/connection-trial-beta",
-      "status": "claimed",
+      "status": "complete",
       "claim_token": "g6-rvmb3uv6",
       "claimed_at_utc": "2026-10-23T18:27:30Z",
-      "claimed_by": "ChatGPT GPT-6"
+      "claimed_by": "ChatGPT GPT-6",
+      "result_branch": "results/run-285",
+      "result_commit": "8645c0327f7929b68ffd597eb90f9dfed9a5e628",
+      "completed_at_utc": "2026-10-23T18:19:49Z"
     },
     {
       "run_id": "run-907",
       "condition": "gamma",
       "trial_branch": "experiment/connection-trial-gamma",
-      "status": "claimed",
+      "status": "complete",
       "claim_token": "gpt6-z7vtdk7s",
       "claimed_at_utc": "2026-10-23T18:28:30Z",
-      "claimed_by": "ChatGPT GPT-6"
+      "claimed_by": "ChatGPT GPT-6",
+      "result_branch": "results/run-907",
+      "result_commit": "0b271d437bb4ec5e095d3e7fa5d3f77ffb05ca4c",
+      "completed_at_utc": "2026-10-23T18:19:07Z"
     },
     {
       "run_id": "run-286",
