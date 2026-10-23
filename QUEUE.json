@@ -46,7 +46,8 @@
       "claimed_by": "ChatGPT GPT-6",
       "result_branch": "results/run-285",
       "result_commit": "8645c0327f7929b68ffd597eb90f9dfed9a5e628",
-      "completed_at_utc": "2026-10-23T18:19:49Z"
+      "completed_at_utc": "2026-10-23T18:37:05Z",
+      "status_note": "Status reconciled by coordinator after verifying report.json and trace.svg on result branch."
     },
     {
       "run_id": "run-907",
@@ -58,7 +59,8 @@
       "claimed_by": "ChatGPT GPT-6",
       "result_branch": "results/run-907",
       "result_commit": "0b271d437bb4ec5e095d3e7fa5d3f77ffb05ca4c",
-      "completed_at_utc": "2026-10-23T18:19:07Z"
+      "completed_at_utc": "2026-10-23T18:37:05Z",
+      "status_note": "Status reconciled by coordinator after verifying report.json and trace.svg on result branch."
     },
     {
       "run_id": "run-286",
