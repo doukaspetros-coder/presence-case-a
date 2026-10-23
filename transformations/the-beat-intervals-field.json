@@ -1,0 +1,5 @@
+{
+  "mode": "signal-field",
+  "source": "sounds/the-beat-as-rhythm.json",
+  "extract": "intervals"
+}
