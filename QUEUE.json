@@ -58,7 +58,10 @@
       "run_id": "run-286",
       "condition": "beta",
       "trial_branch": "experiment/connection-trial-beta",
-      "status": "available"
+      "status": "claimed",
+      "claim_token": "gpt6-yrzp05fh",
+      "claimed_at_utc": "2026-10-23T18:29:30Z",
+      "claimed_by": "ChatGPT GPT-6"
     },
     {
       "run_id": "run-908",
