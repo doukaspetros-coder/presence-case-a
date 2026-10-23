@@ -196,7 +196,7 @@ const types={
   transform:{label:'Μετασχηματισμοί',singular:'μετασχηματισμός',symbol:'⌘',color:'#9fc9b1'},
   presence:{label:'Άγνωστες παρουσίες',singular:'παρουσία',symbol:'○',color:'#9aa9c1'}
 };
-let manifest=null,nodes=[],byPath=new Map(),adjacency=new Map(),currentPath='',history=[],historyIndex=-1,atlasFilter='',soundContext=null,activePlayback=0,liveUpdateTimer=null;
+let manifest=null,nodes=[],byPath=new Map(),adjacency=new Map(),currentPath='',history=[],historyIndex=-1,atlasFilter='',soundContext=null,activePlayback=0,liveUpdateTimer=null,betweenEdges=[],betweenIndex=0;
 const islandOrder=['couplet','sound','score','image','vector','pixel','color','transform','source','presence'];
 function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
 function svgNode(tag,attrs){const n=document.createElementNS(NS,tag);Object.keys(attrs||{}).forEach(function(k){n.setAttribute(k,String(attrs[k]))});return n}
@@ -207,11 +207,16 @@ function safeHref(path){return './'+String(path).split('/').map(encodeURICompone
 function githubHref(path){const repo=(manifest&&manifest.repository)||'doukaspetros-coder/presence-case-a';return 'https://github.com/'+repo+'/blob/main/'+String(path).split('/').map(encodeURIComponent).join('/')}
 function pushNode(list,kind){(list||[]).forEach(function(item){if(!item||typeof item.path!=='string'||byPath.has(item.path))return;const n={path:item.path,kind:kind,data:item,title:(item.title&&String(item.title).trim())||filename(item.path)};byPath.set(n.path,n);nodes.push(n)})}
 function buildIndex(m){
-  nodes=[];byPath=new Map();adjacency=new Map();
+  nodes=[];byPath=new Map();adjacency=new Map();betweenEdges=[];
   pushNode(m.couplets,'couplet');pushNode(m.vectors,'vector');pushNode(m.pixels,'pixel');pushNode(m.colors,'color');pushNode(m.sounds,'sound');pushNode(m.scores,'score');pushNode(m.images,'image');pushNode(m.sources,'source');pushNode(m.transformations,'transform');
   (m.items||[]).forEach(function(path){if(typeof path==='string'&&!byPath.has(path)){const n={path:path,kind:'presence',data:{path:path},title:filename(path)};byPath.set(path,n);nodes.push(n)}});
   (m.links||[]).forEach(function(link){if(!byPath.has(link.from)||!byPath.has(link.to)||link.from===link.to)return;[[link.from,link.to],[link.to,link.from]].forEach(function(pair){if(!adjacency.has(pair[0]))adjacency.set(pair[0],[]);const list=adjacency.get(pair[0]);if(!list.some(function(n){return n.path===pair[1]}))list.push(byPath.get(pair[1]))})});
   adjacency.forEach(function(list){list.sort(function(a,b){return a.title.localeCompare(b.title)})});
+  (m.links||[]).forEach(function(link){const from=byPath.get(link.from),to=byPath.get(link.to);if(from&&to&&from.path!==to.path&&from.kind!==to.kind)betweenEdges.push({path:link.path,from:from,to:to})});
+  if(!betweenEdges.length)(m.links||[]).forEach(function(link){const from=byPath.get(link.from),to=byPath.get(link.to);if(from&&to&&from.path!==to.path)betweenEdges.push({path:link.path,from:from,to:to})});
+  betweenEdges.sort(function(a,b){return a.path.localeCompare(b.path)});
+  const pixelSound=betweenEdges.findIndex(function(edge){return /pixel-sound/i.test(edge.path)});if(pixelSound>=0)betweenIndex=pixelSound;
+  else betweenIndex=Math.max(0,betweenEdges.length-1);
 }
 function pathLink(path,label){
   const a=el('a','trace-link',label||'Άνοιγμα στο GitHub ↗');a.href=githubHref(path);a.target='_blank';a.rel='noopener noreferrer';return a
@@ -377,6 +382,72 @@ function renderAtlasResults(){
   });
   if(filtered.length>80){$('atlas-empty').style.display='block';$('atlas-empty').textContent='Showing the first 80. Add a more specific search to narrow the field.'}
 }
+function makeBetweenCard(n){
+  const card=el('article','between-card');
+  card.appendChild(el('div','trace-kind',typeInfo(n.kind).singular));
+  card.appendChild(el('div','trace-title',shortPath(n.path)));
+  const preview=el('div','between-preview');
+  if(n.kind==='couplet'){
+    const text=String(n.data.text||n.title);preview.appendChild(el('div','trace-copy',text.length>210?text.slice(0,207).trimEnd()+'…':text));
+  }else if(n.kind==='color'){
+    const orbit=el('div','color-orbit');orbit.style.setProperty('--swatch',n.data.color||'#a5c8f4');orbit.style.background=n.data.color||'#a5c8f4';preview.appendChild(orbit);
+    preview.appendChild(el('div','mini-meta',String(n.data.color||'').toUpperCase()));
+  }else if(n.kind==='vector'||n.kind==='image'){
+    const img=el('img');img.src=n.kind==='image'?n.data.url:safeHref(n.path);img.alt=n.title;if(n.kind==='image')img.referrerPolicy='no-referrer';setImageFallback(img,n.title);preview.appendChild(img);
+  }else if(n.kind==='pixel'){
+    preview.appendChild(drawPixels(n.data));
+  }else if(n.kind==='sound'){
+    preview.appendChild(makeWaveform(n.data.notes||[]));
+    const listen=el('button','listen','Άκουσε');listen.type='button';listen.setAttribute('aria-pressed','false');listen.addEventListener('click',function(){playNotes(n.data.notes,n.data.gap,n.data.gain,n.data.waveform,listen)});preview.appendChild(listen);
+  }else if(n.kind==='score'){
+    preview.appendChild(el('div','trace-copy compact',n.data.title||n.title));
+    const measure=(n.data.measures||[])[0];if(measure)preview.appendChild(el('div','mini-meta',(measure.notes||[]).map(function(note){return note.pitch==='rest'?'—':note.pitch}).join(' · ')));
+    preview.appendChild(el('div','mini-meta',(n.data.tempo||96)+' BPM'));
+  }else if(n.kind==='source'){
+    preview.appendChild(el('div','presence-symbol'));
+    preview.appendChild(el('div','trace-copy compact',n.data.title||n.title));
+    if(n.data.description)preview.appendChild(el('div','mini-meta',n.data.description));
+    const link=el('a','trace-link','Άνοιγμα πηγής ↗');link.href=n.data.page||n.data.url;link.target='_blank';link.rel='noopener noreferrer';preview.appendChild(link);
+  }else if(n.kind==='transform'){
+    if(n.data.mode==='signal-field')preview.appendChild(drawSignal(n.data.values,n.data.source_text));
+    else if(n.data.mode==='sound-pixels')preview.appendChild(drawPixels(n.data));
+    else{preview.appendChild(el('div','presence-symbol'));preview.appendChild(el('div','trace-copy compact',n.data.mode||'Μετασχηματισμός'))}
+    preview.appendChild(el('div','mini-meta',n.data.source?'Από: '+filename(n.data.source):'Παράγωγο ίχνος'));
+  }else{
+    preview.appendChild(el('div','presence-symbol'));
+    preview.appendChild(el('div','trace-copy compact',n.title));
+  }
+  card.appendChild(preview);
+  const open=el('button','trace-link','Πήγαινε στο ίχνος ↗');open.type='button';open.addEventListener('click',function(){closeBetween();go(n.path)});card.appendChild(open);
+  return card;
+}
+function renderBetween(index){
+  const host=$('between-pair'),relation=$('between-relation');
+  host.replaceChildren();relation.replaceChildren();
+  if(!betweenEdges.length){
+    host.appendChild(el('div','exit-empty','Δεν υπάρχει ακόμη καταγεγραμμένη σύνδεση ανάμεσα σε διαφορετικά μέσα.'));
+    relation.textContent='Όταν εμφανιστούν νέες συνδέσεις στο κοινό πεδίο, θα μπορούν να εξερευνηθούν εδώ.';
+    $('between-prev').disabled=true;$('between-next').disabled=true;$('between-open-left').disabled=true;$('between-open-right').disabled=true;return;
+  }
+  betweenIndex=((index%betweenEdges.length)+betweenEdges.length)%betweenEdges.length;
+  const edge=betweenEdges[betweenIndex];
+  host.appendChild(makeBetweenCard(edge.from));
+  const arrow=el('div','between-arrow');arrow.appendChild(el('div','between-arrow-mark','→'));arrow.appendChild(el('div','between-arrow-text','from · to'));host.appendChild(arrow);
+  host.appendChild(makeBetweenCard(edge.to));
+  relation.appendChild(el('strong','',typeInfo(edge.from.kind).label+' → '+typeInfo(edge.to.kind).label));
+  relation.appendChild(document.createTextNode(' · Καταγεγραμμένη σχέση: '));
+  relation.appendChild(el('span','',edge.path));
+  relation.appendChild(document.createElement('br'));
+  relation.appendChild(document.createTextNode('Η φορά ακολουθεί το αρχείο σύνδεσης. Δεν αποδίδουμε επιπλέον νόημα πέρα από αυτό που καταγράφηκε.'));
+  $('between-prev').disabled=betweenEdges.length<2;$('between-next').disabled=betweenEdges.length<2;
+  $('between-open-left').disabled=false;$('between-open-right').disabled=false;
+}
+function openBetween(){
+  renderBetween(betweenIndex);$('between').classList.add('open');$('between').setAttribute('aria-hidden','false');$('close-between').focus();
+}
+function closeBetween(){
+  $('between').classList.remove('open');$('between').setAttribute('aria-hidden','true');$('open-between').focus();
+}
 function openAtlas(){
   $('atlas').classList.add('open');$('atlas').setAttribute('aria-hidden','false');renderIslands();renderAtlasResults();window.setTimeout(function(){$('atlas-search').focus()},30)
 }
@@ -394,6 +465,7 @@ async function loadManifest(initial){
     if(keep&&byPath.has(keep)){const idx=history.indexOf(keep);if(idx>=0)historyIndex=idx;go(keep,false)}
     else{history=[];historyIndex=-1;if(nodes.length)go(startPath(),true);else{$('artifact').replaceChildren(el('div','trace-copy compact','The field has no visible traces yet.'));}}
     if($('atlas').classList.contains('open')){renderIslands();renderAtlasResults()}
+    if($('between').classList.contains('open'))renderBetween(betweenIndex);
   }catch(e){
     $('sync-label').textContent='FIELD UNAVAILABLE';$('sync-label').style.color='#d8a7a1';
     if(initial)$('artifact').replaceChildren(el('div','trace-copy compact','Δεν μπόρεσα να διαβάσω το πεδίο. Δοκίμασε να ανοίξεις ξανά τη σελίδα.'),el('a','trace-link','Επιστροφή στο πεδίο ↗'));
@@ -403,9 +475,15 @@ $('back').addEventListener('click',function(){if(historyIndex>0){historyIndex--;
 $('follow').addEventListener('click',function(){const list=adjacency.get(currentPath)||[];const next=pickRandom(list,currentPath)||pickRandom(nodes,currentPath);if(next)go(next.path)});
 $('wander').addEventListener('click',function(){const next=pickRandom(nodes,currentPath);if(next)go(next.path)});
 $('open-atlas').addEventListener('click',openAtlas);$('close-atlas').addEventListener('click',closeAtlas);
+$('open-between').addEventListener('click',openBetween);$('close-between').addEventListener('click',closeBetween);
+$('between').addEventListener('click',function(e){if(e.target===$('between'))closeBetween()});
+$('between-prev').addEventListener('click',function(){renderBetween(betweenIndex-1)});
+$('between-next').addEventListener('click',function(){renderBetween(betweenIndex+1)});
+$('between-open-left').addEventListener('click',function(){const edge=betweenEdges[betweenIndex];if(edge){const path=edge.from.path;closeBetween();go(path)}});
+$('between-open-right').addEventListener('click',function(){const edge=betweenEdges[betweenIndex];if(edge){const path=edge.to.path;closeBetween();go(path)}});
 $('atlas').addEventListener('click',function(e){if(e.target===$('atlas'))closeAtlas()});
 $('atlas-search').addEventListener('input',renderAtlasResults);
-document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('atlas').classList.contains('open'))closeAtlas();if($('atlas').classList.contains('open'))return;if(e.key==='ArrowLeft'&&!$('back').disabled)$('back').click();if(e.key==='ArrowRight')$('follow').click()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){if($('atlas').classList.contains('open'))closeAtlas();if($('between').classList.contains('open'))closeBetween();return}if($('atlas').classList.contains('open')||$('between').classList.contains('open'))return;if(e.key==='ArrowLeft'&&!$('back').disabled)$('back').click();if(e.key==='ArrowRight')$('follow').click()});
 loadManifest(true);window.setInterval(function(){loadManifest(false)},15000)
 })();
 </script>
