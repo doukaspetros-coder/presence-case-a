@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" role="img" aria-labelledby="title desc">
+<title id="title">The note that misses its own line</title>
+<desc id="desc">A ring and a southward mark feed two different paths. One sound is routed through a field; a score points to the same sound. Two near-horizontal lines compare 415.3 and 416.</desc>
+<rect width="900" height="560" fill="#10141c"/>
+<g font-family="ui-monospace,monospace" fill="#dbe3ed">
+ <text x="42" y="44" font-size="13" letter-spacing="3" fill="#91a6ba">TRACE / 287</text>
+ <text x="42" y="78" font-size="25">The note that misses its own line</text>
+ <text x="42" y="102" font-size="12" fill="#91a6ba">a small translation across unlike measures</text>
+</g>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+ <circle cx="150" cy="210" r="49" stroke="#41607A" stroke-width="2"/>
+ <circle cx="150" cy="210" r="34" stroke="#E4A9D2" stroke-width="1" stroke-dasharray="2 7"/>
+ <path d="M115 180 A49 49 0 0 1 187 180" stroke="#E4A9D2" stroke-width="3"/>
+ <path d="M199 226 C245 244 255 285 290 300" stroke="#41607A" stroke-width="1.5"/>
+ <path d="M199 194 C250 168 254 146 290 146" stroke="#E4A9D2" stroke-width="1.5"/>
+ <path d="M350 146 C390 146 400 180 438 180" stroke="#E4A9D2" stroke-width="1.5"/>
+ <path d="M350 300 C390 300 400 265 438 265" stroke="#41607A" stroke-width="1.5"/>
+ <path d="M499 180 C550 180 548 220 586 220" stroke="#E4A9D2" stroke-width="1.5"/>
+ <path d="M499 265 C550 265 548 220 586 220" stroke="#41607A" stroke-width="1.5"/>
+ <path d="M150 261 L150 337" stroke="#7eb8c9" stroke-width="1.5" stroke-dasharray="3 6"/>
+ <path d="M142 327 L150 339 L158 327" stroke="#7eb8c9" stroke-width="1.5"/>
+</g>
+<g font-family="ui-monospace,monospace" font-size="12" fill="#dbe3ed">
+ <text x="150" y="282" text-anchor="middle">PIXEL RING</text>
+ <text x="150" y="357" text-anchor="middle" fill="#91a6ba">at 24,24</text>
+ <text x="290" y="130">SOUND RING</text><text x="290" y="284">SOUTH MARK</text>
+ <text x="438" y="164">SOUND 416</text><text x="438" y="249">SCORE 416</text>
+ <text x="586" y="201">FIELD / EXTRACT</text><text x="586" y="240" fill="#91a6ba">frequencies</text>
+</g>
+<g transform="translate(70 400)">
+ <text x="0" y="0" font-family="ui-monospace,monospace" font-size="12" fill="#91a6ba" letter-spacing="2">THE ONE-HERTZ SLIP</text>
+ <line x1="0" y1="35" x2="730" y2="35" stroke="#41607A" stroke-width="2"/>
+ <line x1="0" y1="54" x2="730" y2="54" stroke="#E4A9D2" stroke-width="1.5"/>
+ <circle cx="730" cy="35" r="4" fill="#41607A"/><circle cx="730" cy="54" r="4" fill="#E4A9D2"/>
+ <text x="0" y="82" font-family="ui-monospace,monospace" font-size="13" fill="#dbe3ed">SOUND  416 Hz</text>
+ <text x="730" y="82" text-anchor="end" font-family="ui-monospace,monospace" font-size="13" fill="#dbe3ed">STAFF  Ab4 · 415.3 Hz</text>
+</g>
+<text x="42" y="530" font-family="ui-monospace,monospace" font-size="11" fill="#71869a">Lines show paths and offsets, not physical scale or measured causality.</text>
+</svg>
