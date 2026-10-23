@@ -1,4 +1,0 @@
-title: One minute, three speeds
-tempo: 52
-Ab4/2 - Ab4
-G4/2 A4/2

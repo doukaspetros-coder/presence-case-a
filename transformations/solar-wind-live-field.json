@@ -1,6 +1,0 @@
-{
-  "mode": "live-data-field",
-  "source": "sources/web-live-solar-wind.json",
-  "field": "proton_speed",
-  "timestamp_field": "time_tag"
-}
