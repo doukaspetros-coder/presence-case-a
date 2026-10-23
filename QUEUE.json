@@ -92,7 +92,10 @@
       "ticket": "v2-443",
       "bundle": "set-82",
       "trial_branch": "experiment/field-set-82",
-      "status": "available"
+      "status": "claimed",
+      "claim_token": "claim-68493f21-5dc5-4aa0-97b7-285f0489c309",
+      "claimed_at_utc": "2026-10-23T21:29:57Z",
+      "claimed_by": "independent-visitor"
     },
     {
       "ticket": "v2-267",
