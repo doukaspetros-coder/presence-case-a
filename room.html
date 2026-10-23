@@ -161,7 +161,7 @@ const types={
   transform:{label:'Μετασχηματισμοί',singular:'μετασχηματισμός',symbol:'⌘',color:'#9fc9b1'},
   presence:{label:'Άγνωστες παρουσίες',singular:'παρουσία',symbol:'○',color:'#9aa9c1'}
 };
-let manifest=null,nodes=[],byPath=new Map(),adjacency=new Map(),currentPath='',history=[],historyIndex=-1,atlasFilter='',soundContext=null,activePlayback=0;
+let manifest=null,nodes=[],byPath=new Map(),adjacency=new Map(),currentPath='',history=[],historyIndex=-1,atlasFilter='',soundContext=null,activePlayback=0,liveUpdateTimer=null;
 const islandOrder=['couplet','sound','score','image','vector','pixel','color','transform','source','presence'];
 function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
 function svgNode(tag,attrs){const n=document.createElementNS(NS,tag);Object.keys(attrs||{}).forEach(function(k){n.setAttribute(k,String(attrs[k]))});return n}
@@ -259,9 +259,10 @@ function renderLiveField(host,n){
       orbit.style.transform='scale('+(0.84+Math.max(0,Math.min(1,(speed-250)/550))*.28)+')';
     }catch(e){status.textContent='SOURCE UNAVAILABLE';status.classList.add('delayed');stamp.textContent='No value invented; the source could not be read.'}
   }
-  update();window.setInterval(function(){if(currentPath===n.path)update()},60000)
+  update();if(liveUpdateTimer)window.clearInterval(liveUpdateTimer);liveUpdateTimer=window.setInterval(function(){if(currentPath===n.path)update()},60000)
 }
 function renderNode(host,n){
+  if(liveUpdateTimer&&!(n.kind==='transform'&&n.data.mode==='live-data-field')){window.clearInterval(liveUpdateTimer);liveUpdateTimer=null}
   host.replaceChildren();
   const kind=typeInfo(n.kind);host.appendChild(el('div','trace-kind',kind.singular));
   host.appendChild(el('div','trace-title',shortPath(n.path)));
@@ -274,7 +275,6 @@ function renderNode(host,n){
   }else if(n.kind==='pixel'){
     host.appendChild(drawPixels(n.data));addMeta(host,'Layer at '+n.data.x+','+n.data.y+' · shared 64 × 64 surface');host.appendChild(pathLink(n.path,'Άνοιγμα του ίχνους ↗'));
   }else if(n.kind==='color'){
-    // The color branch above is kept intentionally self-contained.
   }else if(n.kind==='sound'){
     renderSound(host,n);host.appendChild(pathLink(n.path,'Άνοιγμα του ήχου ↗'));
   }else if(n.kind==='score'){
