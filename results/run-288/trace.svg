@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="title desc">
+<title id="title">One hertz south of the ring</title>
+<desc id="desc">A ring of ten-cell pixel-like marks, a descending diagonal south trace, and two frequency lines separated by one hertz.</desc>
+<rect width="900" height="620" fill="#10141c"/>
+<g fill="none" stroke="#283447" stroke-width="1">
+<path d="M60 90H840 M60 150H840 M60 210H840 M60 270H840 M60 330H840 M60 390H840 M60 450H840 M60 510H840"/>
+<path d="M120 50V550 M180 50V550 M240 50V550 M300 50V550 M360 50V550 M420 50V550 M480 50V550 M540 50V550 M600 50V550 M660 50V550 M720 50V550 M780 50V550"/>
+</g>
+<g transform="translate(205 112)" fill="#E4A9D2">
+<rect x="48" y="0" width="20" height="20"/><rect x="68" y="0" width="20" height="20"/>
+<rect x="28" y="20" width="20" height="20"/><rect x="48" y="20" width="20" height="20"/><rect x="88" y="20" width="20" height="20"/><rect x="108" y="20" width="20" height="20"/>
+<rect x="8" y="40" width="20" height="20"/><rect x="128" y="40" width="20" height="20"/>
+<rect x="0" y="60" width="20" height="20"/><rect x="40" y="60" width="20" height="20"/><rect x="60" y="60" width="20" height="20"/><rect x="80" y="60" width="20" height="20"/><rect x="100" y="60" width="20" height="20"/><rect x="148" y="60" width="20" height="20"/>
+<rect x="0" y="80" width="20" height="20"/><rect x="40" y="80" width="20" height="20"/><rect x="60" y="80" width="20" height="20"/><rect x="80" y="80" width="20" height="20"/><rect x="100" y="80" width="20" height="20"/><rect x="148" y="80" width="20" height="20"/>
+<rect x="8" y="100" width="20" height="20"/><rect x="128" y="100" width="20" height="20"/>
+<rect x="28" y="120" width="20" height="20"/><rect x="48" y="120" width="20" height="20"/><rect x="88" y="120" width="20" height="20"/><rect x="108" y="120" width="20" height="20"/>
+<rect x="48" y="140" width="20" height="20"/><rect x="68" y="140" width="20" height="20"/>
+</g>
+<g stroke="#41607A" stroke-width="2" fill="none">
+<path d="M420 126H720"/><path d="M420 156H790" stroke="#E4A9D2"/>
+<path d="M420 126V156" stroke="#7eb8c9" stroke-dasharray="3 5"/>
+</g>
+<g fill="#dce5f0" font-family="monospace">
+<text x="420" y="105" font-size="16">416 Hz</text>
+<text x="790" y="180" text-anchor="end" font-size="16">Ab4 · 415.3 Hz</text>
+<text x="420" y="205" font-size="12" fill="#9aabbe">difference ≈ 0.7 Hz, not exactly one</text>
+</g>
+<g transform="translate(530 310)" stroke="#7eb8c9" stroke-width="3" fill="none">
+<path d="M0 0L30 30L60 60L90 90L120 60L150 30"/>
+<circle cx="0" cy="0" r="5" fill="#7eb8c9"/><circle cx="30" cy="30" r="5" fill="#7eb8c9"/><circle cx="60" cy="60" r="5" fill="#7eb8c9"/><circle cx="90" cy="90" r="5" fill="#7eb8c9"/><circle cx="120" cy="60" r="5" fill="#7eb8c9"/><circle cx="150" cy="30" r="5" fill="#7eb8c9"/>
+</g>
+<g fill="#E4A9D2" font-family="monospace" font-size="13">
+<text x="205" y="330">RING / REPEATED WIDTH</text>
+<text x="530" y="445">SOUTH TRACE</text>
+</g>
+<path d="M290 365C355 420 420 420 490 385" stroke="#41607A" stroke-width="1.5" stroke-dasharray="4 7" fill="none"/>
+<g fill="#9aabbe" font-family="monospace" font-size="12">
+<text x="60" y="570">THE SHAPE RETURNS; THE MEASUREMENT DOES NOT QUITE MATCH THE STAFF.</text>
+<text x="60" y="590">A relation drawn here is an invitation to compare, not proof of cause.</text>
+</g>
+</svg>
