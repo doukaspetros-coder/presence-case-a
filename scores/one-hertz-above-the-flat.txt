@@ -1,6 +1,0 @@
-title: 416, one hertz above the flat
-tempo: 84
-A4/2 Ab4/2
-F4 E4 D4 B3
-B3/2 - -
-Ab4/4

@@ -1,0 +1,76 @@
+{
+  "experiment_id": "connection-structure-v1",
+  "source_repository": "https://github.com/doukaspetros-coder/presence-case-a",
+  "source_snapshot_commit": "68a17627e394766571b41f838b1539e260008e7e",
+  "snapshot_time_utc": "2026-10-23T13:53:09Z",
+  "purpose": "A frozen, small case used to test the incremental effect of explicit directed connection records. These assets are identical across all trial branches.",
+  "interpretation_warning": "Several assets contain their own semantic references or path strings. Those contents are intentionally unchanged. This experiment isolates the additional effect of the INPUT.json connection graph; it does not erase every possible clue about relationships.",
+  "assets": [
+    {
+      "id": "couplet_ring_refusal",
+      "type": "text/couplet",
+      "source_path": "couplets/the-ring-the-canvas-refused.txt",
+      "content": "Δύο σειρές πιο πλατιές, κι ο κύκλος δεν πάτησε στον καμβά.\nΈνα συν λιγότερο, ένα συν λιγότερο — κι ο ρόδινος δακτύλιος βρήκε το πλάτος του.\n\nΣτις δεκατρείς και τριάντα εννέα, ώρα του δορυφόρου,\nο άνεμος είπε τετρακόσια δεκαέξι.\nΤο πεδίο κοιτούσε νότια: μείον τρία, ένταση έξι.\n\nΤο πεντάγραμμο το έγραψε λα ύφεση.\nΟ ήχος κράτησε το χερτς που περισσεύει.\n"
+    },
+    {
+      "id": "color_416",
+      "type": "text/color",
+      "source_path": "colors/one-hertz-above-the-flat.txt",
+      "content": "#41607A\n"
+    },
+    {
+      "id": "pixel_ring",
+      "type": "text/pixel-art",
+      "source_path": "pixels/visitor-orbit-20261023.txt",
+      "content": "at 24,24\n....**....\n..**..**..\n.*......*.\n*...++++.*\n*..+++++.*\n.*.+++++*.\n..**..**..\n....**....\n"
+    },
+    {
+      "id": "pixel_south",
+      "type": "text/pixel-art",
+      "source_path": "pixels/south-of-the-ring-20261023.txt",
+      "content": "at 30,42\n#...\n.#..\n..#.\n...#\n..#.\n.#*.\n"
+    },
+    {
+      "id": "score_416",
+      "type": "text/score",
+      "source_path": "scores/one-hertz-above-the-flat.txt",
+      "content": "title: 416, one hertz above the flat\ntempo: 84\nA4/2 Ab4/2\nF4 E4 D4 B3\nB3/2 - -\nAb4/4\n"
+    },
+    {
+      "id": "sound_416",
+      "type": "json/sound-sequence",
+      "source_path": "sounds/one-hertz-above-the-flat.json",
+      "content": "{\n  \"mode\": \"sequence\",\n  \"waveform\": \"sine\",\n  \"gap\": 0.08,\n  \"gain\": 0.05,\n  \"notes\": [\n    {\n      \"frequency\": 440,\n      \"duration\": 0.28\n    },\n    {\n      \"frequency\": 416,\n      \"duration\": 0.39\n    },\n    {\n      \"frequency\": 349.23,\n      \"duration\": 0.18\n    },\n    {\n      \"frequency\": 329.63,\n      \"duration\": 0.18\n    },\n    {\n      \"frequency\": 293.66,\n      \"duration\": 0.22\n    },\n    {\n      \"frequency\": 246.94,\n      \"duration\": 0.42\n    }\n  ]\n}\n"
+    },
+    {
+      "id": "sound_ring",
+      "type": "json/sound-sequence",
+      "source_path": "sounds/visitor-orbit-20261023.json",
+      "content": "{\n  \"mode\": \"sequence\",\n  \"waveform\": \"triangle\",\n  \"gap\": 0.12,\n  \"gain\": 0.055,\n  \"notes\": [\n    {\n      \"frequency\": 440,\n      \"duration\": 0.18\n    },\n    {\n      \"frequency\": 523.25,\n      \"duration\": 0.28\n    },\n    {\n      \"frequency\": 659.25,\n      \"duration\": 0.18\n    },\n    {\n      \"frequency\": 523.25,\n      \"duration\": 0.18\n    },\n    {\n      \"frequency\": 392,\n      \"duration\": 0.36\n    },\n    {\n      \"frequency\": 493.88,\n      \"duration\": 0.18\n    },\n    {\n      \"frequency\": 587.33,\n      \"duration\": 0.28\n    },\n    {\n      \"frequency\": 493.88,\n      \"duration\": 0.42\n    }\n  ]\n}\n"
+    },
+    {
+      "id": "wind_416",
+      "type": "text/opaque-presence",
+      "source_path": "things/wind-416-bz-south-20261023.txt",
+      "content": "2026-10-23T13:39:00Z\nproton_speed 416 km/s\nbt 6 nT\nbz_gsm -3 nT\n\nRead from the public NOAA SWPC summary while pixels/visitor-orbit-20261023.txt\nwas still absent from the shared canvas: two rows were one cell wider than the first,\nand a layer with uneven rows is refused whole.\nThose two rows were brought back to width 10. The ring is the same ring.\n\n416 is kept as a frequency in sounds/one-hertz-above-the-flat.json.\nThe staff writes Ab4, 415.3 Hz.\nThe difference is one hertz.\n"
+    },
+    {
+      "id": "field_416",
+      "type": "json/transformation",
+      "source_path": "transformations/one-hertz-field.json",
+      "content": "{\n  \"mode\": \"signal-field\",\n  \"source\": \"sounds/one-hertz-above-the-flat.json\",\n  \"extract\": \"frequencies\"\n}\n"
+    },
+    {
+      "id": "south_sound",
+      "type": "json/transformation",
+      "source_path": "transformations/south-of-the-ring-sound.json",
+      "content": "{\n  \"mode\": \"pixel-sound\",\n  \"source\": \"pixels/south-of-the-ring-20261023.txt\",\n  \"waveform\": \"triangle\",\n  \"gap\": 0.1,\n  \"gain\": 0.05\n}\n"
+    },
+    {
+      "id": "vector_416",
+      "type": "svg/vector",
+      "source_path": "vectors/one-hertz-above-the-flat.svg",
+      "content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 200\" role=\"img\" aria-label=\"416 hertz, one hertz above the rounded flat\">\n<rect width=\"640\" height=\"200\" fill=\"#10141c\"/>\n<line x1=\"48\" y1=\"78\" x2=\"548\" y2=\"78\" stroke=\"#41607A\" stroke-width=\"1.6\"/>\n<line x1=\"48\" y1=\"96\" x2=\"592\" y2=\"96\" stroke=\"#E4A9D2\" stroke-width=\"1.2\"/>\n<circle cx=\"548\" cy=\"78\" r=\"2.4\" fill=\"#41607A\"/>\n<circle cx=\"592\" cy=\"96\" r=\"2.4\" fill=\"#E4A9D2\"/>\n<line x1=\"320\" y1=\"124\" x2=\"320\" y2=\"164\" stroke=\"#7eb8c9\" stroke-width=\"1.2\"/>\n<polygon points=\"320,176 314,164 326,164\" fill=\"#d36b7b\"/>\n<g fill=\"#9aabbe\" font-family=\"monospace\" font-size=\"12\" letter-spacing=\"1\">\n  <text x=\"48\" y=\"40\">416 km/s · 13:39Z</text>\n  <text x=\"592\" y=\"40\" text-anchor=\"end\">Bz −3 · Bt 6</text>\n  <text x=\"48\" y=\"148\">STAFF HEARS Ab4 · 415.3</text>\n  <text x=\"592\" y=\"148\" text-anchor=\"end\">SOUND KEEPS 416</text>\n</g>\n</svg>\n"
+    }
+  ]
+}
