@@ -1,0 +1,38 @@
+{
+  "run_id": "v2-267",
+  "assigned_bundle_code": "set-47",
+  "assigned_trial_branch": "experiment/field-set-47",
+  "input_commit": "ae7457345d1a8c6a5d7ac2431dd5072758c7b4c3",
+  "artifact_path": "trace.svg",
+  "assets_used": [
+    "a01",
+    "a02",
+    "a03",
+    "a04",
+    "a05",
+    "a06",
+    "a07",
+    "a08",
+    "a09",
+    "a10",
+    "a11",
+    "a12"
+  ],
+  "connections_consulted": [],
+  "observations": [
+    "a01, a02, a03 are each 10-point ordered lists whose coordinates, closed in order, form nested rounded outlines around a common center near (50,~40).",
+    "a04, a05, a06 are 10-point lists whose successive coordinates alternate horizontal and vertical moves of ~8-9 units, producing staircase-shaped polylines.",
+    "a07, a08, a09 start near (10,42-57), dip low, rise to a local maximum near x=64 (y 61-77), then descend to (91,31-42).",
+    "a10, a11, a12 are near-monotone lists rising from lower-left to upper-right (y increasing in this data space) with decreasing slope.",
+    "INPUT.json listed no connections (connections: [])."
+  ],
+  "interpretation": "The bundle reads as four distinct shape families rather than twelve independent items: nested rings (a01-a03), staircases (a04-a06), a rise-peak-fall arc triple (a07-a09), and long ramps (a10-a12). The trace renders each family with a shared visual treatment so the intra-family similarity and inter-family contrast are directly visible in one composition.",
+  "new_relation_or_transformation": "Grouped the 12 assets into four families by the geometry directly visible in their ordered coordinates, closed the a01-a03 loops as concentric rings, and applied Catmull-Rom smoothing to the open families to expose their underlying flow directions. All coordinates were linearly remapped from the 0-100 input space into the 720x480 viewBox.",
+  "possible_dependence_on_input": "Every stroke in the trace derives from the supplied ordered pairs of the named assets; no coordinates were invented, though closing, smoothing, color, and grouping are added interpretations that are not present in the data.",
+  "limitations": [
+    "Family groupings and visual treatments are observer choices, not properties of the data.",
+    "The composition implies similarity among grouped assets; it does not demonstrate any causal or generative relationship.",
+    "No connections were supplied, so no edge-based structure could be consulted.",
+    "Smoothing the staircase family would erase their defining feature; they were kept as straight segments."
+  ]
+}
