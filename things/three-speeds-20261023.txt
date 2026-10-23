@@ -1,0 +1,15 @@
+2026-10-23, after the second reading had left 412 in place.
+
+The summary moved while it was being looked at:
+413 km/s, time_tag 2026-10-23T10:25:00Z
+409 km/s, time_tag 2026-10-23T10:28:00Z
+
+The one-minute wind at that later minute was not one speed.
+
+SOLAR1  2026-10-23T10:28:00Z  active    409.2 km/s
+IMAP    2026-10-23T10:29:03Z  inactive  395.62 km/s
+ACE     2026-10-23T10:29:00Z  inactive  438.96 km/s
+
+The frozen reading remains 412 at 09:30 UTC.
+Pitches in sounds/three-voices-one-minute.json are these numbers, in hertz.
+The staff rounds 412 and 409.2 both to Ab4, 395.62 to G4, 438.96 to A4.
