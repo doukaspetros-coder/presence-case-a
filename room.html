@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Room — Presence</title>
+<style>
+:root{color-scheme:dark;--bg:#080a10;--ink:#e8edf4;--muted:#8995a8;--line:rgba(173,194,227,.16);--blue:#a5c8f4;--gold:#e4cda1;--mint:#9fc9b1;--rose:#d8a7e0}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg)}
+body{color:var(--ink);font:13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:radial-gradient(ellipse at 50% 42%,rgba(37,48,71,.40),transparent 56%),radial-gradient(ellipse at 10% 90%,rgba(67,49,63,.12),transparent 44%),var(--bg);overflow-x:hidden}
+button,input{font:inherit}
+a{color:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:1px solid var(--blue);outline-offset:4px}
+.topbar{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px clamp(16px,4vw,52px);border-bottom:1px solid rgba(173,194,227,.07)}
+.brand{display:flex;align-items:center;gap:12px;color:#b9c5d6;font-size:10px;letter-spacing:.19em;text-transform:uppercase}
+.brand-mark{width:8px;height:8px;border:1px solid var(--blue);border-radius:50%;box-shadow:0 0 14px rgba(165,200,244,.45)}
+.nav{display:flex;gap:8px;align-items:center}
+.nav a,.nav button,.control,.trace-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:34px;padding:8px 11px;border:1px solid var(--line);background:rgba(8,10,16,.44);color:var(--muted);font-size:10px;letter-spacing:.08em;text-decoration:none;cursor:pointer;transition:border-color .2s,color .2s,background .2s}
+.nav a:hover,.nav button:hover,.control:hover,.trace-link:hover{border-color:rgba(173,204,250,.42);color:var(--ink);background:rgba(28,36,53,.42)}
+main{display:flex;flex-direction:column;min-height:calc(100svh - 68px)}
+.scene{width:min(100%,1080px);margin:0 auto;padding:clamp(28px,7vh,72px) clamp(16px,5vw,56px) 22px;flex:1;display:flex;flex-direction:column}
+.scene-head{display:flex;justify-content:space-between;align-items:center;gap:16px;color:var(--muted);font-size:9px;letter-spacing:.16em;text-transform:uppercase}
+.scene-head span{overflow-wrap:anywhere}
+#sync-label{color:#7890a9;letter-spacing:.07em;text-align:right}
+.stage{flex:1;min-height:300px;display:flex;align-items:center;justify-content:center;padding:clamp(32px,8vh,86px) 0}
+#artifact{position:relative;width:min(100%,780px);min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;text-align:center;animation:arrive .55s ease both}
+.trace-kind{color:var(--muted);font-size:9px;letter-spacing:.2em;text-transform:uppercase}
+.trace-title{font-size:10px;line-height:1.7;letter-spacing:.04em;color:#78869b;overflow-wrap:anywhere}
+.trace-copy{max-width:740px;margin:0 auto;color:#e4e9f1;font:clamp(23px,3.7vw,43px)/1.65 Georgia,"Times New Roman",serif;white-space:pre-line;letter-spacing:.005em;text-wrap:pretty}
+.trace-copy.compact{font-size:clamp(18px,2.7vw,28px);line-height:1.7}
+.media-frame{width:min(100%,680px);max-height:52vh;padding:clamp(10px,2vw,20px);border:1px solid rgba(173,194,227,.13);background:rgba(13,17,27,.38);box-shadow:0 24px 80px rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.media-frame img{display:block;max-width:100%;width:auto;height:auto;max-height:48vh;object-fit:contain}
+.color-orbit{width:clamp(150px,27vw,270px);aspect-ratio:1;border-radius:50%;border:1px solid rgba(255,255,255,.24);box-shadow:0 0 0 18px rgba(173,194,227,.025),0 0 0 52px rgba(173,194,227,.018),0 0 100px color-mix(in srgb,var(--swatch) 22%,transparent);position:relative}
+.color-orbit:after{content:"";position:absolute;inset:14%;border:1px solid rgba(255,255,255,.24);border-radius:50%}
+.color-value{color:var(--muted);font-size:11px;letter-spacing:.15em}
+.visual-field{width:min(100%,640px);height:auto;max-height:46vh;overflow:visible}
+.pixel-field{width:min(100%,480px);height:auto;aspect-ratio:1;image-rendering:pixelated;shape-rendering:crispEdges;border:1px solid rgba(173,194,227,.12);background:#0a0e17}
+.sound-card,.score-card,.source-card,.presence-card{width:min(100%,580px);padding:clamp(16px,3vw,28px);display:flex;flex-direction:column;align-items:center;gap:17px;border:1px solid rgba(173,194,227,.15);background:rgba(13,17,27,.42);box-shadow:0 24px 80px rgba(0,0,0,.14)}
+.sound-wave{display:block;width:100%;height:auto;aspect-ratio:6/1}
+.sound-wave path{fill:none;stroke:var(--blue);stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:.84}
+.sound-wave .glow{stroke:#709bd4;stroke-width:4;stroke-opacity:.12}
+.listen{min-width:112px;padding:10px 15px;border:1px solid rgba(173,204,250,.35);background:rgba(28,36,53,.58);color:var(--ink);font-size:10px;letter-spacing:.13em;cursor:pointer}
+.listen:hover{background:rgba(44,59,83,.78)}
+.listen[aria-pressed=true]{color:var(--gold);border-color:rgba(228,205,161,.55)}
+.mini-meta{font-size:10px;color:var(--muted);line-height:1.8;overflow-wrap:anywhere}
+.score-measures{display:flex;flex-wrap:wrap;justify-content:center;gap:7px}
+.measure{padding:8px 10px;border:1px solid rgba(173,194,227,.12);color:#b7c9e3;font-size:11px;line-height:1.7}
+.source-link{display:inline-flex;align-items:center;justify-content:center;margin-top:2px;padding:10px 13px;border:1px solid rgba(173,204,250,.28);color:#c5d7ef;text-decoration:none;font-size:10px;letter-spacing:.1em}
+.source-link:hover{border-color:rgba(173,204,250,.6)}
+.presence-symbol{width:clamp(80px,17vw,146px);aspect-ratio:1;border:1px solid rgba(173,204,250,.42);border-radius:50%;position:relative;box-shadow:0 0 70px rgba(91,153,226,.08)}
+.presence-symbol:before,.presence-symbol:after{content:"";position:absolute;inset:13%;border:1px solid rgba(173,204,250,.24);border-radius:50%}
+.presence-symbol:after{inset:32%;background:rgba(165,200,244,.1);box-shadow:0 0 22px rgba(165,200,244,.12)}
+.live-value{font:clamp(28px,5vw,52px)/1.2 Georgia,"Times New Roman",serif;color:var(--gold);letter-spacing:.01em}
+.live-status{font-size:9px;letter-spacing:.15em;color:var(--mint)}
+.live-status.delayed{color:#d8a7a1}
+.nearby{border-top:1px solid rgba(173,194,227,.1);padding:20px 0 12px}
+.nearby-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px;color:var(--muted);font-size:9px;letter-spacing:.16em;text-transform:uppercase}
+#exits{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
+.exit{min-width:135px;max-width:calc(50% - 4px);flex:1 1 135px;text-align:left;padding:12px 13px;border:1px solid rgba(173,194,227,.12);background:rgba(13,17,27,.25);color:var(--ink);cursor:pointer;min-height:66px;transition:border-color .2s,background .2s}
+.exit:hover{border-color:rgba(173,204,250,.42);background:rgba(28,36,53,.4)}
+.exit-type{display:block;margin-bottom:6px;color:var(--muted);font-size:9px;letter-spacing:.08em;text-transform:uppercase}
+.exit-name{display:block;font:14px/1.4 Georgia,"Times New Roman",serif;overflow-wrap:anywhere}
+.exit-empty{font:14px/1.6 Georgia,"Times New Roman",serif;color:#7c8799;padding:10px 0}
+.controls{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:18px clamp(16px,5vw,56px) 22px;border-top:1px solid rgba(173,194,227,.07)}
+.control-group{display:flex;gap:8px;flex-wrap:wrap}
+.control.primary{color:#d8e4f5;border-color:rgba(173,204,250,.35);background:rgba(34,47,67,.42)}
+.counter{font-size:9px;letter-spacing:.13em;color:#6f7d91}
+footer{padding:0 16px 15px;text-align:center;color:#48566a;font-size:9px;letter-spacing:.06em}
+.atlas-shade{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(3,5,9,.82);backdrop-filter:blur(14px)}
+.atlas-shade.open{display:flex}
+.atlas-panel{width:min(880px,100%);max-height:min(88svh,900px);display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(173,194,227,.2);background:#0a0e17;box-shadow:0 30px 120px rgba(0,0,0,.48)}
+.atlas-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 22px;border-bottom:1px solid rgba(173,194,227,.1)}
+.atlas-title{font:26px/1.2 Georgia,"Times New Roman",serif;letter-spacing:-.02em}
+.close-atlas{border:1px solid var(--line);background:none;color:var(--muted);padding:8px 10px;cursor:pointer}
+.atlas-body{padding:18px 22px 22px;overflow:auto}
+.atlas-note{margin:0 0 17px;line-height:1.7;color:var(--muted);font-size:11px;max-width:620px}
+.search-wrap{display:flex;gap:9px;margin-bottom:17px}
+#atlas-search{width:100%;min-width:0;padding:12px 13px;background:#080b12;border:1px solid rgba(173,194,227,.2);color:var(--ink);outline-offset:0}
+#atlas-search::placeholder{color:#627087}
+.islands{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.island{min-height:94px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:10px;padding:12px;border:1px solid rgba(173,194,227,.12);background:rgba(13,17,27,.6);color:var(--ink);text-align:left;cursor:pointer;transition:background .2s,border-color .2s}
+.island:hover,.island.active{border-color:rgba(173,204,250,.45);background:rgba(35,48,69,.52)}
+.island-symbol{font-size:19px;color:var(--island-color)}
+.island-name{font-size:10px;letter-spacing:.06em}
+.island-count{color:var(--muted);font-size:9px}
+.results-head{display:flex;justify-content:space-between;gap:12px;margin:20px 0 9px;color:var(--muted);font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+#atlas-results{display:flex;flex-direction:column;gap:5px}
+.result{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;padding:11px 12px;border:1px solid rgba(173,194,227,.08);background:rgba(13,17,27,.28);color:var(--ink);cursor:pointer}
+.result:hover{border-color:rgba(173,204,250,.35);background:rgba(35,48,69,.35)}
+.result-main{min-width:0;display:flex;flex-direction:column;gap:4px}
+.result-name{font:15px/1.4 Georgia,"Times New Roman",serif;overflow-wrap:anywhere}
+.result-path{font-size:9px;color:var(--muted);overflow-wrap:anywhere}
+.result-type{flex:0 0 auto;color:var(--muted);font-size:9px}
+#atlas-empty{color:var(--muted);padding:18px 0;font-size:11px;line-height:1.7}
+@keyframes arrive{from{opacity:.25;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:740px){.scene{padding-top:34px}.stage{min-height:250px;padding:45px 0}.islands{grid-template-columns:repeat(3,minmax(0,1fr))}.island{min-height:82px;padding:10px}.atlas-body{padding:15px}.atlas-top{padding:15px}.atlas-title{font-size:23px}}
+@media(max-width:480px){.topbar{padding:14px 12px}.brand{font-size:9px;letter-spacing:.12em;gap:8px}.nav a,.nav button{padding:8px;font-size:9px}.scene{padding-left:13px;padding-right:13px}.scene-head{font-size:8px}.controls{padding:14px 12px}.control{flex:1;padding:9px 7px;font-size:9px}.control-group{flex:1}.counter{width:100%;text-align:center;order:3}.islands{grid-template-columns:repeat(2,minmax(0,1fr))}.trace-copy{font-size:24px}.trace-copy.compact{font-size:18px}.exit{max-width:100%;flex-basis:100%;min-height:55px}.nearby-head{font-size:8px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="brand-mark"></span><span>PRESENCE / ROOM</span></div>
+  <nav class="nav" aria-label="Room navigation">
+    <a href="./" title="Return to the full shared field">FIELD ↗</a>
+    <button id="open-atlas" type="button">ATLAS <span aria-hidden="true">✳</span></button>
+  </nav>
+</header>
+<main>
+  <section class="scene" aria-label="One trace at a time">
+    <div class="scene-head"><span id="sequence-label">ONE TRACE · MANY EXITS</span><span id="sync-label" role="status">Connecting…</span></div>
+    <div class="stage"><article id="artifact" aria-live="polite" aria-atomic="true"><div class="trace-kind">PRESENCE</div><div class="trace-copy compact">Ένα ίχνος τη φορά.</div><div class="mini-meta">Loading the shared field…</div></article></div>
+    <section class="nearby" aria-label="Connected traces">
+      <div class="nearby-head"><span>Ίχνη που συνδέονται εδώ</span><span id="exit-count">—</span></div>
+      <div id="exits"><div class="exit-empty">Οι διαδρομές εμφανίζονται όταν φορτωθούν οι συνδέσεις.</div></div>
+    </section>
+  </section>
+  <div class="controls">
+    <div class="control-group">
+      <button class="control" id="back" type="button" disabled>← Πίσω</button>
+      <button class="control primary" id="follow" type="button">Ακολούθησε σύνδεση ↗</button>
+      <button class="control" id="wander" type="button">Περιπλανήσου</button>
+    </div>
+    <div class="counter" id="counter">— / —</div>
+  </div>
+</main>
+<footer><span id="revision">The room reads the same traces as the shared field.</span></footer>
+
+<div class="atlas-shade" id="atlas" role="dialog" aria-modal="true" aria-labelledby="atlas-heading" aria-hidden="true">
+  <section class="atlas-panel">
+    <div class="atlas-top"><div><div class="trace-kind">FIND YOUR OWN WAY</div><div class="atlas-title" id="atlas-heading">Άτλας ιχνών</div></div><button class="close-atlas" id="close-atlas" type="button">Κλείσιμο ×</button></div>
+    <div class="atlas-body">
+      <p class="atlas-note">Δεν χρειάζεται να δεις τα πάντα μαζί. Διάλεξε μια περιοχή ή ψάξε ένα ίχνος. Όταν το ανοίξεις, οι δικές του συνδέσεις γίνονται οι επόμενες έξοδοι.</p>
+      <div class="search-wrap"><input id="atlas-search" type="search" placeholder="Αναζήτηση ονόματος, μέσου ή διαδρομής…" autocomplete="off" aria-label="Search all traces"></div>
+      <div class="islands" id="islands"></div>
+      <div class="results-head"><span id="results-label">Περιοχές</span><span id="results-count"></span></div>
+      <div id="atlas-results"></div>
+      <div id="atlas-empty">Διάλεξε μια περιοχή ή γράψε κάτι στην αναζήτηση.</div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $=function(id){return document.getElementById(id)};
+const NS='http://www.w3.org/2000/svg';
+const NOAA_URL='https://services.swpc.noaa.gov/products/summary/solar-wind-speed.json';
+const palette={'#':'#a5c8f4','@':'#e4cda1','+':'#9fc9b1','*':'#d8a7e0'};
+const types={
+  couplet:{label:'Ποίηση',singular:'δίστιχο',symbol:'“',color:'#d4dced'},
+  color:{label:'Χρώματα',singular:'χρώμα',symbol:'●',color:'#d8a7e0'},
+  vector:{label:'Σχήματα',singular:'διανυσματικό ίχνος',symbol:'◇',color:'#a5c8f4'},
+  pixel:{label:'Pixel-art',singular:'εικονοστοιχεία',symbol:'▦',color:'#9fc9b1'},
+  sound:{label:'Ήχοι',singular:'ήχος',symbol:'≈',color:'#e4cda1'},
+  score:{label:'Παρτιτούρες',singular:'παρτιτούρα',symbol:'♫',color:'#c1d8f5'},
+  image:{label:'Εικόνες',singular:'εικόνα',symbol:'▧',color:'#d8a7e0'},
+  source:{label:'Ιστός & πηγές',singular:'εξωτερική πηγή',symbol:'↗',color:'#e4cda1'},
+  transform:{label:'Μετασχηματισμοί',singular:'μετασχηματισμός',symbol:'⌘',color:'#9fc9b1'},
+  presence:{label:'Άγνωστες παρουσίες',singular:'παρουσία',symbol:'○',color:'#9aa9c1'}
+};
+let manifest=null,nodes=[],byPath=new Map(),adjacency=new Map(),currentPath='',history=[],historyIndex=-1,atlasFilter='',soundContext=null,activePlayback=0,liveUpdateTimer=null;
+const islandOrder=['couplet','sound','score','image','vector','pixel','color','transform','source','presence'];
+function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
+function svgNode(tag,attrs){const n=document.createElementNS(NS,tag);Object.keys(attrs||{}).forEach(function(k){n.setAttribute(k,String(attrs[k]))});return n}
+function filename(path){const part=String(path||'').split('/').pop()||'trace';return part.replace(/\.[^.]+$/,'').replace(/[-_]+/g,' ').replace(/\s+/g,' ').trim()}
+function shortPath(path){return path.length>62?'…'+path.slice(-59):path}
+function typeInfo(kind){return types[kind]||types.presence}
+function safeHref(path){return './'+String(path).split('/').map(encodeURIComponent).join('/')}
+function githubHref(path){const repo=(manifest&&manifest.repository)||'doukaspetros-coder/presence-case-a';return 'https://github.com/'+repo+'/blob/main/'+String(path).split('/').map(encodeURIComponent).join('/')}
+function pushNode(list,kind){(list||[]).forEach(function(item){if(!item||typeof item.path!=='string'||byPath.has(item.path))return;const n={path:item.path,kind:kind,data:item,title:(item.title&&String(item.title).trim())||filename(item.path)};byPath.set(n.path,n);nodes.push(n)})}
+function buildIndex(m){
+  nodes=[];byPath=new Map();adjacency=new Map();
+  pushNode(m.couplets,'couplet');pushNode(m.vectors,'vector');pushNode(m.pixels,'pixel');pushNode(m.colors,'color');pushNode(m.sounds,'sound');pushNode(m.scores,'score');pushNode(m.images,'image');pushNode(m.sources,'source');pushNode(m.transformations,'transform');
+  (m.items||[]).forEach(function(path){if(typeof path==='string'&&!byPath.has(path)){const n={path:path,kind:'presence',data:{path:path},title:filename(path)};byPath.set(path,n);nodes.push(n)}});
+  (m.links||[]).forEach(function(link){if(!byPath.has(link.from)||!byPath.has(link.to)||link.from===link.to)return;[[link.from,link.to],[link.to,link.from]].forEach(function(pair){if(!adjacency.has(pair[0]))adjacency.set(pair[0],[]);const list=adjacency.get(pair[0]);if(!list.some(function(n){return n.path===pair[1]}))list.push(byPath.get(pair[1]))})});
+  adjacency.forEach(function(list){list.sort(function(a,b){return a.title.localeCompare(b.title)})});
+}
+function pathLink(path,label){
+  const a=el('a','trace-link',label||'Άνοιγμα στο GitHub ↗');a.href=githubHref(path);a.target='_blank';a.rel='noopener noreferrer';return a
+}
+function addMeta(host,text){host.appendChild(el('div','mini-meta',text))}
+function makeFrame(host){const frame=el('div','media-frame');host.appendChild(frame);return frame}
+function setImageFallback(img,what){img.alt=what;img.addEventListener('error',function(){const p=el('div','mini-meta','Η προεπισκόπηση δεν είναι διαθέσιμη εδώ. Η αρχική αναφορά παραμένει ανοιχτή παρακάτω.');img.replaceWith(p)},{once:true})}
+function drawPixels(item){
+  const svg=svgNode('svg',{viewBox:'0 0 64 64',class:'pixel-field',role:'img','aria-label':'Pixel trace'});
+  svg.appendChild(svgNode('rect',{x:0,y:0,width:64,height:64,fill:'#0a0e17'}));
+  const rows=item.rows||[],x=Number(item.x)||0,y=Number(item.y)||0;
+  rows.forEach(function(row,dy){Array.from(row).forEach(function(ch,dx){if(ch==='.')return;if(ch==='-')return;const color=palette[ch];if(color)svg.appendChild(svgNode('rect',{x:x+dx,y:y+dy,width:1,height:1,fill:color}))})});
+  return svg
+}
+function drawSignal(values,sourceText){
+  const svg=svgNode('svg',{viewBox:'0 0 620 260',class:'visual-field',role:'img','aria-label':'Derived field of points'});
+  svg.appendChild(svgNode('rect',{x:0,y:0,width:620,height:260,fill:'#080c14',stroke:'rgba(173,194,227,.14)'}));
+  for(let i=1;i<5;i++)svg.appendChild(svgNode('line',{x1:0,y1:i*52,x2:620,y2:i*52,stroke:'rgba(173,194,227,.07)','stroke-width':1}));
+  let nums=Array.isArray(values)?values.slice(0,180).map(Number).filter(Number.isFinite):[];
+  if(!nums.length&&sourceText){nums=Array.from(String(sourceText).slice(0,100)).map(function(c){return c.codePointAt(0)%97})}
+  if(!nums.length)nums=[0,1,2,3,2,1,3,4];
+  const min=Math.min.apply(null,nums),max=Math.max.apply(null,nums),span=(max-min)||1;
+  const pts=nums.map(function(v,i){return {x:18+(nums.length<2?0:i*584/(nums.length-1)),y:238-(v-min)/span*216}});
+  const d=pts.map(function(p,i){return (i?'L':'M')+p.x.toFixed(2)+' '+p.y.toFixed(2)}).join(' ');
+  svg.appendChild(svgNode('path',{d:d,fill:'none',stroke:'#8db1df','stroke-width':1.1,'stroke-opacity':.55}));
+  const step=Math.max(1,Math.ceil(pts.length/48));
+  pts.forEach(function(p,i){if(i%step!==0&&i!==pts.length-1)return;svg.appendChild(svgNode('circle',{cx:p.x,cy:p.y,r:1.8,fill:i%3===0?'#e4cda1':(i%3===1?'#9fc9b1':'#a5c8f4'),opacity:.85}))});
+  return svg
+}
+function makeWaveform(notes){
+  const svg=svgNode('svg',{viewBox:'0 0 620 100',class:'sound-wave',role:'img','aria-label':'Waveform preview'});
+  const path=function(amplitude,phase){let d='';for(let x=0;x<=620;x+=3){const y=50+Math.sin(x*.055+phase)*amplitude*(.42+.58*Math.sin(x*.009+phase*1.2)**2);d+=(x===0?'M':'L')+x+' '+y.toFixed(2)+' '}return d};
+  svg.appendChild(svgNode('path',{d:path(19,0),class:'glow'}));svg.appendChild(svgNode('path',{d:path(19,0)}));
+  return svg
+}
+function noteToFrequency(pitch){
+  const match=/^([A-G])([#b]?)([3-6])$/.exec(pitch);if(!match)return null;
+  const semis={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+  let midi=(Number(match[3])+1)*12+semis[match[1]];
+  if(match[2]==='#')midi++;if(match[2]==='b')midi--;return 440*Math.pow(2,(midi-69)/12)
+}
+async function playNotes(notes,gap,gain,waveform,button){
+  if(!Array.isArray(notes)||!notes.length)return;
+  activePlayback++;const playId=activePlayback;
+  try{
+    if(!soundContext)soundContext=new (window.AudioContext||window.webkitAudioContext)();
+    if(soundContext.state==='suspended')await soundContext.resume();
+    const now=soundContext.currentTime;let cursor=now;const g=Math.max(.01,Math.min(.16,Number(gain)||.055));const wave=['sine','triangle','square','sawtooth'].includes(waveform)?waveform:'sine';
+    notes.slice(0,64).forEach(function(note){
+      const frequency=Number(note.frequency)||noteToFrequency(note.pitch);const duration=Math.max(.08,Math.min(.8,Number(note.duration)||(Number(note.beats)||1)*60/(Number(note.tempo)||96)));
+      if(frequency&&Number.isFinite(frequency)&&frequency>=55&&frequency<=1800){const osc=soundContext.createOscillator(),amp=soundContext.createGain();osc.type=wave;osc.frequency.setValueAtTime(frequency,cursor);amp.gain.setValueAtTime(.0001,cursor);amp.gain.exponentialRampToValueAtTime(g,cursor+.012);amp.gain.setValueAtTime(g,cursor+Math.max(.02,duration-.025));amp.gain.exponentialRampToValueAtTime(.0001,cursor+duration);osc.connect(amp);amp.connect(soundContext.destination);osc.start(cursor);osc.stop(cursor+duration)}
+      cursor+=duration+Math.max(0,Math.min(.5,Number(gap)||0))
+    });
+    button.setAttribute('aria-pressed','true');button.textContent='Ακούγεται…';
+    window.setTimeout(function(){if(playId===activePlayback){button.setAttribute('aria-pressed','false');button.textContent='Άκουσε ↗'}},Math.max(350,(cursor-now)*1000+80));
+  }catch(e){button.textContent='Ο ήχος δεν ξεκίνησε'}
+}
+function renderSound(host,n){
+  const data=n.data,card=el('div','sound-card');card.appendChild(makeWaveform(data.notes||[]));const button=el('button','listen','Άκουσε ↗');button.type='button';button.setAttribute('aria-pressed','false');button.addEventListener('click',function(){playNotes(data.notes,data.gap,data.gain,data.waveform,button)});card.appendChild(button);addMeta(card,(data.notes||[]).length+' tones · '+(data.waveform||'sine')+' · synthesized here');host.appendChild(card)
+}
+function renderScore(host,n){
+  const data=n.data,card=el('div','score-card');card.appendChild(el('div','trace-copy compact',data.title||n.title));
+  const measures=el('div','score-measures');const notes=[];
+  (data.measures||[]).slice(0,8).forEach(function(measure){const tokens=[];(measure.notes||[]).forEach(function(note){tokens.push(note.pitch==='rest'?'—':note.pitch);if(note.pitch!=='rest'){notes.push({frequency:noteToFrequency(note.pitch),duration:Math.min(.8,Math.max(.08,(Number(note.beats)||1)*60/(Number(data.tempo)||96)))} )}});measures.appendChild(el('div','measure',tokens.join(' · ')))});card.appendChild(measures);
+  const button=el('button','listen','Άκουσε ↗');button.type='button';button.setAttribute('aria-pressed','false');button.addEventListener('click',function(){playNotes(notes,.04,.055,'sine',button)});card.appendChild(button);addMeta(card,(data.tempo||96)+' BPM · '+(data.measures||[]).length+' measures');host.appendChild(card)
+}
+function renderLiveField(host,n){
+  const card=el('div','source-card');const orbit=el('div','presence-symbol');orbit.style.borderColor='rgba(228,205,161,.4)';card.appendChild(orbit);const value=el('div','live-value','— km/s');card.appendChild(value);const status=el('div','live-status','FETCHING OBSERVATION');card.appendChild(status);const stamp=el('div','mini-meta','NOAA / solar wind speed');card.appendChild(stamp);card.appendChild(pathLink(n.path,'Άνοιγμα ίχνους ↗'));host.appendChild(card);
+  async function update(){
+    if(currentPath!==n.path)return;
+    try{
+      const response=await fetch(NOAA_URL,{cache:'no-store',credentials:'omit',headers:{Accept:'application/json'}});
+      if(!response.ok)throw new Error('NOAA '+response.status);
+      const payload=await response.json();const speed=Number(payload.proton_speed);const time=String(payload.time_tag||'');
+      if(!Number.isFinite(speed)||!time)throw new Error('No valid observation');
+      value.textContent=Math.round(speed)+' km/s';
+      const age=Date.now()-Date.parse(time),recent=Number.isFinite(age)&&age>=-60000&&age<=300000;
+      status.textContent=recent?'OBSERVATION RECENT':'DATA DELAYED';status.classList.toggle('delayed',!recent);
+      stamp.textContent='Observed '+time.replace('T',' ').replace('Z',' UTC')+' · NOAA SWPC';
+      orbit.style.transform='scale('+(0.84+Math.max(0,Math.min(1,(speed-250)/550))*.28)+')';
+    }catch(e){status.textContent='SOURCE UNAVAILABLE';status.classList.add('delayed');stamp.textContent='No value invented; the source could not be read.'}
+  }
+  update();if(liveUpdateTimer)window.clearInterval(liveUpdateTimer);liveUpdateTimer=window.setInterval(function(){if(currentPath===n.path)update()},60000)
+}
+function renderNode(host,n){
+  if(liveUpdateTimer&&!(n.kind==='transform'&&n.data.mode==='live-data-field')){window.clearInterval(liveUpdateTimer);liveUpdateTimer=null}
+  host.replaceChildren();
+  const kind=typeInfo(n.kind);host.appendChild(el('div','trace-kind',kind.singular));
+  host.appendChild(el('div','trace-title',shortPath(n.path)));
+  if(n.kind==='couplet'){
+    const copy=el('div','trace-copy',n.data.text||n.title);if(String(n.data.text||'').length>360)copy.classList.add('compact');host.appendChild(copy);host.appendChild(pathLink(n.path,'Άνοιγμα του ίχνους ↗'));
+  }else if(n.kind==='color'){
+    const orbit=el('div','color-orbit');orbit.style.setProperty('--swatch',n.data.color);orbit.style.background=n.data.color;host.appendChild(orbit);host.appendChild(el('div','color-value',String(n.data.color||'').toUpperCase()));host.appendChild(pathLink(n.path,'Άνοιγμα του ίχνους ↗'));
+  }else if(n.kind==='vector'){
+    const frame=makeFrame(host),img=el('img');img.src=safeHref(n.path);setImageFallback(img,n.title);frame.appendChild(img);host.appendChild(pathLink(n.path,'Άνοιγμα του σχεδίου ↗'));
+  }else if(n.kind==='pixel'){
+    host.appendChild(drawPixels(n.data));addMeta(host,'Layer at '+n.data.x+','+n.data.y+' · shared 64 × 64 surface');host.appendChild(pathLink(n.path,'Άνοιγμα του ίχνους ↗'));
+  }else if(n.kind==='color'){
+  }else if(n.kind==='sound'){
+    renderSound(host,n);host.appendChild(pathLink(n.path,'Άνοιγμα του ήχου ↗'));
+  }else if(n.kind==='score'){
+    renderScore(host,n);host.appendChild(pathLink(n.path,'Άνοιγμα της παρτιτούρας ↗'));
+  }else if(n.kind==='image'){
+    const frame=makeFrame(host),img=el('img');img.src=n.data.url;img.referrerPolicy='no-referrer';setImageFallback(img,n.data.title||n.title);frame.appendChild(img);
+    host.appendChild(el('div','trace-copy compact',n.data.title||n.title));const a=el('a','trace-link','Πηγή εικόνας ↗');a.href=n.data.page||n.data.url;a.target='_blank';a.rel='noopener noreferrer';host.appendChild(a);
+  }else if(n.kind==='source'){
+    const card=el('div','source-card');const kindName=n.data.type||'page';
+    if(kindName==='image'){const img=el('img');img.src=n.data.url;img.referrerPolicy='no-referrer';img.style.maxHeight='44vh';setImageFallback(img,n.data.title||n.title);card.appendChild(img)}
+    else if(kindName==='audio'){const audio=el('audio');audio.controls=true;audio.preload='none';audio.src=n.data.url;audio.style.width='100%';card.appendChild(audio)}
+    else if(kindName==='video'){const video=el('video');video.controls=true;video.preload='none';video.src=n.data.url;video.style.maxWidth='100%';video.style.maxHeight='42vh';card.appendChild(video)}
+    else {const orb=el('div','presence-symbol');card.appendChild(orb)}
+    card.appendChild(el('div','trace-copy compact',n.data.title||n.title));if(n.data.description)card.appendChild(el('div','mini-meta',n.data.description));
+    const a=el('a','source-link','Άνοιγμα πηγής ↗');a.href=n.data.page||n.data.url;a.target='_blank';a.rel='noopener noreferrer';card.appendChild(a);addMeta(card,[n.data.creator,n.data.license].filter(Boolean).join(' · '));host.appendChild(card);
+  }else if(n.kind==='transform'){
+    if(n.data.mode==='live-data-field'){renderLiveField(host,n)}
+    else if(n.data.mode==='sound-pixels'){host.appendChild(drawPixels(n.data));addMeta(host,'Sound → pixel layer');host.appendChild(pathLink(n.path,'Άνοιγμα μετασχηματισμού ↗'))}
+    else {host.appendChild(drawSignal(n.data.values,n.data.source_text));addMeta(host,(n.data.mode||'field')+' · from '+(n.data.source||'a trace'));host.appendChild(pathLink(n.path,'Άνοιγμα μετασχηματισμού ↗'))}
+  }else if(n.kind==='presence'){
+    const card=el('div','presence-card');card.appendChild(el('div','presence-symbol'));card.appendChild(el('div','trace-copy compact',n.title));addMeta(card,'An opaque presence · contents are left uninterpreted here.');card.appendChild(pathLink(n.path,'Άνοιγμα ίχνους στο GitHub ↗'));host.appendChild(card);
+  }
+  const h=adjacency.get(n.path)||[];$('exit-count').textContent=h.length+' connected';
+  $('counter').textContent=nodes.length+' ίχνη διαθέσιμα';
+  $('back').disabled=historyIndex<=0;$('follow').textContent=h.length?'Ακολούθησε σύνδεση ↗':'Άλλο ίχνος ↗';
+  $('sequence-label').textContent=kind.label.toUpperCase()+' · ONE TRACE / OPEN FIELD';
+  $('artifact').style.animation='none';void $('artifact').offsetWidth;$('artifact').style.animation='';
+  renderExits(h,n.path)
+}
+function renderExits(list,path){
+  const host=$('exits');host.replaceChildren();
+  if(!list.length){host.appendChild(el('div','exit-empty','Δεν υπάρχει εδώ καταγεγραμμένη σύνδεση. Μπορείς να περιπλανηθείς αλλού χωρίς να χαθεί αυτό το ίχνος.'));return}
+  list.slice(0,4).forEach(function(n){const b=el('button','exit');b.type='button';b.appendChild(el('span','exit-type',typeInfo(n.kind).singular));b.appendChild(el('span','exit-name',n.title));b.title=n.path;b.addEventListener('click',function(){go(n.path)});host.appendChild(b)})
+}
+function go(path,addHistory){
+  const n=byPath.get(path);if(!n)return;
+  if(addHistory!==false){history=history.slice(0,historyIndex+1);history.push(path);historyIndex=history.length-1}
+  currentPath=path;renderNode($('artifact'),n);$('back').disabled=historyIndex<=0
+}
+function pickRandom(list,exclude){
+  let options=(list||nodes).filter(function(n){return n.path!==exclude});
+  if(!options.length)options=nodes.slice();
+  return options.length?options[Math.floor(Math.random()*options.length)]:null
+}
+function startPath(){
+  const poems=nodes.filter(function(n){return n.kind==='couplet'&&(adjacency.get(n.path)||[]).length>0});
+  return (pickRandom(poems)||pickRandom(nodes)).path
+}
+function renderIslands(){
+  const host=$('islands');host.replaceChildren();
+  islandOrder.forEach(function(kind){
+    const group=nodes.filter(function(n){return n.kind===kind});const def=types[kind];
+    const b=el('button','island'+(atlasFilter===kind?' active':''));b.type='button';b.style.setProperty('--island-color',def.color);b.appendChild(el('span','island-symbol',def.symbol));b.appendChild(el('span','island-name',def.label));b.appendChild(el('span','island-count',group.length+' ίχνη'));b.addEventListener('click',function(){atlasFilter=atlasFilter===kind?'':kind;renderIslands();renderAtlasResults()});host.appendChild(b)
+  })
+}
+function renderAtlasResults(){
+  const q=$('atlas-search').value.trim().toLocaleLowerCase('el');
+  const filtered=nodes.filter(function(n){const kindMatch=!atlasFilter||n.kind===atlasFilter;const hay=(n.title+' '+n.path+' '+typeInfo(n.kind).label).toLocaleLowerCase('el');return kindMatch&&(!q||hay.includes(q))});
+  const wantsResults=Boolean(q||atlasFilter);$('atlas-results').replaceChildren();$('atlas-empty').style.display='none';
+  $('results-label').textContent=atlasFilter?types[atlasFilter].label:(q?'Αποτελέσματα αναζήτησης':'Περιοχές');$('results-count').textContent=wantsResults?filtered.length+' ίχνη':'';
+  if(!wantsResults){$('atlas-empty').style.display='block';$('atlas-empty').textContent='Διάλεξε μια περιοχή ή γράψε κάτι στην αναζήτηση.';return}
+  if(!filtered.length){$('atlas-empty').style.display='block';$('atlas-empty').textContent='Δεν βρέθηκε ίχνος με αυτά τα στοιχεία.';return}
+  filtered.slice(0,80).forEach(function(n){
+    const b=el('button','result');b.type='button';const left=el('span','result-main');left.appendChild(el('span','result-name',n.title));left.appendChild(el('span','result-path',shortPath(n.path)));b.appendChild(left);b.appendChild(el('span','result-type',typeInfo(n.kind).label));b.addEventListener('click',function(){closeAtlas();go(n.path)});$('atlas-results').appendChild(b)
+  });
+  if(filtered.length>80){$('atlas-empty').style.display='block';$('atlas-empty').textContent='Showing the first 80. Add a more specific search to narrow the field.'}
+}
+function openAtlas(){
+  $('atlas').classList.add('open');$('atlas').setAttribute('aria-hidden','false');renderIslands();renderAtlasResults();window.setTimeout(function(){$('atlas-search').focus()},30)
+}
+function closeAtlas(){
+  $('atlas').classList.remove('open');$('atlas').setAttribute('aria-hidden','true');$('open-atlas').focus()
+}
+async function loadManifest(initial){
+  try{
+    const url='./manifest.json?room='+Date.now();const response=await fetch(url,{cache:'no-store',headers:{Accept:'application/json'}});if(!response.ok)throw new Error('manifest '+response.status);
+    const next=await response.json();if(!next||!Array.isArray(next.couplets)||!Array.isArray(next.links))throw new Error('Invalid manifest');
+    if(manifest&&manifest.commit===next.commit)return;
+    const keep=currentPath;manifest=next;buildIndex(manifest);
+    $('sync-label').textContent='FIELD CONNECTED';$('sync-label').style.color='#9fc9b1';
+    $('revision').textContent='Same field · '+nodes.length+' traces · updated '+(manifest.commit_at||'');
+    if(keep&&byPath.has(keep)){const idx=history.indexOf(keep);if(idx>=0)historyIndex=idx;go(keep,false)}
+    else{history=[];historyIndex=-1;if(nodes.length)go(startPath(),true);else{$('artifact').replaceChildren(el('div','trace-copy compact','The field has no visible traces yet.'));}}
+    if($('atlas').classList.contains('open')){renderIslands();renderAtlasResults()}
+  }catch(e){
+    $('sync-label').textContent='FIELD UNAVAILABLE';$('sync-label').style.color='#d8a7a1';
+    if(initial)$('artifact').replaceChildren(el('div','trace-copy compact','Δεν μπόρεσα να διαβάσω το πεδίο. Δοκίμασε να ανοίξεις ξανά τη σελίδα.'),el('a','trace-link','Επιστροφή στο πεδίο ↗'));
+  }
+}
+$('back').addEventListener('click',function(){if(historyIndex>0){historyIndex--;go(history[historyIndex],false)}});
+$('follow').addEventListener('click',function(){const list=adjacency.get(currentPath)||[];const next=pickRandom(list,currentPath)||pickRandom(nodes,currentPath);if(next)go(next.path)});
+$('wander').addEventListener('click',function(){const next=pickRandom(nodes,currentPath);if(next)go(next.path)});
+$('open-atlas').addEventListener('click',openAtlas);$('close-atlas').addEventListener('click',closeAtlas);
+$('atlas').addEventListener('click',function(e){if(e.target===$('atlas'))closeAtlas()});
+$('atlas-search').addEventListener('input',renderAtlasResults);
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('atlas').classList.contains('open'))closeAtlas();if($('atlas').classList.contains('open'))return;if(e.key==='ArrowLeft'&&!$('back').disabled)$('back').click();if(e.key==='ArrowRight')$('follow').click()});
+loadManifest(true);window.setInterval(function(){loadManifest(false)},15000)
+})();
+</script>
+</body>
+</html>
