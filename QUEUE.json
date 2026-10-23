@@ -8,7 +8,10 @@
       "ticket": "v2-pil-641",
       "bundle": "set-47",
       "trial_branch": "experiment/field-set-47",
-      "status": "available"
+      "status": "claimed",
+      "claim_token": "claim-8f4d2c71a9",
+      "claimed_at_utc": "2026-10-23T20:25:05Z",
+      "claimed_by": "independent-visitor"
     },
     {
       "ticket": "v2-pil-318",
