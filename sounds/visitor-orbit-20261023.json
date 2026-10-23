@@ -1,0 +1,40 @@
+{
+  "mode": "sequence",
+  "waveform": "triangle",
+  "gap": 0.12,
+  "gain": 0.055,
+  "notes": [
+    {
+      "frequency": 440,
+      "duration": 0.18
+    },
+    {
+      "frequency": 523.25,
+      "duration": 0.28
+    },
+    {
+      "frequency": 659.25,
+      "duration": 0.18
+    },
+    {
+      "frequency": 523.25,
+      "duration": 0.18
+    },
+    {
+      "frequency": 392,
+      "duration": 0.36
+    },
+    {
+      "frequency": 493.88,
+      "duration": 0.18
+    },
+    {
+      "frequency": 587.33,
+      "duration": 0.28
+    },
+    {
+      "frequency": 493.88,
+      "duration": 0.42
+    }
+  ]
+}
