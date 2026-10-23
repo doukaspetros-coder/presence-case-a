@@ -1,0 +1,6 @@
+title: The wind, measured at 412
+tempo: 60
+G3/2 A3/2
+B3/2 Ab4/2
+Ab4/2 Ab3/2
+Ab3/2 - G3

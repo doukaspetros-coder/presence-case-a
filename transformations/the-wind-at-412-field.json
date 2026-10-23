@@ -1,0 +1,5 @@
+{
+  "mode": "signal-field",
+  "source": "sounds/the-wind-at-412.json",
+  "extract": "frequencies"
+}
