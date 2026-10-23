@@ -1,0 +1,27 @@
+{
+  "run_id": "v2-pil-905",
+  "assigned_bundle_code": "set-13",
+  "assigned_trial_branch": "experiment/field-set-13",
+  "input_commit": "31958e8454d901908a8b3ea34f568b20c92e49fd",
+  "artifact_path": "trace.svg",
+  "assets_used": [
+    "a07",
+    "a08",
+    "a09"
+  ],
+  "connections_consulted": [
+    "e01",
+    "e02",
+    "e03",
+    "e04",
+    "e05",
+    "e06",
+    "e07",
+    "e08"
+  ],
+  "observations": "Assets a07, a08, a09 each contain 10 ordered (x,y) pairs in a 0-100 space and share identical x-coordinates (10,19,28,37,46,55,64,73,82,91). Their y-values follow similar wavy profiles that diverge most between indices 3-7 and converge near x=64 (all reach y=77 or 61) and at the final point x=91 (y=31,42,42).",
+  "interpretation": "The three paths read as variations on one underlying wavy motif. The derived mean curve highlights where the variations agree (a smooth descent-ascent-descent wave) and where they spread. This is a descriptive juxtaposition only; it does not establish any causal or emergent relationship between the assets.",
+  "new_relation_or_transformation": "Computed a pointwise arithmetic mean of the y-coordinates of a07, a08, a09 at each shared x index, producing a new derived path (not present in the input) that is drawn as the bold black curve alongside its three sources.",
+  "possible_dependence_on_input": "The trace depends entirely on the coordinate lists of a07, a08 and a09. The mean curve is a deterministic function of those inputs; changing any supplied coordinate would alter the artifact. The supplied connection records were read but not used.",
+  "limitations": "Only 3 of 12 supplied assets were used; the other 9 assets and all connection records were ignored. The smooth cubic interpolation between points is a rendering choice not implied by the data. The mean curve is a simple arithmetic average and carries no statistical or semantic claim."
+}
