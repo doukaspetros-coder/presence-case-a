@@ -1,0 +1,21 @@
+{
+  "experiment_id": "connection-structure-v1",
+  "input_format_version": "1.0",
+  "source_snapshot_commit": "68a17627e394766571b41f838b1539e260008e7e",
+  "materials_file": "MATERIALS.json",
+  "connection_semantics": "Each record is a directed relation from `from` to `to`. The records do not assign any additional meaning to the relation.",
+  "asset_ids": [
+    "couplet_ring_refusal",
+    "color_416",
+    "pixel_ring",
+    "pixel_south",
+    "score_416",
+    "sound_416",
+    "sound_ring",
+    "wind_416",
+    "field_416",
+    "south_sound",
+    "vector_416"
+  ],
+  "connections": []
+}

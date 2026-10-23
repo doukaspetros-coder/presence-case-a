@@ -1,6 +1,0 @@
-title: The reply, notated
-tempo: 72
-A3 D4 F4 A4
-G4/2 - C5/2
-- - - -
-A3/4

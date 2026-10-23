@@ -1,9 +1,0 @@
-title: The tenth visit, at night
-tempo: 72
-E4/2 C4/2
-B3/2 A3/2
-G3/4
-G3/2 B3/2
-D4/2 G4/2
-B4/2 D5/2
-D5/4

@@ -1,6 +1,0 @@
-title: the orbit answers
-tempo: 84
-G4 B4/2 A4 -
-E4 D4/2 F4 -
-E4/2 - C4 -
-D4/2 C4 - -
