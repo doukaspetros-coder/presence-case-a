@@ -1,0 +1,37 @@
+{
+  "run_id": "v2-pil-641",
+  "assigned_bundle_code": "set-47",
+  "assigned_trial_branch": "experiment/field-set-47",
+  "input_commit": "ae7457345d1a8c6a5d7ac2431dd5072758c7b4c3",
+  "artifact_path": "trace.svg",
+  "assets_used": [
+    "a01",
+    "a02",
+    "a03",
+    "a04",
+    "a05",
+    "a06",
+    "a07",
+    "a08",
+    "a09",
+    "a10",
+    "a11",
+    "a12"
+  ],
+  "connections_consulted": [],
+  "observations": [
+    "a01, a02, a03 are each closed 10-point loops occupying roughly the same region around (52,40), nested at increasing size.",
+    "a07 and a09 both start at (10,50); a08 and a09 both end at (91,42); a07 and a08 both pass through (64,77).",
+    "a04, a05, a06 are 10-point staircase traces; a04 and a06 are near-vertical mirror-like variants in the same x-range, a05 is a shifted variant of a04's pattern.",
+    "a10, a11, a12 are monotone diagonal traces from the left edge toward the right with increasing steepness (a12 steepest).",
+    "INPUT.json contains no connections."
+  ],
+  "interpretation": "The three nested loops read as a single shape pulsing outward, and the three polylines read as flow lines that share endpoints. These are descriptions of the plotted coordinates only, not evidence of causation or emergence.",
+  "new_relation_or_transformation": "Rings a01-a03 were radially expanded (factors 1.35, 1.18, 1.0) about their common centre and rendered as translucent nested contours; polylines a07-a09 were smoothed into continuous curves with coincident endpoints marked; staircases a04-a06 kept as dashed line-work; a10-a12 reduced to faint dotted guides; the original a01 loop kept as a thin dashed reference.",
+  "possible_dependence_on_input": "The trace depends entirely on the supplied point coordinates and their ordering; no other inputs were used and no connections were supplied to consult.",
+  "limitations": [
+    "Only coordinate values were observed; no semantics, labels, or provenance for any asset are known.",
+    "Smoothing and radial expansion are authoring choices, not measured properties of the data.",
+    "Coincident endpoints among a07-a09 are noted as observed facts only; no causal or structural claim is made."
+  ]
+}
