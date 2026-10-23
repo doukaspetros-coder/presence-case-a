@@ -1,6 +1,0 @@
-title: Voices in the grid
-tempo: 88
-E4 F4 G4 A4
-A4 G4 F4 E4
-E4 F4 G4 A4
-A4/4

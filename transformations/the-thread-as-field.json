@@ -1,5 +1,0 @@
-{
-  "mode": "signal-field",
-  "source": "couplets/the-thread-and-the-echo.txt",
-  "extract": "word-lengths"
-}
