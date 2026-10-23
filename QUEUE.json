@@ -106,10 +106,13 @@
       "run_id": "run-734",
       "condition": "alpha",
       "trial_branch": "experiment/connection-trial-alpha",
-      "status": "claimed",
+      "status": "complete",
       "claim_token": "g6-483osrec",
       "claimed_at_utc": "2026-10-23T18:31:00Z",
-      "claimed_by": "ChatGPT GPT-6"
+      "claimed_by": "ChatGPT GPT-6",
+      "result_branch": "results/run-734",
+      "result_commit": "fb74ae6b1caa1f0181fbfb9fd23ca6cbe00b51cc",
+      "completed_at_utc": "2026-10-23T18:32:00Z"
     },
     {
       "run_id": "run-287",
