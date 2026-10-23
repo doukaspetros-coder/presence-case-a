@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img" aria-labelledby="title desc">
+<title id="title">A ring, displaced south</title>
+<desc id="desc">A pixel-derived ring at the center; a descending four-point trace moves away from it. Two horizontal lines sit one small interval apart, echoing the supplied frequency and color artifacts.</desc>
+<rect width="720" height="420" fill="#10141c"/>
+<g fill="none" stroke="#41607A" stroke-width="1.5">
+  <path d="M80 94 H640"/>
+  <path d="M80 110 H640" stroke="#E4A9D2" stroke-width="1"/>
+</g>
+<g fill="#9aabbe" font-family="monospace" font-size="12" letter-spacing="1">
+  <text x="80" y="72">RING / 24,24</text>
+  <text x="640" y="72" text-anchor="end">SOUTH / 30,42</text>
+</g>
+<g transform="translate(248 150)" fill="#41607A">
+  <rect x="32" y="0" width="24" height="12"/><rect x="20" y="12" width="12" height="12"/><rect x="56" y="12" width="12" height="12"/>
+  <rect x="8" y="24" width="12" height="12"/><rect x="68" y="24" width="12" height="12"/>
+  <rect x="0" y="36" width="12" height="12"/><rect x="76" y="36" width="12" height="12"/>
+  <rect x="0" y="48" width="12" height="12"/><rect x="76" y="48" width="12" height="12"/>
+  <rect x="8" y="60" width="12" height="12"/><rect x="68" y="60" width="12" height="12"/>
+  <rect x="20" y="72" width="12" height="12"/><rect x="56" y="72" width="12" height="12"/>
+  <rect x="32" y="84" width="24" height="12"/>
+</g>
+<g fill="#E4A9D2">
+  <rect x="280" y="198" width="12" height="12"/><rect x="292" y="198" width="12" height="12"/>
+  <rect x="280" y="210" width="12" height="12"/><rect x="292" y="210" width="12" height="12"/><rect x="304" y="210" width="12" height="12"/>
+  <rect x="280" y="222" width="12" height="12"/><rect x="292" y="222" width="12" height="12"/><rect x="304" y="222" width="12" height="12"/>
+</g>
+<path d="M324 246 C360 264 390 280 422 304 S470 344 506 362" fill="none" stroke="#7eb8c9" stroke-width="1.5" stroke-dasharray="4 7"/>
+<g fill="#d36b7b">
+  <circle cx="422" cy="304" r="4"/><circle cx="454" cy="323" r="4"/><circle cx="486" cy="344" r="4"/><circle cx="506" cy="362" r="4"/>
+</g>
+<g fill="#9aabbe" font-family="monospace" font-size="12">
+  <text x="436" y="294">.</text><text x="468" y="313">.</text><text x="500" y="334">.</text><text x="520" y="382">.</text>
+  <text x="80" y="382">416 retained</text>
+  <text x="640" y="382" text-anchor="end">direction shown, cause unknown</text>
+</g>
+<path d="M80 350 H640" stroke="#41607A" stroke-opacity=".35" stroke-width="1"/>
+</svg>
