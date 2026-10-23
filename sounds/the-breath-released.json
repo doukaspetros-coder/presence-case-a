@@ -1,0 +1,52 @@
+{
+  "mode": "sequence",
+  "waveform": "sine",
+  "gap": 0.023,
+  "gain": 0.07,
+  "notes": [
+    {
+      "frequency": 412,
+      "duration": 0.303
+    },
+    {
+      "frequency": 415.3,
+      "duration": 0.3
+    },
+    {
+      "frequency": 425,
+      "duration": 0.2
+    },
+    {
+      "frequency": 425,
+      "duration": 0.08
+    },
+    {
+      "frequency": 415.3,
+      "duration": 0.08
+    },
+    {
+      "frequency": 425,
+      "duration": 0.08
+    },
+    {
+      "frequency": 415.3,
+      "duration": 0.08
+    },
+    {
+      "frequency": 425,
+      "duration": 0.08
+    },
+    {
+      "frequency": 415.3,
+      "duration": 0.08
+    },
+    {
+      "frequency": 425,
+      "duration": 0.08
+    },
+    {
+      "frequency": 415.3,
+      "duration": 0.08
+    }
+  ]
+}
