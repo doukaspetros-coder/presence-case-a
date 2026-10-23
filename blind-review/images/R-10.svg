@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img" aria-labelledby="title desc">
+
+
+<rect width="720" height="420" fill="#10141c"/>
+<g fill="none" stroke="#41607A" stroke-width="1.5" opacity=".9">
+<path d="M80 95 H570"/>
+<path d="M80 105 H614" stroke="#E4A9D2"/>
+</g>
+<g fill="#41607A"><circle cx="570" cy="95" r="3"/></g><g fill="#E4A9D2"><circle cx="614" cy="105" r="3"/></g>
+<g transform="translate(318 166)" fill="none" stroke="#E4A9D2" stroke-width="8" stroke-linecap="square">
+<path d="M-34 -34 H-10 M10 -34 H34 M-34 -10 V10 M34 -10 V10 M-34 34 H-10 M10 34 H34"/>
+<path d="M-18 -18 H18 M-18 0 H18 M-18 18 H18" stroke="#41607A" stroke-width="5"/>
+</g>
+<g transform="translate(414 220)" fill="none" stroke="#7eb8c9" stroke-width="3">
+<path d="M-40 -24 L-16 0 L8 -24 L32 0 L56 -24"/>
+<path d="M-16 0 L8 24 L32 0" stroke="#d36b7b"/>
+</g>
+<path d="M360 270 V306" stroke="#7eb8c9" stroke-width="1.5"/><path d="M352 299 L360 308 L368 299" fill="none" stroke="#7eb8c9" stroke-width="1.5"/>
+<g fill="#9aabbe" font-family="monospace" font-size="13" letter-spacing="1">
+<text x="80" y="64">416 · A SIGNAL, NOT A LINK</text>
+<text x="80" y="344">RING: SAME WIDTH</text>
+<text x="640" y="344" text-anchor="end">DIAGONAL: NO DESTINATION</text>
+<text x="360" y="333" text-anchor="middle" fill="#E4A9D2">1 Hz BETWEEN READINGS</text>
+<text x="80" y="386" opacity=".7">A shape can recur without an explicit edge.</text>
+</g>
+</svg>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="title desc">
+
+
+<rect width="800" height="520" fill="#10141c"/>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="290" cy="230" r="106" stroke="#41607A" stroke-width="1.5" opacity=".65"/>
+  <circle cx="290" cy="230" r="82" stroke="#E4A9D2" stroke-width="1" stroke-dasharray="2 8" opacity=".75"/>
+  <path d="M230 160 L250 140 L270 140 L290 160 L310 140 L330 140 L350 160 L350 180 L370 200 L370 220 L350 240 L370 260 L370 280 L350 300 L330 320 L310 320 L290 300 L270 320 L250 320 L230 300 L230 280 L210 260 L210 240 L230 220 L210 200 L210 180 Z" stroke="#7eb8c9" stroke-width="2"/>
+  <path d="M290 336 L290 372 L326 372 L326 408 L362 408 L362 444 L398 444" stroke="#d36b7b" stroke-width="2"/>
+  <path d="M398 444 C430 444 438 418 462 418 S494 444 520 444" stroke="#d36b7b" stroke-width="1.2" stroke-dasharray="3 7"/>
+  <line x1="470" y1="174" x2="710" y2="174" stroke="#41607A" stroke-width="2"/>
+  <line x1="470" y1="188" x2="710" y2="188" stroke="#E4A9D2" stroke-width="2"/>
+  <line x1="470" y1="181" x2="710" y2="181" stroke="#ffffff" stroke-width=".7" opacity=".35"/>
+</g>
+<g fill="#9aabbe" font-family="monospace" font-size="13" letter-spacing="1">
+  <text x="48" y="52">RING / SOUTH / RESIDUAL</text>
+  <text x="470" y="146">TWO NEAR TONES</text>
+  <text x="470" y="228">Ab4 ≈ 415.3 Hz</text>
+  <text x="470" y="250">signal = 416 Hz</text>
+  <text x="48" y="478">THE OFFSET IS NOT A BRIDGE.</text>
+  <text x="48" y="497">IT IS THE DISTANCE LEFT VISIBLE.</text>
+</g>
+<g fill="#E4A9D2">
+  <circle cx="398" cy="444" r="4"/>
+  <circle cx="710" cy="188" r="3"/>
+</g>
+<g fill="#41607A"><circle cx="710" cy="174" r="3"/></g>
+</svg>

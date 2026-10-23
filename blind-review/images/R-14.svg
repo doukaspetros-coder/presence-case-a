@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" role="img" aria-labelledby="title desc">
+
+
+<rect width="900" height="560" fill="#10141c"/>
+<g fill="#9aabbe" font-family="monospace">
+  <text x="42" y="42" font-size="13" letter-spacing="2">RUN 906 / TRACE</text>
+  <text x="858" y="42" font-size="12" text-anchor="end">RING → SOUTH → FIELD?</text>
+</g>
+<g transform="translate(100 112) scale(18)" fill="#E4A9D2">
+  <rect x="4" y="0" width="2" height="1"/><rect x="2" y="1" width="2" height="1"/><rect x="6" y="1" width="2" height="1"/>
+  <rect x="1" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/>
+  <rect x="0" y="3" width="1" height="1"/><rect x="4" y="3" width="4" height="1"/><rect x="9" y="3" width="1" height="1"/>
+  <rect x="0" y="4" width="1" height="1"/><rect x="3" y="4" width="5" height="1"/><rect x="9" y="4" width="1" height="1"/>
+  <rect x="1" y="5" width="1" height="1"/><rect x="3" y="5" width="5" height="1"/><rect x="8" y="5" width="1" height="1"/>
+  <rect x="2" y="6" width="2" height="1"/><rect x="6" y="6" width="2" height="1"/>
+  <rect x="4" y="7" width="2" height="1"/>
+</g>
+<g fill="#9aabbe" font-family="monospace" font-size="12">
+  <text x="100" y="286">PIXEL RING</text><text x="100" y="305">anchor: 24,24</text>
+</g>
+<path d="M290 230 C350 230 360 286 412 286 S465 342 520 342" fill="none" stroke="#7eb8c9" stroke-width="1.5" stroke-dasharray="4 7"/>
+<g transform="translate(470 296) scale(15)" fill="#E4A9D2">
+  <rect x="0" y="0" width="1" height="1"/><rect x="1" y="1" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="1" y="5" width="1" height="1"/>
+</g>
+<g fill="#9aabbe" font-family="monospace" font-size="12">
+  <text x="520" y="408">SOUTH MARK</text><text x="520" y="427">anchor: 30,42</text>
+</g>
+<g stroke-width="2" fill="none">
+  <line x1="100" y1="466" x2="620" y2="466" stroke="#41607A"/>
+  <line x1="100" y1="486" x2="615" y2="486" stroke="#E4A9D2"/>
+  <circle cx="620" cy="466" r="3" fill="#41607A" stroke="none"/>
+  <circle cx="615" cy="486" r="3" fill="#E4A9D2" stroke="none"/>
+</g>
+<g fill="#9aabbe" font-family="monospace" font-size="12">
+  <text x="100" y="451">416 Hz (sequence value)</text>
+  <text x="650" y="470">Ab4 · 415.3 Hz</text>
+  <text x="650" y="490">Δ ≈ 0.7 Hz*</text>
+  <text x="100" y="526" font-size="10">*Arithmetic comparison of the two supplied labels; not a claim about audible perception.</text>
+</g>
+</svg>

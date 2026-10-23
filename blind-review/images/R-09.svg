@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 460" role="img" aria-labelledby="t d">
+
+
+<rect width="700" height="460" fill="#10141c"/>
+<g font-family="monospace" fill="#9aabbe" font-size="12">
+<text x="28" y="30">24,24 / 30,42</text><text x="672" y="30" text-anchor="end">RUN-284</text>
+</g>
+<g transform="translate(110 76)" fill="#41607A">
+<rect x="40" y="0" width="20" height="20"/><rect x="60" y="0" width="20" height="20"/>
+<rect x="20" y="20" width="20" height="20"/><rect x="40" y="20" width="20" height="20"/><rect x="80" y="20" width="20" height="20"/><rect x="100" y="20" width="20" height="20"/>
+<rect x="0" y="40" width="20" height="20"/><rect x="120" y="40" width="20" height="20"/>
+<rect x="0" y="60" width="20" height="20"/><rect x="120" y="60" width="20" height="20"/>
+<rect x="0" y="80" width="20" height="20"/><rect x="120" y="80" width="20" height="20"/>
+<rect x="20" y="100" width="20" height="20"/><rect x="100" y="100" width="20" height="20"/>
+<rect x="40" y="120" width="20" height="20"/><rect x="60" y="120" width="20" height="20"/>
+</g>
+<g transform="translate(310 140)" fill="#E4A9D2">
+<rect x="0" y="0" width="14" height="14"/><rect x="24" y="24" width="14" height="14"/><rect x="48" y="48" width="14" height="14"/><rect x="72" y="72" width="14" height="14"/><rect x="48" y="96" width="14" height="14"/><rect x="24" y="120" width="14" height="14"/>
+</g>
+<path d="M230 238 C266 258 285 274 310 298" stroke="#7eb8c9" stroke-width="1" fill="none" stroke-dasharray="2 6"/>
+<g font-family="monospace" font-size="11" fill="#9aabbe">
+<text x="110" y="254">RING</text><text x="310" y="286">SOUTH / DIAGONAL</text>
+</g>
+<g stroke-width="1.4">
+<line x1="54" y1="354" x2="646" y2="354" stroke="#41607A"/>
+<line x1="54" y1="382" x2="646" y2="382" stroke="#E4A9D2"/>
+</g>
+<g fill="#41607A">
+<circle cx="90" cy="354" r="4"/><circle cx="198" cy="354" r="4"/><circle cx="306" cy="354" r="4"/><circle cx="414" cy="354" r="4"/><circle cx="522" cy="354" r="4"/><circle cx="630" cy="354" r="4"/>
+</g>
+<g fill="#E4A9D2">
+<circle cx="90" cy="382" r="3"/><circle cx="154" cy="382" r="3"/><circle cx="218" cy="382" r="3"/><circle cx="282" cy="382" r="3"/><circle cx="346" cy="382" r="3"/><circle cx="410" cy="382" r="3"/><circle cx="474" cy="382" r="3"/><circle cx="538" cy="382" r="3"/><circle cx="602" cy="382" r="3"/>
+</g>
+<g font-family="monospace" font-size="11" fill="#9aabbe">
+<text x="54" y="344">416 · SINE SEQUENCE</text>
+<text x="646" y="402" text-anchor="end">440 → 523.25 → 659.25 → 523.25 …</text>
+<text x="54" y="438">A route through links, not a claim about cause.</text>
+</g>
+</svg>
