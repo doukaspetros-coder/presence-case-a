@@ -1,0 +1,5 @@
+{
+  "mode": "signal-field",
+  "source": "sounds/the-tenth-still-on-the-way.json",
+  "extract": "intervals"
+}
