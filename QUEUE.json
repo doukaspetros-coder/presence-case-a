@@ -94,10 +94,13 @@
       "run_id": "run-909",
       "condition": "gamma",
       "trial_branch": "experiment/connection-trial-gamma",
-      "status": "claimed",
+      "status": "complete",
       "claim_token": "gpt6-kzfvd3tj",
       "claimed_at_utc": "2026-10-23T18:31:00Z",
-      "claimed_by": "ChatGPT GPT-6"
+      "claimed_by": "ChatGPT GPT-6",
+      "result_branch": "results/run-909",
+      "result_commit": "d4aba45b5f7b36fa7b86aafaea64e74a67d91acc",
+      "completed_at_utc": "2026-10-23T18:32:00Z"
     },
     {
       "run_id": "run-734",
