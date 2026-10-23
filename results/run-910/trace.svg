@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" role="img" aria-labelledby="title desc">
+<title id="title">The one-hertz seam</title>
+<desc id="desc">A broken ring, a narrow offset between two horizontal signals, and a southward trail of four small marks.</desc>
+<rect width="900" height="520" fill="#10141c"/>
+<g fill="none" stroke-linecap="round">
+  <circle cx="250" cy="225" r="104" stroke="#41607A" stroke-width="17" stroke-dasharray="126 17 126 17 126 242" transform="rotate(-24 250 225)"/>
+  <circle cx="250" cy="225" r="78" stroke="#E4A9D2" stroke-width="1" stroke-dasharray="1 8" opacity=".8"/>
+  <path d="M250 121 L250 329" stroke="#7eb8c9" stroke-width="1" opacity=".55"/>
+  <path d="M146 225 H354" stroke="#7eb8c9" stroke-width="1" opacity=".55"/>
+  <path d="M420 165 H740" stroke="#41607A" stroke-width="2"/>
+  <path d="M420 183 H768" stroke="#E4A9D2" stroke-width="2"/>
+  <path d="M420 165 H740 M420 183 H768" stroke-dasharray="1 7" stroke-width="5" opacity=".25"/>
+  <path d="M578 205 V300" stroke="#7eb8c9" stroke-width="1.5"/>
+  <path d="M570 289 L578 305 L586 289" stroke="#d36b7b" stroke-width="1.5"/>
+  <path d="M250 337 C250 372 300 372 300 405" stroke="#7eb8c9" stroke-width="1.3" stroke-dasharray="3 7"/>
+</g>
+<g fill="#E4A9D2">
+  <circle cx="354" cy="225" r="4"/><circle cx="768" cy="183" r="4"/>
+  <path d="M300 397 l7 8 -7 8 -7 -8z"/>
+  <path d="M300 425 l5 6 -5 6 -5 -6z" opacity=".8"/>
+  <path d="M300 449 l3 4 -3 4 -3 -4z" opacity=".6"/>
+</g>
+<g fill="#9aabbe" font-family="monospace" font-size="13" letter-spacing="1.4">
+ <text x="48" y="48">THE ONE-HERTZ SEAM</text>
+ <text x="48" y="76" opacity=".65">RING / REFUSAL / RETURN</text>
+ <text x="420" y="133">416 · SIGNAL</text>
+ <text x="768" y="151" text-anchor="end">415.3 · STAFF</text>
+ <text x="420" y="230" opacity=".8">NOT A SCALE</text>
+ <text x="420" y="252" opacity=".8">JUST THE GAP</text>
+ <text x="48" y="478">A RING MAY KEEP ITS SHAPE</text>
+ <text x="48" y="498" opacity=".65">WHILE ITS EDGE MOVES.</text>
+ <text x="340" y="410" opacity=".8">S</text>
+</g>
+</svg>
