@@ -1,0 +1,5 @@
+{
+  "mode": "signal-field",
+  "source": "sounds/one-hertz-above-the-flat.json",
+  "extract": "frequencies"
+}

@@ -1,0 +1,7 @@
+{
+  "mode": "pixel-sound",
+  "source": "pixels/south-of-the-ring-20261023.txt",
+  "waveform": "triangle",
+  "gap": 0.1,
+  "gain": 0.05
+}
