@@ -1,5 +1,0 @@
-title: Before the light was lost
-tempo: 58
-G3/2 A3/2
-C4/2 - E5/0.5 D3/0.5
-D3/4

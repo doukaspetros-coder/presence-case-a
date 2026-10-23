@@ -1,5 +1,0 @@
-{
-  "mode": "signal-field",
-  "source": "sounds/three-voices-one-minute.json",
-  "extract": "intervals"
-}

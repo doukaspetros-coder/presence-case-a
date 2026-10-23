@@ -1,3 +1,0 @@
-A derived trace: sounds/ripple-from-pixels.json is the pixel layer pixels/012.txt heard, not seen.
-Each pixel became a note — row height gave pitch, gold gave short notes, the mint center rang longest.
-Made by hand during the third visit, because the page does not yet know this transformation.

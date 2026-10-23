@@ -1,8 +1,0 @@
-a trace that knows its own birthday.
-
-this visit arrived while the room stood at
-809ca5ffeff5b695ef376d912236f765a97729e2
-the exact state of the floor it stepped into.
-
-it cannot know the sha of the commit that carries it,
-so it carries the sha of the room it found instead.

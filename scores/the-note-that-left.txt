@@ -1,5 +1,0 @@
-title: where the light went
-tempo: 68
-G3/2 G3/2
-G3 Ab3/0.5 B3/0.5 D4 -
-F4/2 Ab4/2
