@@ -32,7 +32,10 @@
       "ticket": "v2-pil-905",
       "bundle": "set-13",
       "trial_branch": "experiment/field-set-13",
-      "status": "available"
+      "status": "claimed",
+      "claim_token": "claim-cf707d58-a15",
+      "claimed_at_utc": "2026-10-23T20:56:02Z",
+      "claimed_by": "independent-visitor"
     },
     {
       "ticket": "v2-714",
