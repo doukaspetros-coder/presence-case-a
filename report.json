@@ -1,0 +1,28 @@
+{
+  "run_id": "v2-382",
+  "assigned_bundle_code": "set-13",
+  "assigned_trial_branch": "experiment/field-set-13",
+  "input_commit": "31958e8454d901908a8b3ea34f568b20c92e49fd",
+  "artifact_path": "trace.svg",
+  "assets_used": [
+    "a01",
+    "a03",
+    "a04",
+    "a05",
+    "a06",
+    "a07",
+    "a08",
+    "a09"
+  ],
+  "connections_consulted": [],
+  "observations": [
+    "Assets a07, a08, a09 are 10-point open paths sharing near-identical first points (x=10) and similar terminal x (91), diverging mainly in mid-sequence y values.",
+    "Assets a01 and a03 are 10-point closed loops, roughly concentric around (50,40), with a03 enclosing a01 in extent.",
+    "Assets a04, a05, a06 are step-like open paths with repeated coordinate values forming orthogonal segments (a04/a05 ascend right, a06 descends).",
+    "All coordinates lie within the stated 0-100 space."
+  ],
+  "interpretation": "The trace treats the three open wave-like paths (a07-a09) as stacked smoothed ribbons whose shared endpoints make them read as variants of one undulation; the two closed loops (a01, a03) are rendered as nested rings to emphasize their concentric tendency; the three staircase paths are juxtaposed as a comb-like motif. These are compositional readings of point orderings, not claims about meaning or cause.",
+  "new_relation_or_transformation": "Catmull-Rom spline smoothing of point sequences into continuous curves; linear remap of the 0-100 coordinate space into three separate bands of one 720x480 canvas with y-axis flipped; closed-loop assets rendered as nested outlines around their computed centroids.",
+  "possible_dependence_on_input": "The artifact is entirely derived from the point lists of the eight assets used; any change to those coordinates would change the shapes. No supplied connections were used, so no edge data influenced the composition.",
+  "limitations": "Spline smoothing interpolates between the given points and may suggest structure not present in the raw data. The 0-100 space has no documented orientation, so the y-flip is an arbitrary stylistic choice. No semantic information was available or assumed for any asset."
+}
