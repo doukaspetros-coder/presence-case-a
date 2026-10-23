@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="title desc">
+<title id="title">The remainder of a ring</title>
+<desc id="desc">A pixel ring opens into two orbital paths. Two nearly aligned frequency marks leave a narrow measurable gap.</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#10141c"/><stop offset="1" stop-color="#202b39"/></linearGradient>
+  <radialGradient id="halo"><stop stop-color="#41607A" stop-opacity=".30"/><stop offset="1" stop-color="#41607A" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="900" height="620" fill="url(#bg)"/>
+<circle cx="450" cy="275" r="238" fill="url(#halo)"/>
+<g fill="none" stroke="#41607A" stroke-width="1.5" opacity=".8">
+  <circle cx="450" cy="275" r="176"/>
+  <circle cx="450" cy="275" r="192" stroke-dasharray="1 9"/>
+  <ellipse cx="450" cy="275" rx="218" ry="146" transform="rotate(-31 450 275)" stroke-dasharray="2 12"/>
+</g>
+<g fill="#E4A9D2">
+  <rect x="423" y="83" width="10" height="10"/><rect x="467" y="83" width="10" height="10"/>
+  <rect x="396" y="98" width="10" height="10"/><rect x="494" y="98" width="10" height="10"/>
+  <rect x="379" y="125" width="10" height="10"/><rect x="511" y="125" width="10" height="10"/>
+  <rect x="379" y="415" width="10" height="10"/><rect x="511" y="415" width="10" height="10"/>
+  <rect x="396" y="442" width="10" height="10"/><rect x="494" y="442" width="10" height="10"/>
+  <rect x="423" y="457" width="10" height="10"/><rect x="467" y="457" width="10" height="10"/>
+</g>
+<g fill="none" stroke-linecap="round">
+  <path d="M285 246 A166 166 0 0 1 574 190" stroke="#7eb8c9" stroke-width="3"/>
+  <path d="M616 306 A166 166 0 0 1 326 361" stroke="#d36b7b" stroke-width="3"/>
+  <path d="M450 275 L450 208" stroke="#9aabbe" stroke-width="1"/>
+  <path d="M450 275 L507 315" stroke="#9aabbe" stroke-width="1"/>
+</g>
+<circle cx="450" cy="275" r="5" fill="#f0e8dc"/>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#e7edf4">
+  <text x="450" y="35" text-anchor="middle" font-size="13" letter-spacing="4" fill="#9aabbe">STUDY 01 / NO EXPLICIT LINKS</text>
+  <text x="450" y="286" text-anchor="middle" font-size="13" letter-spacing="2">RING</text>
+  <text x="72" y="520" font-size="14" fill="#7eb8c9">416 Hz</text>
+  <line x1="72" y1="538" x2="828" y2="538" stroke="#41607A" stroke-width="2"/>
+  <circle cx="828" cy="538" r="4" fill="#7eb8c9"/>
+  <text x="72" y="567" font-size="14" fill="#E4A9D2">Ab4 · 415.3 Hz</text>
+  <line x1="72" y1="585" x2="815" y2="585" stroke="#E4A9D2" stroke-width="2"/>
+  <circle cx="815" cy="585" r="4" fill="#E4A9D2"/>
+  <text x="828" y="567" text-anchor="end" font-size="11" fill="#9aabbe">0.7 Hz apart</text>
+</g>
+</svg>
