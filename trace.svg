@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" width="720" height="480">
+  <rect width="720" height="480" fill="#0d1117"/>
+  <title>Trace v2-443: interpolated growth across the a01-a02-a03 decagon chain</title>
+  <text x="70" y="34" fill="#c9d1d9" font-family="monospace" font-size="16">GROWTH FAN: a01 -&gt; a02 -&gt; a03</text>
+  <text x="70" y="52" fill="#8b949e" font-family="monospace" font-size="11">7 interpolated rings between the three supplied decagons; rays trace per-vertex drift a01-&gt;a03</text>
+  <g stroke="#f0883e" stroke-width="0.7" opacity="0.5">
+    <line x1="340.0" y1="121.2" x2="340.0" y2="104.2"/>
+    <line x1="404.8" y1="134.8" x2="437.2" y2="124.6"/>
+    <line x1="448.0" y1="168.8" x2="502.0" y2="165.4"/>
+    <line x1="458.8" y1="209.6" x2="523.6" y2="209.6"/>
+    <line x1="415.6" y1="243.6" x2="464.2" y2="253.8"/>
+    <line x1="340.0" y1="257.2" x2="340.0" y2="274.2"/>
+    <line x1="275.2" y1="243.6" x2="215.8" y2="253.8"/>
+    <line x1="232.0" y1="209.6" x2="156.4" y2="209.6"/>
+    <line x1="242.8" y1="168.8" x2="178.0" y2="165.4"/>
+    <line x1="286.0" y1="134.8" x2="242.8" y2="124.6"/>
+  </g>
+  <path d="M340.0,121.2 L404.8,134.8 L448.0,168.8 L458.8,209.6 L415.6,243.6 L340.0,257.2 L275.2,243.6 L232.0,209.6 L242.8,168.8 L286.0,134.8 Z" fill="none" stroke="#1f6feb" stroke-width="2.2" opacity="1"/>
+  <path d="M341.4,119.5 L407.5,133.9 L452.1,168.8 L464.2,210.4 L418.3,245.3 L341.4,258.9 L273.9,244.4 L229.3,209.6 L242.8,167.9 L287.4,133.9 Z" fill="none" stroke="#1f6feb" stroke-width="1" opacity="0.8"/>
+  <path d="M342.7,117.8 L410.2,133.1 L456.1,168.8 L469.6,211.3 L421.0,247.0 L342.7,260.6 L272.5,245.3 L226.6,209.6 L242.8,167.1 L288.7,133.1 Z" fill="none" stroke="#1f6feb" stroke-width="1" opacity="0.62"/>
+  <path d="M344.1,116.1 L412.9,132.3 L460.2,168.8 L475.0,212.2 L423.7,248.7 L344.1,262.3 L271.1,246.2 L223.9,209.6 L242.8,166.3 L290.1,132.3 Z" fill="none" stroke="#1f6feb" stroke-width="1" opacity="0.45"/>
+  <path d="M345.4,114.4 L415.6,131.4 L464.2,168.8 L480.4,213.0 L426.4,250.4 L345.4,264.0 L269.8,247.0 L221.2,209.6 L242.8,165.4 L291.4,131.4 Z" fill="none" stroke="#1f6feb" stroke-width="2.2" opacity="1"/>
+  <path d="M344.1,111.8 L421.0,129.7 L473.7,167.9 L491.2,212.2 L435.9,251.3 L344.1,266.5 L256.3,248.7 L205.0,209.6 L226.6,165.4 L279.3,129.7 Z" fill="none" stroke="#1f6feb" stroke-width="1" opacity="0.8"/>
+  <path d="M342.7,109.3 L426.4,128.0 L483.1,167.1 L502.0,211.3 L445.3,252.1 L342.7,269.1 L242.8,250.4 L188.8,209.6 L210.4,165.4 L267.1,128.0 Z" fill="none" stroke="#1f6feb" stroke-width="1" opacity="0.62"/>
+  <path d="M341.4,106.8 L431.8,126.3 L492.6,166.3 L512.8,210.4 L454.8,252.9 L341.4,271.6 L229.3,252.1 L172.6,209.6 L194.2,165.4 L255.0,126.3 Z" fill="none" stroke="#1f6feb" stroke-width="1" opacity="0.45"/>
+  <path d="M340.0,104.2 L437.2,124.6 L502.0,165.4 L523.6,209.6 L464.2,253.8 L340.0,274.2 L215.8,253.8 L156.4,209.6 L178.0,165.4 L242.8,124.6 Z" fill="none" stroke="#1f6feb" stroke-width="2.2" opacity="1"/>
+  <circle cx="344.3" cy="189.2" r="3" fill="#f0883e"/>
+  <g font-family="monospace" font-size="12">
+    <text x="560" y="440" fill="#1f6feb">a01 (inner)</text>
+    <text x="560" y="456" fill="#8b949e">a03 (outer)</text>
+  </g>
+</svg>
