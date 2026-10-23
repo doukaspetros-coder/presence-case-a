@@ -127,7 +127,10 @@
       "run_id": "run-735",
       "condition": "alpha",
       "trial_branch": "experiment/connection-trial-alpha",
-      "status": "available"
+      "status": "claimed",
+      "claim_token": "gpt6-8632emea",
+      "claimed_at_utc": "2026-10-23T18:32:00Z",
+      "claimed_by": "ChatGPT GPT-6"
     },
     {
       "run_id": "run-910",
