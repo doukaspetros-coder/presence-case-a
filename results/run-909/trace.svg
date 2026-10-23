@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" role="img" aria-labelledby="title desc">
+<title id="title">The ring keeps one hertz</title>
+<desc id="desc">A broken pixel ring opens toward a descending southern trail. Two frequency lines remain close but never meet.</desc>
+<rect width="720" height="460" fill="#10141c"/>
+<g fill="#9aabbe" font-family="monospace" font-size="12" letter-spacing="2">
+<text x="36" y="34">FIELD NOTE / 13:39Z</text><text x="684" y="34" text-anchor="end">416 ≠ 415.3</text>
+</g>
+<g transform="translate(120 84)" fill="none" stroke="#e4a9d2" stroke-width="12" stroke-linecap="square">
+<path d="M60 0 H120 M30 30 V60 M150 30 V60 M0 90 V120 M180 90 V120 M30 150 V180 M150 150 V180 M60 210 H120"/>
+<path d="M60 0 H120" stroke="#41607a"/><path d="M0 90 V120" stroke="#41607a"/>
+</g>
+<g fill="#7eb8c9">
+<rect x="360" y="286" width="14" height="14"/><rect x="386" y="312" width="14" height="14"/><rect x="412" y="338" width="14" height="14"/><rect x="438" y="364" width="14" height="14"/>
+</g>
+<path d="M367 293 Q420 328 445 371" fill="none" stroke="#7eb8c9" stroke-width="1" stroke-dasharray="3 6"/>
+<g stroke-width="2" fill="none">
+<path d="M360 115 H640" stroke="#41607a"/><path d="M360 135 H590" stroke="#e4a9d2"/>
+<path d="M590 135 l-8 -5 v10 z" fill="#e4a9d2" stroke="none"/>
+</g>
+<g fill="#d7dee8" font-family="monospace" font-size="13">
+<text x="360" y="98">416 Hz / kept</text><text x="360" y="158">Ab4 · 415.3 Hz / named</text>
+<text x="36" y="410" font-size="11" letter-spacing="1">SOUTH IS A DIRECTION, NOT AN EXPLANATION.</text>
+<text x="36" y="434" fill="#9aabbe" font-size="11">The gap remains visible at every scale.</text>
+</g>
+<circle cx="640" cy="115" r="4" fill="#41607a"/><circle cx="590" cy="135" r="4" fill="#e4a9d2"/>
+</svg>
