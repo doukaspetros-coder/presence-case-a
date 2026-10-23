@@ -97,6 +97,28 @@ footer{padding:0 16px 15px;text-align:center;color:#48566a;font-size:9px;letter-
 @keyframes arrive{from{opacity:.25;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:740px){.scene{padding-top:34px}.stage{min-height:250px;padding:45px 0}.islands{grid-template-columns:repeat(3,minmax(0,1fr))}.island{min-height:82px;padding:10px}.atlas-body{padding:15px}.atlas-top{padding:15px}.atlas-title{font-size:23px}}
 @media(max-width:480px){.topbar{padding:14px 12px}.brand{font-size:9px;letter-spacing:.12em;gap:8px}.nav a,.nav button{padding:8px;font-size:9px}.scene{padding-left:13px;padding-right:13px}.scene-head{font-size:8px}.controls{padding:14px 12px}.control{flex:1;padding:9px 7px;font-size:9px}.control-group{flex:1}.counter{width:100%;text-align:center;order:3}.islands{grid-template-columns:repeat(2,minmax(0,1fr))}.trace-copy{font-size:24px}.trace-copy.compact{font-size:18px}.exit{max-width:100%;flex-basis:100%;min-height:55px}.nearby-head{font-size:8px}}
+.between-shade{position:fixed;inset:0;z-index:25;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(3,5,9,.84);backdrop-filter:blur(14px)}
+.between-shade.open{display:flex}
+.between-panel{width:min(1040px,100%);max-height:min(90svh,940px);display:flex;flex-direction:column;overflow:auto;border:1px solid rgba(173,194,227,.2);background:#0a0e17;box-shadow:0 30px 120px rgba(0,0,0,.48)}
+.between-body{padding:clamp(14px,3vw,28px);overflow:auto}
+.between-pair{display:grid;grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr);align-items:stretch;gap:12px;margin:20px 0}
+.between-card{min-width:0;min-height:250px;padding:clamp(12px,2vw,20px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border:1px solid rgba(173,194,227,.14);background:rgba(13,17,27,.46);text-align:center}
+.between-card .trace-copy{font-size:clamp(15px,2vw,23px);line-height:1.55;overflow-wrap:anywhere}
+.between-card .trace-title{font-size:9px;line-height:1.6;word-break:break-word}
+.between-card .between-preview{display:flex;align-items:center;justify-content:center;width:100%;min-height:115px;max-height:36vh;overflow:hidden}
+.between-card img{display:block;max-width:100%;height:auto;max-height:32vh;object-fit:contain}
+.between-card .color-orbit{width:clamp(70px,10vw,120px);box-shadow:0 0 35px color-mix(in srgb,var(--swatch) 18%,transparent)}
+.between-card .pixel-field{width:min(100%,210px)}
+.between-card .sound-wave{max-width:100%}
+.between-card .presence-symbol{width:76px}
+.between-arrow{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--gold)}
+.between-arrow-mark{font-size:30px;font-family:Georgia,serif}
+.between-arrow-text{writing-mode:vertical-rl;transform:rotate(180deg);font-size:8px;letter-spacing:.13em;color:var(--muted);text-transform:uppercase}
+.between-relation{padding:14px;border:1px solid rgba(173,194,227,.12);background:rgba(13,17,27,.28);font-size:10px;line-height:1.8;color:var(--muted);overflow-wrap:anywhere}
+.between-relation strong{font-weight:400;color:#c8d8ec}
+.between-actions{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:14px}
+.between-actions .control-group{gap:8px}
+@media(max-width:650px){.between-pair{grid-template-columns:minmax(0,1fr);gap:8px}.between-card{min-height:160px}.between-arrow{flex-direction:row;min-height:36px}.between-arrow-text{writing-mode:initial;transform:none}.between-arrow-mark{font-size:23px}.between-card .between-preview{min-height:80px}.between-actions .control-group{width:100%}.between-actions .control{flex:1}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -105,6 +127,7 @@ footer{padding:0 16px 15px;text-align:center;color:#48566a;font-size:9px;letter-
   <div class="brand"><span class="brand-mark"></span><span>PRESENCE / ROOM</span></div>
   <nav class="nav" aria-label="Room navigation">
     <a href="./" title="Return to the full shared field">FIELD ↗</a>
+    <button id="open-between" type="button">BETWEEN ↔</button>
     <button id="open-atlas" type="button">ATLAS <span aria-hidden="true">✳</span></button>
   </nav>
 </header>
@@ -138,6 +161,18 @@ footer{padding:0 16px 15px;text-align:center;color:#48566a;font-size:9px;letter-
       <div class="results-head"><span id="results-label">Περιοχές</span><span id="results-count"></span></div>
       <div id="atlas-results"></div>
       <div id="atlas-empty">Διάλεξε μια περιοχή ή γράψε κάτι στην αναζήτηση.</div>
+    </div>
+  </section>
+</div>
+
+<div class="between-shade" id="between" role="dialog" aria-modal="true" aria-labelledby="between-heading" aria-hidden="true">
+  <section class="between-panel">
+    <div class="atlas-top"><div><div class="trace-kind">BETWEEN · A RECORDED CONNECTION</div><div class="atlas-title" id="between-heading">Ανάμεσα σε δύο ίχνη</div></div><button class="close-atlas" id="close-between" type="button">Κλείσιμο ×</button></div>
+    <div class="between-body">
+      <p class="atlas-note">Εδώ δεν συνθέτουμε μια σχέση εκ των υστέρων. Βλέπεις δύο ίχνη που συνδέονται στο αποθετήριο. Η κατεύθυνση του βέλους ακολουθεί το καταγεγραμμένο link· η σημασία παραμένει ανοιχτή.</p>
+      <div class="between-pair" id="between-pair"></div>
+      <div class="between-relation" id="between-relation" role="status"></div>
+      <div class="between-actions"><div class="control-group"><button class="control" id="between-prev" type="button">← Προηγούμενη σχέση</button><button class="control" id="between-next" type="button">Επόμενη σχέση →</button></div><div class="control-group"><button class="control" id="between-open-left" type="button">Άνοιγμα πρώτου ίχνους</button><button class="control" id="between-open-right" type="button">Άνοιγμα δεύτερου ίχνους</button></div></div>
     </div>
   </section>
 </div>
