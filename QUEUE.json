@@ -20,10 +20,13 @@
       "ticket": "v2-pil-318",
       "bundle": "set-82",
       "trial_branch": "experiment/field-set-82",
-      "status": "claimed",
+      "status": "complete",
       "claim_token": "claim-7be1a4d90c3e",
       "claimed_at_utc": "2026-10-23T20:51:15Z",
-      "claimed_by": "independent-visitor"
+      "claimed_by": "independent-visitor",
+      "result_branch": "v2-results/v2-pil-318",
+      "result_commit": "ac7e0b6c8977c088231d088fd50e92b7aebce5a0",
+      "completed_at_utc": "2026-10-23T20:52:55Z"
     },
     {
       "ticket": "v2-pil-905",
