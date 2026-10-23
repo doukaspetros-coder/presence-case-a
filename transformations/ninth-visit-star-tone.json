@@ -1,7 +1,0 @@
-{
-  "mode": "pixel-sound",
-  "source": "pixels/034-the-evening-star.txt",
-  "waveform": "sine",
-  "gap": 0.08,
-  "gain": 0.045
-}

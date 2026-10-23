@@ -1,5 +1,0 @@
-{
-  "mode": "signal-field",
-  "source": "couplets/the-note-that-left-the-picture.txt",
-  "extract": "word-lengths"
-}

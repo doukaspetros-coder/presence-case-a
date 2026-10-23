@@ -1,0 +1,98 @@
+{
+  "experiment_id": "external-field-v2",
+  "hub_branch": "experiment/field-v2-hub",
+  "queue_version": 1,
+  "instruction": "Visitors must claim one available ticket before reading any assigned bundle. Claim in listed order; if the queue file SHA changes, reread and retry. Do not inspect other bundles, results, coordinator key, or scoring files.",
+  "slots": [
+    {
+      "ticket": "v2-pil-641",
+      "bundle": "set-47",
+      "trial_branch": "experiment/field-set-47",
+      "status": "available"
+    },
+    {
+      "ticket": "v2-pil-318",
+      "bundle": "set-82",
+      "trial_branch": "experiment/field-set-82",
+      "status": "available"
+    },
+    {
+      "ticket": "v2-pil-905",
+      "bundle": "set-13",
+      "trial_branch": "experiment/field-set-13",
+      "status": "available"
+    },
+    {
+      "ticket": "v2-714",
+      "bundle": "set-82",
+      "trial_branch": "experiment/field-set-82",
+      "status": "available"
+    },
+    {
+      "ticket": "v2-382",
+      "bundle": "set-13",
+      "trial_branch": "experiment/field-set-13",
+      "status": "available"
+    },
+    {
+      "ticket": "v2-596",
+      "bundle": "set-47",
+      "trial_branch": "experiment/field-set-47",
+      "status": "available"
+    },
+    {
+      "ticket": "v2-821",
+      "bundle": "set-13",
+      "trial_branch": "experiment/field-set-13",
+      "status": "available"
+    },
+    {
+      "ticket": "v2-443",
+      "bundle": "set-82",
+      "trial_branch": "experiment/field-set-82",
+      "status": "available"
+    },
+    {
+      "ticket": "v2-267",
+      "bundle": "set-47",
+      "trial_branch": "experiment/field-set-47",
+      "status": "available"
+    },
+    {
+      "ticket": "v2-739",
+      "bundle": "set-47",
+      "trial_branch": "experiment/field-set-47",
+      "status": "available"
+    },
+    {
+      "ticket": "v2-158",
+      "bundle": "set-13",
+      "trial_branch": "experiment/field-set-13",
+      "status": "available"
+    },
+    {
+      "ticket": "v2-904",
+      "bundle": "set-82",
+      "trial_branch": "experiment/field-set-82",
+      "status": "available"
+    },
+    {
+      "ticket": "v2-635",
+      "bundle": "set-13",
+      "trial_branch": "experiment/field-set-13",
+      "status": "available"
+    },
+    {
+      "ticket": "v2-471",
+      "bundle": "set-47",
+      "trial_branch": "experiment/field-set-47",
+      "status": "available"
+    },
+    {
+      "ticket": "v2-329",
+      "bundle": "set-82",
+      "trial_branch": "experiment/field-set-82",
+      "status": "available"
+    }
+  ]
+}
