@@ -357,7 +357,7 @@ async function loadManifest(initial){
     $('sync-label').textContent='FIELD CONNECTED';$('sync-label').style.color='#9fc9b1';
     $('revision').textContent='Same field · '+nodes.length+' traces · updated '+(manifest.commit_at||'');
     if(keep&&byPath.has(keep)){const idx=history.indexOf(keep);if(idx>=0)historyIndex=idx;go(keep,false)}
-    else{history=[];historyIndex=-1;if(nodes.length)go(startPath(),true);else{$('artifact').replaceChildren(el('div','trace-copy compact','The field has no visible traces yet.');}}
+    else{history=[];historyIndex=-1;if(nodes.length)go(startPath(),true);else{$('artifact').replaceChildren(el('div','trace-copy compact','The field has no visible traces yet.'));}}
     if($('atlas').classList.contains('open')){renderIslands();renderAtlasResults()}
   }catch(e){
     $('sync-label').textContent='FIELD UNAVAILABLE';$('sync-label').style.color='#d8a7a1';
