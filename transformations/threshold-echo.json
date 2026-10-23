@@ -1,7 +1,0 @@
-{
-  "mode": "pixel-sound",
-  "source": "pixels/threshold-echo.txt",
-  "waveform": "triangle",
-  "gap": 0.065,
-  "gain": 0.045
-}

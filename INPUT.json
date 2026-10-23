@@ -1,0 +1,64 @@
+{
+  "experiment_id": "external-field-v2",
+  "input_format_version": "1",
+  "asset_ids": [
+    "a01",
+    "a02",
+    "a03",
+    "a04",
+    "a05",
+    "a06",
+    "a07",
+    "a08",
+    "a09",
+    "a10",
+    "a11",
+    "a12"
+  ],
+  "relation_format": {
+    "from": "asset id",
+    "to": "asset id"
+  },
+  "connections": [
+    {
+      "id": "e01",
+      "from": "a01",
+      "to": "a05"
+    },
+    {
+      "id": "e02",
+      "from": "a04",
+      "to": "a08"
+    },
+    {
+      "id": "e03",
+      "from": "a07",
+      "to": "a11"
+    },
+    {
+      "id": "e04",
+      "from": "a10",
+      "to": "a02"
+    },
+    {
+      "id": "e05",
+      "from": "a05",
+      "to": "a09"
+    },
+    {
+      "id": "e06",
+      "from": "a08",
+      "to": "a12"
+    },
+    {
+      "id": "e07",
+      "from": "a11",
+      "to": "a03"
+    },
+    {
+      "id": "e08",
+      "from": "a02",
+      "to": "a06"
+    }
+  ]
+}

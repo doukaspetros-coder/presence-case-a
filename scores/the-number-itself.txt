@@ -1,5 +1,0 @@
-title: The number itself
-tempo: 60
-Ab4/2 - Ab4
-B3/2 - -
-B2/2 - -

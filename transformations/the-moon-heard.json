@@ -1,7 +1,0 @@
-{
-  "mode": "pixel-sound",
-  "source": "pixels/028-the-moon-that-rose.txt",
-  "waveform": "sine",
-  "gap": 0.1,
-  "gain": 0.05
-}
