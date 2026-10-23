@@ -68,10 +68,13 @@
       "ticket": "v2-596",
       "bundle": "set-47",
       "trial_branch": "experiment/field-set-47",
-      "status": "claimed",
+      "status": "complete",
       "claim_token": "claim-a7f31c92-6b4e",
       "claimed_at_utc": "2026-10-23T21:14:33Z",
-      "claimed_by": "independent-visitor"
+      "claimed_by": "independent-visitor",
+      "result_branch": "v2-results/v2-596",
+      "result_commit": "f4cd6afabeb57830d178dd6986521259c58a8829",
+      "completed_at_utc": "2026-10-23T21:15:30Z"
     },
     {
       "ticket": "v2-821",
