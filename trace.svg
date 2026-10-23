@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" width="720" height="480">
+  <rect width="720" height="480" fill="#0e1420"/>
+  <text x="24" y="34" fill="#8ea0b8" font-family="monospace" font-size="14">trace — nested rings a01/a02/a03 + derived mean ring</text>
+  <polyline points="150,335 204,300.8 204,266.6 258,266.6 258,232.4 312,232.4 312,198.2 366,198.2 366,164 420,164" fill="none" stroke="#2a3a52" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <polyline points="198,335 252,300.8 252,262.8 306,262.8 306,221 360,221 360,190.6 414,190.6 414,145 468,145" fill="none" stroke="#2a3a52" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <polyline points="150,141.2 204,175.4 204,213.4 258,213.4 258,247.6 312,247.6 312,281.8 366,281.8 366,316 420,316" fill="none" stroke="#2a3a52" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <polygon points="360,99.4 468,122.2 540,167.8 564,217.2 498,266.6 360,289.4 222,266.6 156,217.2 180,167.8 252,122.2" fill="rgba(240,166,74,0.10)" stroke="#f0a64a" stroke-width="2"/>
+  <polygon points="366,110.8 444,129.8 498,171.6 516,221 456,262.8 366,278 282,259 228,217.2 252,167.8 306,129.8" fill="rgba(224,90,180,0.10)" stroke="#e05ab4" stroke-width="2"/>
+  <polygon points="360,118.4 432,133.6 480,171.6 492,217.2 444,255.2 360,270.4 288,255.2 240,217.2 252,171.6 300,133.6" fill="rgba(80,200,255,0.10)" stroke="#50c8ff" stroke-width="2"/>
+  <polygon points="361.8,109.7 448.2,128.7 505.8,170.5 523.8,218.3 466.2,261.7 361.8,279.1 264,260.1 208.2,217.2 228,168.9 286.2,128.7" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="7 5"/>
+  <line x1="360" y1="99.4" x2="360" y2="118.4" stroke="#5b6d87" stroke-width="1"/>
+  <line x1="468" y1="122.2" x2="432" y2="133.6" stroke="#5b6d87" stroke-width="1"/>
+  <line x1="540" y1="167.8" x2="480" y2="171.6" stroke="#5b6d87" stroke-width="1"/>
+  <line x1="564" y1="217.2" x2="492" y2="217.2" stroke="#5b6d87" stroke-width="1"/>
+  <line x1="498" y1="266.6" x2="444" y2="255.2" stroke="#5b6d87" stroke-width="1"/>
+  <line x1="360" y1="289.4" x2="360" y2="270.4" stroke="#5b6d87" stroke-width="1"/>
+  <line x1="222" y1="266.6" x2="288" y2="255.2" stroke="#5b6d87" stroke-width="1"/>
+  <line x1="156" y1="217.2" x2="240" y2="217.2" stroke="#5b6d87" stroke-width="1"/>
+  <line x1="180" y1="167.8" x2="252" y2="171.6" stroke="#5b6d87" stroke-width="1"/>
+  <line x1="252" y1="122.2" x2="300" y2="133.6" stroke="#5b6d87" stroke-width="1"/>
+  <circle cx="361.8" cy="109.7" r="4" fill="#ffffff"/>
+  <circle cx="448.2" cy="128.7" r="4" fill="#ffffff"/>
+  <circle cx="505.8" cy="170.5" r="4" fill="#ffffff"/>
+  <circle cx="523.8" cy="218.3" r="4" fill="#ffffff"/>
+  <circle cx="466.2" cy="261.7" r="4" fill="#ffffff"/>
+  <circle cx="361.8" cy="279.1" r="4" fill="#ffffff"/>
+  <circle cx="264" cy="260.1" r="4" fill="#ffffff"/>
+  <circle cx="208.2" cy="217.2" r="4" fill="#ffffff"/>
+  <circle cx="228" cy="168.9" r="4" fill="#ffffff"/>
+  <circle cx="286.2" cy="128.7" r="4" fill="#ffffff"/>
+  <g font-family="monospace" font-size="12">
+    <text x="596" y="80" fill="#f0a64a">a03</text>
+    <text x="596" y="98" fill="#e05ab4">a02</text>
+    <text x="596" y="116" fill="#50c8ff">a01</text>
+    <text x="596" y="134" fill="#ffffff">derived mean</text>
+    <text x="596" y="152" fill="#3a4d68">a04-a06</text>
+  </g>
+</svg>
