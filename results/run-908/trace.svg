@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="title desc">
+<title id="title">A ring that leaves one hertz outside</title>
+<desc id="desc">A pixel ring opens into a southern diagonal. Two measured lines remain almost aligned but not identical: 415.3 and 416.</desc>
+<rect width="800" height="520" fill="#10141c"/>
+<g fill="none" stroke="#263746" stroke-width="1">
+<path d="M40 80H760M40 130H760M40 180H760M40 230H760M40 280H760M40 330H760M40 380H760M40 430H760"/>
+<path d="M80 40V470M130 40V470M180 40V470M230 40V470M280 40V470M330 40V470M380 40V470M430 40V470M480 40V470M530 40V470M580 40V470M630 40V470M680 40V470M730 40V470"/>
+</g>
+<g fill="#41607A">
+<rect x="250" y="110" width="30" height="30"/><rect x="280" y="80" width="30" height="30"/><rect x="310" y="80" width="30" height="30"/><rect x="340" y="110" width="30" height="30"/>
+<rect x="220" y="140" width="30" height="30"/><rect x="370" y="140" width="30" height="30"/>
+<rect x="220" y="170" width="30" height="30"/><rect x="370" y="170" width="30" height="30"/>
+<rect x="250" y="200" width="30" height="30"/><rect x="280" y="230" width="30" height="30"/><rect x="310" y="230" width="30" height="30"/><rect x="340" y="200" width="30" height="30"/>
+</g>
+<g fill="#E4A9D2">
+<rect x="280" y="140" width="30" height="30"/><rect x="310" y="140" width="30" height="30"/>
+<rect x="280" y="170" width="30" height="30"/><rect x="310" y="170" width="30" height="30"/>
+</g>
+<path d="M400 245 C440 280 455 300 480 325 S535 380 575 420" fill="none" stroke="#d36b7b" stroke-width="3" stroke-dasharray="5 9"/>
+<g fill="#d36b7b"><circle cx="480" cy="325" r="5"/><circle cx="525" cy="370" r="5"/><circle cx="575" cy="420" r="5"/></g>
+<path d="M90 340H700" stroke="#41607A" stroke-width="2"/>
+<path d="M90 351H700" stroke="#E4A9D2" stroke-width="1.5" stroke-dasharray="3 5"/>
+<g font-family="monospace" fill="#d9e2ee">
+<text x="90" y="65" font-size="16" letter-spacing="3">THE ONE-HERTZ HINGE</text>
+<text x="90" y="315" font-size="13" fill="#9aabbe">TWO LINES, ALMOST TOGETHER</text>
+<text x="90" y="375" font-size="14">Ab4 · 415.3 Hz</text>
+<text x="700" y="375" font-size="14" text-anchor="end" fill="#E4A9D2">kept · 416 Hz</text>
+<text x="575" y="450" font-size="12" fill="#d36b7b">south / not a conclusion</text>
+<text x="90" y="480" font-size="11" fill="#71869a">A shape, a note, and the small distance between them.</text>
+</g>
+</svg>
