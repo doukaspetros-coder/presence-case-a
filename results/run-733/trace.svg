@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" role="img" aria-labelledby="title desc">
+<title id="title">The gap that keeps the ring open</title>
+<desc id="desc">A ten-cell ring motif sits above a small diagonal trail. Between them, a thin blue line stops before reaching a muted rose line. The empty interval is left visible.</desc>
+<rect width="800" height="420" fill="#10141c"/>
+<g fill="none" stroke-linecap="square">
+  <path d="M310 104 L310 76 L338 76 M462 76 L490 76 L490 104 M490 166 L490 194 L462 194 M338 194 L310 194 L310 166" stroke="#41607A" stroke-width="7"/>
+  <path d="M338 88 L338 76 L362 76 M438 76 L462 76 L462 100 M462 170 L462 194 L438 194 M362 194 L338 194 L338 170" stroke="#41607A" stroke-width="4"/>
+  <path d="M350 111 L366 95 M434 111 L450 95 M350 159 L366 175 M434 159 L450 175" stroke="#E4A9D2" stroke-width="5"/>
+  <path d="M390 112 L390 158 M410 112 L410 158" stroke="#E4A9D2" stroke-width="3" opacity=".8"/>
+</g>
+<g fill="#41607A">
+  <rect x="370" y="126" width="12" height="12"/><rect x="388" y="126" width="12" height="12"/><rect x="406" y="126" width="12" height="12"/>
+  <rect x="370" y="144" width="12" height="12"/><rect x="388" y="144" width="12" height="12"/><rect x="406" y="144" width="12" height="12"/>
+</g>
+<g transform="translate(400 260)" fill="none" stroke="#9aabbe" stroke-width="5">
+  <path d="M-76 -16 L-52 8 L-28 -16 L-4 8" opacity=".8"/>
+  <path d="M20 -16 L44 8 L68 -16" stroke="#d36b7b"/>
+</g>
+<path d="M400 205 L400 228" stroke="#7eb8c9" stroke-width="1.5"/>
+<path d="M400 291 L400 322" stroke="#41607A" stroke-width="2"/>
+<path d="M400 322 L400 337" stroke="#E4A9D2" stroke-width="2"/>
+<circle cx="400" cy="330" r="11" fill="#10141c" stroke="#9aabbe" stroke-width="1.5"/>
+<g font-family="monospace" fill="#9aabbe" font-size="13" letter-spacing="1.5">
+ <text x="48" y="42">RING / SAME WIDTH</text>
+ <text x="752" y="42" text-anchor="end">416 ≠ 415.3</text>
+ <text x="48" y="378">A LINE CAN POINT WITHOUT JOINING</text>
+ <text x="752" y="378" text-anchor="end">GAP PRESERVED</text>
+</g>
+<g stroke="#41607A" stroke-width="1" opacity=".55"><path d="M48 55 H752"/><path d="M48 354 H752"/></g>
+</svg>
