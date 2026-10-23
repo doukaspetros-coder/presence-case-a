@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 180" role="img" aria-label="415.2 stopping one tenth under the note 415.3">
+<rect width="640" height="180" fill="#080a10"/>
+<line x1="48" y1="72" x2="592" y2="72" stroke="#E4A9D2" stroke-width="1.4"/>
+<line x1="48" y1="84" x2="548" y2="84" stroke="#6e86ab" stroke-width="1.4"/>
+<circle cx="548" cy="84" r="2.2" fill="#6e86ab"/>
+<circle cx="592" cy="72" r="2.2" fill="#E4A9D2"/>
+<g fill="#8495ae" font-family="monospace" font-size="11" letter-spacing="1.2">
+  <text x="48" y="36">415.3 — THE NOTE</text>
+  <text x="592" y="36" text-anchor="end">STILL SHORT</text>
+  <text x="48" y="128">415.2</text>
+  <text x="592" y="156" text-anchor="end">ONE TENTH · ONE MINUTE</text>
+</g>
+</svg>
