@@ -1,0 +1,62 @@
+{
+  "experiment_id": "connection-structure-v1",
+  "input_format_version": "1.0",
+  "source_snapshot_commit": "68a17627e394766571b41f838b1539e260008e7e",
+  "materials_file": "MATERIALS.json",
+  "connection_semantics": "Each record is a directed relation from `from` to `to`. The records do not assign any additional meaning to the relation.",
+  "asset_ids": [
+    "couplet_ring_refusal",
+    "color_416",
+    "pixel_ring",
+    "pixel_south",
+    "score_416",
+    "sound_416",
+    "sound_ring",
+    "wind_416",
+    "field_416",
+    "south_sound",
+    "vector_416"
+  ],
+  "connections": [
+    {
+      "id": "c01",
+      "from": "pixel_ring",
+      "to": "sound_416"
+    },
+    {
+      "id": "c02",
+      "from": "pixel_ring",
+      "to": "pixel_south"
+    },
+    {
+      "id": "c03",
+      "from": "sound_416",
+      "to": "south_sound"
+    },
+    {
+      "id": "c04",
+      "from": "score_416",
+      "to": "sound_ring"
+    },
+    {
+      "id": "c05",
+      "from": "color_416",
+      "to": "vector_416"
+    },
+    {
+      "id": "c06",
+      "from": "pixel_south",
+      "to": "field_416"
+    },
+    {
+      "id": "c07",
+      "from": "couplet_ring_refusal",
+      "to": "pixel_ring"
+    },
+    {
+      "id": "c08",
+      "from": "sound_ring",
+      "to": "sound_416"
+    }
+  ]
+}

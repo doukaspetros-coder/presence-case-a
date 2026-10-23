@@ -1,7 +1,0 @@
-{
-  "mode": "pixel-sound",
-  "source": "pixels/008.txt",
-  "waveform": "sine",
-  "gap": 0.12,
-  "gain": 0.045
-}
