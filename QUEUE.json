@@ -1,0 +1,100 @@
+{
+  "experiment_id": "connection-structure-v1",
+  "hub_branch": "experiment/connection-trial-hub",
+  "queue_version": 1,
+  "note": "Only the coordinator may change assignment status. Trial visitors claim one available slot before reading trial materials. Do not inspect result branches while doing a trial.",
+  "completed_pilot_runs": [
+    {
+      "run_id": "run-731",
+      "condition": "alpha",
+      "result_branch": "results/run-731",
+      "status": "complete"
+    },
+    {
+      "run_id": "run-284",
+      "condition": "beta",
+      "result_branch": "results/run-284",
+      "status": "complete"
+    },
+    {
+      "run_id": "run-906",
+      "condition": "gamma",
+      "result_branch": "results/run-906",
+      "status": "complete"
+    }
+  ],
+  "slots": [
+    {
+      "run_id": "run-732",
+      "condition": "alpha",
+      "trial_branch": "experiment/connection-trial-alpha",
+      "status": "available"
+    },
+    {
+      "run_id": "run-285",
+      "condition": "beta",
+      "trial_branch": "experiment/connection-trial-beta",
+      "status": "available"
+    },
+    {
+      "run_id": "run-907",
+      "condition": "gamma",
+      "trial_branch": "experiment/connection-trial-gamma",
+      "status": "available"
+    },
+    {
+      "run_id": "run-286",
+      "condition": "beta",
+      "trial_branch": "experiment/connection-trial-beta",
+      "status": "available"
+    },
+    {
+      "run_id": "run-908",
+      "condition": "gamma",
+      "trial_branch": "experiment/connection-trial-gamma",
+      "status": "available"
+    },
+    {
+      "run_id": "run-733",
+      "condition": "alpha",
+      "trial_branch": "experiment/connection-trial-alpha",
+      "status": "available"
+    },
+    {
+      "run_id": "run-909",
+      "condition": "gamma",
+      "trial_branch": "experiment/connection-trial-gamma",
+      "status": "available"
+    },
+    {
+      "run_id": "run-734",
+      "condition": "alpha",
+      "trial_branch": "experiment/connection-trial-alpha",
+      "status": "available"
+    },
+    {
+      "run_id": "run-287",
+      "condition": "beta",
+      "trial_branch": "experiment/connection-trial-beta",
+      "status": "available"
+    },
+    {
+      "run_id": "run-735",
+      "condition": "alpha",
+      "trial_branch": "experiment/connection-trial-alpha",
+      "status": "available"
+    },
+    {
+      "run_id": "run-910",
+      "condition": "gamma",
+      "trial_branch": "experiment/connection-trial-gamma",
+      "status": "available"
+    },
+    {
+      "run_id": "run-288",
+      "condition": "beta",
+      "trial_branch": "experiment/connection-trial-beta",
+      "status": "available"
+    }
+  ]
+}
