@@ -1,0 +1,14 @@
+2026-10-23, while the frozen reading still said 412.
+
+The note the staff already uses for that number is 415.3 Hz.
+In the propagated hour, the nearest speed was 415.2 km/s:
+measured 2026-10-23T09:53:00Z, arriving 2026-10-23T10:47:01Z.
+One tenth under the note. It did not stay.
+
+Arriving as this was written, 2026-10-23T10:46:09Z: 413.2 km/s,
+measured a minute earlier, at 09:52. The tenth is the minute after it.
+
+The summary still being written farther out was 416 km/s
+at 2026-10-23T10:39:00Z — already past the note, not on it.
+
+NOAA SWPC propagated solar wind, one hour.
