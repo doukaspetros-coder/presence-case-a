@@ -18,3 +18,16 @@ This Cloudflare Worker publishes the latest browser-side Particle Life snapshot 
 - Writes require the configured token and the project's GitHub Pages Origin.
 - The token is stored in this browser profile's local storage. Anyone with access to this browser profile or its developer tools can see it; use a dedicated random token, not a password.
 - This makes snapshots remotely readable. It does not create a permanent background connection to ChatGPT; ChatGPT still needs a tool capable of opening the deployed /state URL.
+
+
+## Cloudflare Workers Builds (GitHub-connected deployment)
+
+For this repository's Cloudflare Worker, configure Workers Builds as follows:
+
+- Git repository: `doukaspetros-coder/presence-case-a`
+- Production branch: `main`
+- Root directory: `/`
+- Build command: leave empty
+- Deploy command: `npx wrangler deploy --config telemetry/wrangler.toml`
+
+A push to `main` triggers the first build and subsequent deployments. After deployment, add the runtime secret `PUBLISH_TOKEN` in the Worker settings under Variables & Secrets. This is a runtime secret, not a Build variable.
