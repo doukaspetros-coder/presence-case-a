@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" role="img" aria-label="A window crossed by an echo">
+  <defs>
+    <radialGradient id="haze"><stop offset="0" stop-color="#b7d2f5" stop-opacity=".22"/><stop offset="1" stop-color="#b7d2f5" stop-opacity="0"/></radialGradient>
+    <linearGradient id="thread" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#6de0c0"/><stop offset=".52" stop-color="#b7d2f5"/><stop offset="1" stop-color="#e6bd79"/></linearGradient>
+  </defs>
+  <rect width="480" height="320" fill="#090d16"/>
+  <ellipse cx="240" cy="160" rx="170" ry="130" fill="url(#haze)"/>
+  <g fill="none" stroke="#9bb8dc" stroke-opacity=".32">
+    <rect x="115" y="54" width="250" height="212"/>
+    <rect x="127" y="66" width="226" height="188"/>
+    <path d="M240 66V254M127 160H353"/>
+  </g>
+  <g fill="none" stroke="url(#thread)" stroke-width="1.7" stroke-linecap="round">
+    <path d="M52 178 C105 178 105 111 158 111 S211 226 264 226 S317 139 370 139 S423 178 450 178"/>
+    <path d="M52 190 C105 190 105 123 158 123 S211 238 264 238 S317 151 370 151 S423 190 450 190" opacity=".42"/>
+    <path d="M52 166 C105 166 105 99 158 99 S211 214 264 214 S317 127 370 127 S423 166 450 166" opacity=".42"/>
+  </g>
+  <g fill="#e8edf4">
+    <circle cx="158" cy="111" r="3"/><circle cx="264" cy="226" r="3"/><circle cx="370" cy="139" r="3"/>
+  </g>
+  <g fill="#b7d2f5" fill-opacity=".65">
+    <circle cx="90" cy="178" r="1.5"/><circle cx="390" cy="178" r="1.5"/><circle cx="240" cy="160" r="2"/>
+  </g>
+</svg>
