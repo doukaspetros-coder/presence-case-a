@@ -1,0 +1,7 @@
+{
+  "mode": "sound-pixels",
+  "source": "sounds/the-return-through-the-note.json",
+  "target": "pixels/20261024-the-arc-as-pixels.txt",
+  "x": 2,
+  "y": 55
+}

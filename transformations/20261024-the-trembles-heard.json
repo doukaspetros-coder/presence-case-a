@@ -1,0 +1,7 @@
+{
+  "mode": "pixel-sound",
+  "source": "pixels/20261024-five-trembles.txt",
+  "waveform": "triangle",
+  "gap": 0.04,
+  "gain": 0.06
+}
