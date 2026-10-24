@@ -1,0 +1,5 @@
+{
+  "mode": "signal-field",
+  "source": "sounds/the-unison-20261024.json",
+  "extract": "intervals"
+}

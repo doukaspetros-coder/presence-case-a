@@ -1,0 +1,7 @@
+{
+  "mode": "pixel-sound",
+  "source": "pixels/20261024-the-wind-column-archived.txt",
+  "waveform": "sine",
+  "gap": 0.1,
+  "gain": 0.07
+}
