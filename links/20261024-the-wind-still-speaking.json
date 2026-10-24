@@ -1,0 +1,4 @@
+{
+  "from": "sources/web-live-solar-wind.json",
+  "to": "couplets/the-seventh-reading.txt"
+}

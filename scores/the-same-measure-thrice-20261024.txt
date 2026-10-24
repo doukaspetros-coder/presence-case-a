@@ -1,0 +1,5 @@
+title: The same measure, three times
+tempo: 60
+G4/4
+G4/4
+G4/4
