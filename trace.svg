@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480">
+  <defs>
+    <linearGradient id="band" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#1b3a4b"/>
+      <stop offset="0.5" stop-color="#2e6e7e"/>
+      <stop offset="1" stop-color="#16303c"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.42" r="0.6">
+      <stop offset="0" stop-color="#0e2a33"/>
+      <stop offset="1" stop-color="#081820"/>
+    </radialGradient>
+  </defs>
+  <rect width="720" height="480" fill="url(#glow)"/>
+  <!-- outer ring from a03 -->
+  <polygon points="360,78.6 478.8,103.8 558,154.2 584.4,208.8 511.8,263.4 360,288.6 208.2,263.4 135.6,208.8 162,154.2 241.2,103.8" fill="none" stroke="#3fae9f" stroke-width="2.4" opacity="0.85"/>
+  <!-- inner ring from a01 -->
+  <polygon points="360,99.6 439.2,116.4 492,158.4 505.2,208.8 452.4,250.8 360,267.6 280.8,250.8 228,208.8 241.2,158.4 294,116.4" fill="#0f2830" stroke="#7fe0d4" stroke-width="2" opacity="0.9"/>
+  <!-- derived ring: a01 scaled 1.35 about its centroid and rotated 18 degrees -->
+  <polygon points="413.6,74.4 504.2,116.9 544.5,184.9 528.4,253.1 433.1,293 303.4,290 212.8,247.4 172.5,179.5 222.5,118.3 317.8,78.4" fill="none" stroke="#e0b45c" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.9"/>
+  <!-- spokes connecting a01 vertices to matching a03 vertices -->
+  <line x1="360" y1="99.6" x2="360" y2="78.6" stroke="#2b5f6b" stroke-width="1" opacity="0.6"/>
+  <line x1="439.2" y1="116.4" x2="478.8" y2="103.8" stroke="#2b5f6b" stroke-width="1" opacity="0.6"/>
+  <line x1="492" y1="158.4" x2="558" y2="154.2" stroke="#2b5f6b" stroke-width="1" opacity="0.6"/>
+  <line x1="505.2" y1="208.8" x2="584.4" y2="208.8" stroke="#2b5f6b" stroke-width="1" opacity="0.6"/>
+  <line x1="452.4" y1="250.8" x2="511.8" y2="263.4" stroke="#2b5f6b" stroke-width="1" opacity="0.6"/>
+  <line x1="360" y1="267.6" x2="360" y2="288.6" stroke="#2b5f6b" stroke-width="1" opacity="0.6"/>
+  <line x1="280.8" y1="250.8" x2="208.2" y2="263.4" stroke="#2b5f6b" stroke-width="1" opacity="0.6"/>
+  <line x1="228" y1="208.8" x2="135.6" y2="208.8" stroke="#2b5f6b" stroke-width="1" opacity="0.6"/>
+  <line x1="241.2" y1="158.4" x2="162" y2="154.2" stroke="#2b5f6b" stroke-width="1" opacity="0.6"/>
+  <line x1="294" y1="116.4" x2="241.2" y2="103.8" stroke="#2b5f6b" stroke-width="1" opacity="0.6"/>
+  <!-- wave band: a09 and its mirror about y=45, filled -->
+  <polygon points="96,234 155.4,200.4 214.8,175.2 274.2,183.6 333.6,221.4 393,255 452.4,280.2 511.8,267.6 571.2,229.8 630.6,200.4 630.6,225.6 571.2,196.2 511.8,158.4 452.4,145.8 393,171 333.6,204.6 274.2,242.4 214.8,250.8 155.4,225.6 96,192" fill="url(#band)" opacity="0.75"/>
+  <polyline points="96,234 155.4,200.4 214.8,175.2 274.2,183.6 333.6,221.4 393,255 452.4,280.2 511.8,267.6 571.2,229.8 630.6,200.4" fill="none" stroke="#a8f0e2" stroke-width="2.2"/>
+  <polyline points="96,192 155.4,225.6 214.8,250.8 274.2,242.4 333.6,204.6 393,171 452.4,145.8 511.8,158.4 571.2,196.2 630.6,225.6" fill="none" stroke="#e0b45c" stroke-width="1.4" stroke-dasharray="7 5"/>
+  <!-- zigzag a07 as an accent thread -->
+  <polyline points="96,234 155.4,166.8 214.8,116.4 274.2,137.4 333.6,213 393,288.6 452.4,347.4 511.8,313.8 571.2,225.6 630.6,154.2" fill="none" stroke="#d96c4f" stroke-width="1.6" opacity="0.8"/>
+  <!-- end nodes -->
+  <circle cx="96" cy="234" r="2.5" fill="#a8f0e2"/><circle cx="274.2" cy="183.6" r="2.5" fill="#a8f0e2"/><circle cx="452.4" cy="280.2" r="2.5" fill="#a8f0e2"/><circle cx="630.6" cy="200.4" r="2.5" fill="#a8f0e2"/>
+  <text x="30" y="462" fill="#6fa3ad" font-family="monospace" font-size="11">trace from set-13: rings a01/a03 + derived ring; wave band from a09 + its mirror; thread a07</text>
+</svg>
