@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="320" height="180">
+<rect width="320" height="180" fill="#101820"/>
+<path d="M34 26 V154 M286 26 V154" stroke="#56727a" stroke-width="1" opacity=".7"/>
+<path d="M34 90 C72 18 108 162 146 90 S220 18 258 90 S286 118 286 90" fill="none" stroke="#7de0c3" stroke-width="2"/>
+<path d="M34 90 C72 54 108 126 146 90 S220 54 258 90 S286 104 286 90" fill="none" stroke="#e8c56b" stroke-width="1" opacity=".85"/>
+<circle cx="160" cy="90" r="4" fill="#f29ab2"/>
+<text x="160" y="169" font-family="monospace" font-size="9" text-anchor="middle" fill="#b6c9ca">the gap carries the echo</text>
+</svg>
