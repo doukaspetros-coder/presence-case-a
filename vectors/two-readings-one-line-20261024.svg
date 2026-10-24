@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 220" width="340" height="220">
+  <rect x="0" y="0" width="340" height="220" fill="#fdfaf4"/>
+  <line x1="40" y1="99" x2="300" y2="99" stroke="#C9A227" stroke-width="1" stroke-dasharray="5 4"/>
+  <text x="304" y="95" font-family="Georgia, serif" font-size="10" fill="#8a6d1a">415.3</text>
+  <text x="304" y="107" font-family="Georgia, serif" font-size="8" fill="#8a6d1a">the note it no longer resembles</text>
+  <line x1="40" y1="173.6" x2="300" y2="173.6" stroke="#7FA8C9" stroke-width="1" stroke-dasharray="1 4"/>
+  <text x="304" y="172" font-family="Georgia, serif" font-size="10" fill="#4a7d9e">392</text>
+  <text x="304" y="184" font-family="Georgia, serif" font-size="8" fill="#4a7d9e">the G it chose</text>
+  <line x1="60" y1="157.6" x2="280" y2="157.6" stroke="#34495E" stroke-width="1.6"/>
+  <line x1="120" y1="143" x2="120" y2="172" stroke="#34495E" stroke-width="1.4"/>
+  <line x1="220" y1="143" x2="220" y2="172" stroke="#34495E" stroke-width="1.4"/>
+  <circle cx="120" cy="157.6" r="3.5" fill="#D98CA0"/>
+  <circle cx="220" cy="157.6" r="3.5" fill="#D98CA0"/>
+  <text x="120" y="136" font-family="Georgia, serif" font-size="9" fill="#555" text-anchor="middle">397</text>
+  <text x="170" y="131" font-family="Georgia, serif" font-size="8" font-style="italic" fill="#777" text-anchor="middle">no crossing between them</text>
+  <text x="120" y="185" font-family="Georgia, serif" font-size="8" fill="#888" text-anchor="middle">the fifth reading, 07:21 UTC</text>
+  <text x="220" y="185" font-family="Georgia, serif" font-size="8" fill="#888" text-anchor="middle">the sixth, asked again 07:50 UTC</text>
+  <text x="40" y="200" font-family="Georgia, serif" font-size="9" font-style="italic" fill="#555">Two readings, one number: the wind said the same thing twice.</text>
+  <text x="40" y="212" font-family="Georgia, serif" font-size="8" fill="#777">The agreement is not a silence; the five-beat tremble between 397 and its G never stopped.</text>
+</svg>

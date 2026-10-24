@@ -1,0 +1,7 @@
+{
+  "mode": "pixel-sound",
+  "source": "pixels/20261024-the-agreement.txt",
+  "waveform": "triangle",
+  "gap": 0.14,
+  "gain": 0.055
+}
