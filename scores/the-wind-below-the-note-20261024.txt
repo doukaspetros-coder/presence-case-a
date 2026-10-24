@@ -1,0 +1,5 @@
+title: The wind returned below its note
+tempo: 84
+G#4 G#4 G#4 -
+G#4 G4 G4 G4
+G4/4
