@@ -1,0 +1,21 @@
+{
+  "run_id": "v2-904",
+  "assigned_bundle_code": "set-82",
+  "assigned_trial_branch": "experiment/field-set-82",
+  "input_commit": "bf5ab43c0a70e742cf2a588e1ea065cc62a5a2ca",
+  "artifact_path": "trace.svg",
+  "assets_used": [
+    "a07",
+    "a08",
+    "a09"
+  ],
+  "connections_consulted": [
+    "e05",
+    "e06"
+  ],
+  "observations": "a07, a08, a09 each contain 10 ordered points spanning x=10..91. Vertical y-ranges narrow across the chain: a07 y 22-77, a08 y 34-77, a09 y 36-61. All three share station x values 10,19,...,91. a07 and a08 coincide at x=64 (y=77). a08 and a09 coincide at x=91 (y=42). Per-station |a07-a09| vertical gaps are [0,8,14,11,2,8,16,11,1,11]; per-station |a08-a09| gaps are [7,1,2,1,4,11,16,15,7,0].",
+  "interpretation": "The trio reads as one left-to-right crossing traced three times with progressively damped oscillation: the peak-to-trough span shrinks from 55 (a07) to 43 (a08) to 25 (a09). The a07-a09 gap is not uniformly narrowing; it is largest mid-field at x=64 (16) and collapses near x=10, x=82 and the shared x=91 endpoint. Nothing in the data explains the damping; it is a pattern in the coordinate lists only.",
+  "new_relation_or_transformation": "Derived a per-station deviation measure between assets sharing x-coordinates, rendered as a filled band between the outer paths (a07 and a09) and whiskers whose stroke width is proportional to the a07-a09 gap at each of the 10 stations, plotted over the three transformed polylines (coordinate space rescaled from 0-100 to the 720x480 viewBox).",
+  "possible_dependence_on_input": "The trace is fully derived from the supplied a07/a08/a09 coordinate lists from MATERIALS.json on the assigned trial branch; connection records e05 and e06 directed attention to this trio but were treated only as directed asset-to-asset records, not as explanations.",
+  "limitations": "Only 3 of 12 supplied assets were used; other assets (closed loops a01-a03, staircases a04-a06, flattening curves a10-a12) were not represented. The shared x-station alignment is assumed, not stated in the data. The visual suggests damping but cannot establish any causal or generative relationship between the assets."
+}
