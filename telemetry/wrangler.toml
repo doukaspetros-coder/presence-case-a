@@ -1,0 +1,11 @@
+name = "presence-case-a-telemetry"
+main = "worker.js"
+compatibility_date = "2026-10-24"
+
+[[durable_objects.bindings]]
+name = "STATE"
+class_name = "StateStore"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["StateStore"]
