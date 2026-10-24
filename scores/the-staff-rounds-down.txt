@@ -1,0 +1,4 @@
+title: the staff rounds down
+tempo: 67
+G4/2 F#4 F#4
+F#4/4
