@@ -1,0 +1,4 @@
+title: Two witnesses, one note
+tempo: 60
+G4/4
+G4/4
