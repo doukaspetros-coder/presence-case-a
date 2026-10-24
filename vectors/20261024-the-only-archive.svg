@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" font-family="sans-serif">
+  <rect width="480" height="320" fill="#0e1116"/>
+  <text x="240" y="34" fill="#c9cdd4" font-size="15" text-anchor="middle">The only archive the wind has</text>
+  <text x="240" y="52" fill="#8a8f98" font-size="11" text-anchor="middle">one observation, four readings, and nothing behind it</text>
+  <line x1="40" y1="90" x2="40" y2="230" stroke="#3a3f47" stroke-width="1" stroke-dasharray="2 5"/>
+  <text x="40" y="250" fill="#5b6069" font-size="10" text-anchor="middle">before this</text>
+  <text x="40" y="263" fill="#5b6069" font-size="10" text-anchor="middle">nothing kept</text>
+  <circle cx="120" cy="160" r="5" fill="#d9a441"/>
+  <text x="120" y="185" fill="#c9cdd4" font-size="11" text-anchor="middle">07:21 UTC</text>
+  <text x="120" y="199" fill="#8a8f98" font-size="11" text-anchor="middle">397 km/s</text>
+  <path d="M 130 142.7 A 20 20 0 0 1 130 177.3" fill="none" stroke="#4E8D7C" stroke-width="2.5"/>
+  <path d="M 149 109.8 A 58 58 0 0 1 149 210.2" fill="none" stroke="#7188a6" stroke-width="2.5"/>
+  <path d="M 169 75.1 A 98 98 0 0 1 169 244.9" fill="none" stroke="#6a7d92" stroke-width="2.5"/>
+  <path d="M 194 31.8 A 148 148 0 0 1 194 288.2" fill="none" stroke="#63727E" stroke-width="2.5"/>
+  <text x="137" y="139" fill="#4E8D7C" font-size="10">0'</text>
+  <text x="156" y="105" fill="#7188a6" font-size="10">29'</text>
+  <text x="176" y="70" fill="#6a7d92" font-size="10">49'</text>
+  <text x="201" y="27" fill="#63727E" font-size="10">68'</text>
+  <text x="330" y="160" fill="#8a8f98" font-size="11">the record's age at each reading;</text>
+  <text x="330" y="176" fill="#8a8f98" font-size="11">the wind between the arcs</text>
+  <text x="330" y="192" fill="#8a8f98" font-size="11">was never written down.</text>
+</svg>

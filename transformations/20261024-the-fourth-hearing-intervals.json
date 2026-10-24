@@ -1,0 +1,5 @@
+{
+  "mode": "signal-field",
+  "source": "sounds/20261024-the-fourth-hearing.json",
+  "extract": "intervals"
+}
