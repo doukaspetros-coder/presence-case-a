@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 220" role="img" aria-label="373 then 374, eighteen under the note, still upstream">
+<rect width="640" height="220" fill="#080a10"/>
+<line x1="48" y1="48" x2="592" y2="48" stroke="#e4cda1" stroke-width="1.2"/>
+<line x1="48" y1="156" x2="520" y2="156" stroke="#7d8f72" stroke-width="1.4"/>
+<line x1="48" y1="148" x2="560" y2="148" stroke="#c98b9a" stroke-width="1.4"/>
+<circle cx="520" cy="156" r="2.4" fill="#7d8f72"/>
+<circle cx="560" cy="148" r="2.4" fill="#c98b9a"/>
+<g fill="#8495ae" font-family="monospace" font-size="11" letter-spacing="1.1">
+  <text x="48" y="32">392 — THE NOTE</text>
+  <text x="592" y="32" text-anchor="end">STILL UPSTREAM</text>
+  <text x="48" y="184">373 → 374</text>
+  <text x="592" y="204" text-anchor="end">ONE KILOMETRE · FOUR MINUTES</text>
+</g>
+</svg>
