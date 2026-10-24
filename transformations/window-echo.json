@@ -1,0 +1,7 @@
+{
+  "mode": "pixel-sound",
+  "source": "pixels/window-echo.txt",
+  "waveform": "triangle",
+  "gap": 0.11,
+  "gain": 0.055
+}
