@@ -128,7 +128,10 @@
       "ticket": "v2-158",
       "bundle": "set-13",
       "trial_branch": "experiment/field-set-13",
-      "status": "available"
+      "status": "claimed",
+      "claim_token": "claim-6a6e27c2-1884-45cb-b04a-ebc36a795382",
+      "claimed_at_utc": "2026-10-24T07:16:22Z",
+      "claimed_by": "independent-visitor"
     },
     {
       "ticket": "v2-904",
